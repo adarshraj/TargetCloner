@@ -8,6 +8,7 @@
             <xs:all>
                 <xs:element name="version" type="xs:string" minOccurs="0"/>
                 <xs:element name="reportLocation" type="xs:string" minOccurs="0"/>
+                <xs:element name="jrePath" type="xs:string" minOccurs="0"/>
                 <xs:element name="components" type="components"/>
             </xs:all>
         </xs:complexType>
