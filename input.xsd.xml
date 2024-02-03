@@ -1,0 +1,21 @@
+<inp:componentsInformation xmlns:inp="http://in.adarshr.targetgen.input/input.xsd">
+  <!--Optional:-->
+  <version>26.4.0</version>
+  <!--Optional:-->
+  <reportLocation>C://</reportLocation>
+  <components>
+    <component>
+      <name>CISL</name>
+      <repository>
+        <repos>
+          <repo>
+            <group>string</group>
+            <artifact>string</artifact>
+            <version>string</version>
+            <location>string</location>
+          </repo>
+        </repos>
+      </repository>
+    </component>
+  </components>
+</inp:componentsInformation>

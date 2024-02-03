@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://in.adarshr.targetgen.output/output.xsd"
+           xmlns="http://in.adarshr.targetgen.output/output.xsd">
+
+    <xs:element name="target">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="environment" type="environment"/>
+                <xs:element name="targetJRE" type="targetJRE"/>
+                <xs:element name="locations" type="locations"/>
+            </xs:sequence>
+            <xs:attribute name="includeMode" type="xs:string" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="sequenceNumber" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="environment">
+        <xs:all>
+            <xs:element name="nl" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="targetJRE">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="path" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="locations">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="location" type="location"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="location">
+        <xs:sequence>
+            <xs:element name="repository" type="targetRepository"/>
+            <xs:element name="unit" type="unit" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="includeAllPlatforms" type="xs:string" use="required"/>
+        <xs:attribute name="includeConfigurePhase" type="xs:string" use="required"/>
+        <xs:attribute name="includeMode" type="xs:string" use="required"/>
+        <xs:attribute name="includeSource" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="targetRepository">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="location" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="unit">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+</xs:schema>
