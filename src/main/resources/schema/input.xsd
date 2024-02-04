@@ -6,9 +6,19 @@
     <xs:element name="componentInfo">
         <xs:complexType>
             <xs:all>
-                <xs:element name="version" type="xs:string" minOccurs="0"/>
-                <xs:element name="reportLocation" type="xs:string" minOccurs="0"/>
-                <xs:element name="jrePath" type="xs:string" minOccurs="0"/>
+                <xs:element name="version" type="xs:string"/>
+                <xs:element name="reportLocation" type="xs:string"/>
+                <xs:element name="jrePath" type="xs:string"/>
+                <xs:element name="jreValue" type="xs:string"/>
+                <xs:element name="targetName" type="xs:string"/>
+                <xs:element name="includeMode" type="xs:string"/>
+                <xs:element name="sequenceNumber" type="xs:string"/>
+                <xs:element name="environment" type="xs:string"/>
+                <xs:element name="includeAllPlatforms" type="xs:string"/>
+                <xs:element name="includeConfigurePhase" type="xs:string"/>
+                <xs:element name="includeSource" type="xs:string"/>
+                <xs:element name="targetType" type="xs:string"/>
+                <xs:element name="targetLocation" type="xs:string"/>
                 <xs:element name="components" type="components"/>
             </xs:all>
         </xs:complexType>
