@@ -1,8 +1,11 @@
 package in.adarshr.targetgen.build;
 
+import in.adarshr.targetgen.bo.ComponentRepo;
 import in.adarshr.targetgen.bo.TargetVO;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
+
+import java.util.List;
 
 public class TargetBuilder {
     public Target buildTarget(TargetVO targetVO) {
@@ -48,6 +51,9 @@ public class TargetBuilder {
     }
 
     private Unit createUnit(TargetVO targetVO) {
+        List<ComponentRepo> componentRepos = targetVO.getComponentRepos();
+        List<in.adarshr.targetgen.bo.Unit> units = targetVO.getUnits();
+
         Unit unit = new Unit();
         unit.setId("org.eclipse.egit");
         unit.setVersion("5.11.0.202105071451-r");
