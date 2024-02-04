@@ -1,4 +1,4 @@
-<inp:componentsInformation xmlns:inp="http://in.adarshr.targetgen.input/input.xsd">
+<inp:componentInfo xmlns:inp="http://in.adarshr.targetgen.input/input.xsd">
   <!--Optional:-->
   <version>26.4.0</version>
   <!--Optional:-->
@@ -9,13 +9,13 @@
       <repository>
         <repos>
           <repo>
-            <group>string</group>
-            <artifact>string</artifact>
-            <version>string</version>
-            <location>string</location>
+            <group>group</group>
+            <artifact>artifact</artifact>
+            <version>1.0.1</version>
+            <location>https://download.eclipse.org/egit/updates-6.7/</location>
           </repo>
         </repos>
       </repository>
     </component>
   </components>
-</inp:componentsInformation>
+</inp:componentInfo>

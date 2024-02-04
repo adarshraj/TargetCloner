@@ -3,7 +3,7 @@
            targetNamespace="http://in.adarshr.targetgen.input/input.xsd"
            xmlns="http://in.adarshr.targetgen.input/input.xsd">
 
-    <xs:element name="componentsInformation">
+    <xs:element name="componentInfo">
         <xs:complexType>
             <xs:all>
                 <xs:element name="version" type="xs:string" minOccurs="0"/>

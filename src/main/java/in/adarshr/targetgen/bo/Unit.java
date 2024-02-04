@@ -6,4 +6,6 @@ import lombok.Data;
 public class Unit {
     String id;
     String version;
+    String singleton;
+    String generation;
 }
