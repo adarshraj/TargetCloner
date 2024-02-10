@@ -32,7 +32,7 @@ public class TargetGen {
         ComponentInfo componentInfo = null;
         //Read input xml
         try {
-            File xmlFile = new File("input.xsd.xml");
+            File xmlFile = new File("input/input.xsd.xml");
             componentInfo = JaxbUtils.unmarshal(xmlFile, ComponentInfo.class);
             targetVO.setComponentInfo(componentInfo);
         } catch (JAXBException e) {
