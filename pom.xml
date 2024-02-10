@@ -25,7 +25,6 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.3</version>
-            <scope>runtime</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>
@@ -44,7 +43,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
-            <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
