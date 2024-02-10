@@ -22,6 +22,12 @@ import java.util.List;
 public class TargetGen {
     private static final Logger LOG = LoggerFactory.getLogger(TargetGen.class);
     public static void main(String[] args) {
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            System.err.println("Global exception handler caught: " + exception.getMessage());
+            LOG.error("Global exception handler caught: {}", exception.getMessage());
+        });
+
         TargetVO targetVO = new TargetVO();
         ComponentInfo componentInfo = null;
         //Read input xml
