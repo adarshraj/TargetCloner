@@ -10,7 +10,7 @@ import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,4 +82,16 @@ public class XMLUtils {
         }
         return xml;
     }
+
+    //Save XML file to disk
+    public static void saveXmlFile(String xml, String fileName) {
+        File file = new File(fileName);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(xml);
+            LOG.info("XML file {} saved to disk", fileName);
+        } catch (IOException e) {
+            LOG.error("Failed to write to file: {}", e.getMessage());
+        }
+    }
+
 }

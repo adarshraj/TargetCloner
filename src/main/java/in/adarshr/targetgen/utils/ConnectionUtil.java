@@ -72,4 +72,20 @@ public class ConnectionUtil {
             return reader.lines().collect(Collectors.joining("\n"));
         }
     }
+
+    public static String readFileFromDirectory(String fileName) throws IOException {
+        File file = new File(fileName);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+    public static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
+        File file = new File(fileName);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
+        }
+    }
+
+
 }

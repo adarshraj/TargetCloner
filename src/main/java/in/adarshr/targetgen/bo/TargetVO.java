@@ -10,4 +10,5 @@ public class TargetVO {
     private ComponentInfo componentInfo;
     private List<Unit> units;
     private List<ComponentRepo> componentRepos;
+    private List<Report> reportData;
 }

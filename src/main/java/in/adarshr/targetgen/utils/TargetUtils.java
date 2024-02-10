@@ -1,12 +1,15 @@
 package in.adarshr.targetgen.utils;
 
 import in.adarshr.targetgen.bo.ComponentRepo;
+import in.adarshr.targetgen.bo.Report;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
 
+import java.io.IOException;
 import java.util.*;
 
 public class TargetUtils {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
     public static List<String> getJarUrls(ComponentInfo componentInfo) {
         List<ComponentRepo> componentRepos = getComponentRepos(componentInfo);
         Set<String> repoUrls = getRepoUrls(componentRepos);
@@ -73,4 +76,23 @@ public class TargetUtils {
         return location;
     }
 
+    public static List<Report> getReportData(String reportFileLocation, int linesToSkip) {
+        List<Report> reports = new ArrayList<>();
+        try {
+            String reportFile = ConnectionUtil.readFileFromDirectory(reportFileLocation, linesToSkip);
+            if (reportFile == null) {
+                LOG.error("Report file is null/empty or cannot be read");
+                throw new RuntimeException("Report file is null/empty or cannot be read");
+            } else {
+                for (String line : reportFile.split("\n")) {
+                    Report report = Report.fromDelimitedString(line, ":");
+                    reports.add(report);
+                }
+            }
+            return reports;
+        } catch (IOException e) {
+            LOG.error("Failed to read file from directory: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 }

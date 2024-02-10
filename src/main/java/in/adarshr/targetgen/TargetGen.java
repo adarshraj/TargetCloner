@@ -1,6 +1,7 @@
 package in.adarshr.targetgen;
 
 import in.adarshr.targetgen.bo.ComponentRepo;
+import in.adarshr.targetgen.bo.Report;
 import in.adarshr.targetgen.bo.TargetVO;
 import in.adarshr.targetgen.build.TargetBuilder;
 import in.adarshr.targetgen.utils.ConnectionUtil;
@@ -21,12 +22,11 @@ import java.util.List;
 
 public class TargetGen {
     private static final Logger LOG = LoggerFactory.getLogger(TargetGen.class);
+
     public static void main(String[] args) {
 
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            System.err.println("Global exception handler caught: " + exception.getMessage());
-            LOG.error("Global exception handler caught: {}", exception.getMessage());
-        });
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: {}", exception.getMessage()));
+
 
         TargetVO targetVO = new TargetVO();
         ComponentInfo componentInfo = null;
@@ -39,18 +39,18 @@ public class TargetGen {
             LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
         }
 
-        if(componentInfo == null) {
+        if (componentInfo == null) {
             throw new RuntimeException("ComponentInfo is null");
-        }else{
+        } else {
             List<ComponentRepo> componentRepos = TargetUtils.getComponentRepos(componentInfo);
             targetVO.setComponentRepos(componentRepos);
             LOG.info("ComponentInfo is not null");
         }
 
         List<String> jarUrls = TargetUtils.getJarUrls(componentInfo);
-        List<InputStream> jarStreams = new ArrayList<>();
+        List<InputStream> jarStreams;
         try {
-            jarStreams =  ConnectionUtil.downloadJars(jarUrls);
+            jarStreams = ConnectionUtil.downloadJars(jarUrls);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -59,10 +59,15 @@ public class TargetGen {
         List<in.adarshr.targetgen.bo.Unit> boUnits = XMLUtils.parseAllXml(jarStreams);
         targetVO.setUnits(boUnits);
 
+        List<Report> reportData = TargetUtils.getReportData("report/DeliveryReport.txt", 2);
+        targetVO.setReportData(reportData);
+
         // Create xml file from jaxb
         TargetBuilder targetBuilder = new TargetBuilder();
         Target target = targetBuilder.buildTarget(targetVO);
         XMLUtils.createXmlFile(target);
     }
+
+
 
 }
