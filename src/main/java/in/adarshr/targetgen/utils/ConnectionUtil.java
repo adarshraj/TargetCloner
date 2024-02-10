@@ -4,14 +4,9 @@ import input.targetgen.adarshr.in.input.Repo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,7 +43,7 @@ public class ConnectionUtil {
                         return downloadJar(jarUrl);
                     } catch (IOException e) {
                         LOG.error("Failed to download JAR from URL: {}", jarUrl);
-                        return null;
+                        return new ByteArrayInputStream(new byte[0]);
                     }
                 })
                 .filter(Objects::nonNull) // Filter out any failed downloads
