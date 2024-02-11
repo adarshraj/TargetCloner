@@ -214,6 +214,15 @@ public class TargetUtils {
      * @return boolean
      */
     private static boolean isUnitValid(Unit unit) {
-        return unit.getSingleton().equals("true");
+        if(isValidUnitConditions(unit)){
+            return true;
+        }else{
+            LOG.error("Unit is not valid, filtering: {}", unit);
+            return false;
+        }
+    }
+
+    private static boolean isValidUnitConditions(Unit unit) {
+       return unit.getSingleton().equals("true");
     }
 }

@@ -38,7 +38,6 @@ public class TargetGen {
         try {
             File xmlFile = new File("input/input.xml");
             File inputSchemaFile = new File("schema/input.xsd");
-            //componentInfo = JaxbUtils.unmarshal(xmlFile, ComponentInfo.class);
             componentInfo = JaxbUtils.unmarshallAndValidate(xmlFile, inputSchemaFile, ComponentInfo.class);
             LOG.info("JAXBUtils: {}", componentInfo);
         } catch (JAXBException | SAXException e) {

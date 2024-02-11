@@ -57,31 +57,35 @@ public class XMLUtils {
             int nodeListLength = nodeList.getLength();
             while (nodeListLength-- > 0) {
                 Element element = (Element) nodeList.item(nodeListLength);
-
                 // Getting attributes of 'unit' element
-                String id = element.getAttribute("id");
-                String version = element.getAttribute("version");
-                String singleton = element.getAttribute("singleton");
-                String generation = element.getAttribute("generation");
-
-                Unit unit = new Unit();
-                unit.setId(id);
-                unit.setVersion(version);
-                unit.setSingleton(singleton);
-                unit.setGeneration(generation);
-
-                LOG.info("Unit ID : {}", id);
-                LOG.info("Version : {}", version);
-                LOG.info("Singleton: {}", singleton);
-                LOG.info("Generation : {}", generation);
-
+                Unit unit = getUnit(element);
+                LOG.info("Unit: {}", unit);
                 unitList.add(unit);
-                LOG.info("");
             }
         } catch (Exception e) {
             LOG.error("Failed to parse XML: {}", e.getMessage());
         }
         return unitList;
+    }
+
+    /**
+     * Get unit from element
+     *
+     * @param element Element
+     * @return Unit
+     */
+    private static Unit getUnit(Element element) {
+        String id = element.getAttribute("id");
+        String version = element.getAttribute("version");
+        String singleton = element.getAttribute("singleton");
+        String generation = element.getAttribute("generation");
+
+        Unit unit = new Unit();
+        unit.setId(id);
+        unit.setVersion(version);
+        unit.setSingleton(singleton);
+        unit.setGeneration(generation);
+        return unit;
     }
 
     /**
