@@ -14,6 +14,10 @@ public class Repo {
     public String toString() {
         return "Repo: " + group + ":" + artifact;
     }
+
+    public int hashCode() {
+        return group.hashCode() + artifact.hashCode();
+    }
 }
 
 
