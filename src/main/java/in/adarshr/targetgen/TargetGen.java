@@ -38,14 +38,6 @@ public class TargetGen {
             LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
         }
 
-        if (componentInfo == null) {
-            throw new RuntimeException("ComponentInfo is null");
-        } else {
-            List<ComponentRepo> componentRepos = TargetUtils.getComponentRepos(componentInfo);
-            targetVO.setComponentRepos(componentRepos);
-            LOG.info("ComponentInfo is not null");
-        }
-
         //Get jar urls
         Set<Repo> repoJarUrls = TargetUtils.getJarUrls(componentInfo);
 
