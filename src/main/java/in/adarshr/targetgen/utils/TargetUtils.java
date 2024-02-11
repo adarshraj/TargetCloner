@@ -1,5 +1,6 @@
 package in.adarshr.targetgen.utils;
 
+import in.adarshr.targetgen.bo.Unit;
 import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.bo.Report;
 import input.targetgen.adarshr.in.input.ComponentInfo;
@@ -168,5 +169,20 @@ public class TargetUtils {
             reportLocation = reportLocation.replace("<VERSION>", version);
         }
         return reportLocation;
+    }
+
+    public static Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filterRepoUnits(Map<in.adarshr.targetgen.bo.Repo, List<Unit>> repoListMap) {
+        Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filteredRepoListMap = new HashMap<>();
+        repoListMap.forEach((repo, units) -> {
+            List<Unit> filteredUnits = units.stream()
+                    .filter(TargetUtils::isUnitValid)
+                    .collect(Collectors.toList());
+            filteredRepoListMap.put(repo, filteredUnits);
+        });
+        return filteredRepoListMap;
+    }
+
+    private static boolean isUnitValid(Unit unit) {
+        return unit.getSingleton().equals("true");
     }
 }

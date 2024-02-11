@@ -51,6 +51,7 @@ public class TargetGen {
 
             // Parse the XML from the jar file
             Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
+            Map<Repo, List<Unit>> filteredRepoListMap = TargetUtils.filterRepoUnits(repoListMap);
             targetVO.setRepoUnitMap(repoListMap);
 
             //Set delivery report data
