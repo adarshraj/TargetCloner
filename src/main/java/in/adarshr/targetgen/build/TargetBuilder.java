@@ -3,6 +3,7 @@ package in.adarshr.targetgen.build;
 import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.bo.Repo;
 import in.adarshr.targetgen.dto.TargetVO;
+import in.adarshr.targetgen.utils.TargetUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
 
@@ -16,6 +17,7 @@ public class TargetBuilder {
         List<Target> targets = new ArrayList<>();
         Map<String, ComponentRepoVO> componentRepoMap = targetVO.getComponentRepoMap();
         componentRepoMap.forEach((componentName, componentRepo) -> {
+            targetVO.setTargetName(TargetUtils.getTargetName(componentName, targetVO.getVersion()));
             targetVO.setCurrentComponentName(componentName);
             Target target = createTarget(targetVO);
             targets.add(target);
@@ -58,9 +60,7 @@ public class TargetBuilder {
         repoMapList.get(targetVO.getCurrentComponentName()).forEach(currentRepo -> {
             if(currentRepo.equals(repo)) {
                 location.setRepository(createTargetRepository(currentRepo));
-                repoUnitMap.get(currentRepo).forEach(unit -> {
-                            location.getUnit().add(createUnit(unit));
-                        }
+                repoUnitMap.get(currentRepo).forEach(unit -> location.getUnit().add(createUnit(unit))
                 );
             }
         });

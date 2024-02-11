@@ -141,4 +141,8 @@ public class TargetUtils {
             return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
         }
     }
+
+    public static String getTargetName(String componentName, String version) {
+        return componentName + "_" + version + ".target";
+    }
 }

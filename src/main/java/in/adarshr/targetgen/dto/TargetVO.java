@@ -13,6 +13,7 @@ import java.util.Map;
 public class TargetVO {
     private String targetName;
     private String currentComponentName;
+    private String version;
     private ComponentInfo componentInfo;
     private Map<Repo, List<Unit>> repoUnitMap;
     private Map<String, ComponentRepoVO> componentRepoMap;

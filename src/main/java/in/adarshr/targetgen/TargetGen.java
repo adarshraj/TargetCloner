@@ -58,6 +58,9 @@ public class TargetGen {
         //Set Component Repos
         targetVO.setComponentRepoMap(TargetUtils.getComponentRepoMap(componentInfo));
 
+        //Set version
+        targetVO.setVersion(componentInfo.getVersion());
+
         // Create xml file from jaxb
         TargetBuilder targetBuilder = new TargetBuilder();
         List<Target> targets = targetBuilder.buildTargets(targetVO);
