@@ -1,8 +1,10 @@
 package in.adarshr.targetgen;
 
-import in.adarshr.targetgen.bo.*;
-import in.adarshr.targetgen.dto.TargetVO;
+import in.adarshr.targetgen.bo.Repo;
+import in.adarshr.targetgen.bo.Report;
+import in.adarshr.targetgen.bo.Unit;
 import in.adarshr.targetgen.build.TargetBuilder;
+import in.adarshr.targetgen.dto.TargetVO;
 import in.adarshr.targetgen.utils.ConnectionUtil;
 import in.adarshr.targetgen.utils.JaxbUtils;
 import in.adarshr.targetgen.utils.TargetUtils;
@@ -15,7 +17,6 @@ import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,11 +56,11 @@ public class TargetGen {
             LOG.info("*** Repo Jar Urls creation completed. ***");
 
             //Download jar and get input stream
-            Map<Repo, String> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
+            Map<Repo, String> repoStringMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
             LOG.info("*** Repo Jar Urls download completed. ***");
 
             // Parse the XML from the jar file
-            Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
+            Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoStringMap);
             Map<Repo, List<Unit>> filteredRepoListMap = TargetUtils.filterRepoUnits(repoListMap);
             targetVO.setRepoUnitMap(filteredRepoListMap);
             LOG.info("*** Repo Jar Urls parsing completed. ***");

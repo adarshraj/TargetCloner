@@ -1,14 +1,15 @@
 package in.adarshr.targetgen.utils;
 
 import in.adarshr.targetgen.bo.Repo;
-import in.adarshr.targetgen.bo.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -22,6 +23,13 @@ public class ConnectionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionUtil.class);
 
+    /**
+     * Downloads the JAR from the given URL and returns the InputStream of the XML file inside the JAR.
+     *
+     * @param jarUrl the URL of the JAR
+     * @return the InputStream of the XML file inside the JAR
+     * @throws IOException if an I/O error occurs
+     */
     private static String downloadJar(String jarUrl) throws IOException {
         URI uri = URI.create(jarUrl);
         URL url = uri.toURL();

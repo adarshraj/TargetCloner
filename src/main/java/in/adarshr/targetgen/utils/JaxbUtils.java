@@ -37,7 +37,7 @@ public class JaxbUtils {
     }
 
     /**
-     * Unmarshals the given XML string to an object.
+     * Unmarshal the given XML string to an object.
      *
      * @param xml   the XML string
      * @param clazz the class of the object
@@ -53,7 +53,7 @@ public class JaxbUtils {
     }
 
     /**
-     * Unmarshals the given XML file to an object.
+     * Unmarshal the given XML file to an object.
      *
      * @param xmlFile the XML file
      * @param clazz   the class of the object
@@ -68,7 +68,7 @@ public class JaxbUtils {
     }
 
     /**
-     * Unmarshals and validates the given XML file against the given XSD file to an object.
+     * Unmarshal and validates the given XML file against the given XSD file to an object.
      *
      * @param xmlFile the XML file
      * @param xsdFile the XSD file
@@ -78,6 +78,7 @@ public class JaxbUtils {
      * @throws JAXBException if an error occurs during unmarshalling
      * @throws SAXException  if an error occurs during validation
      */
+    @SuppressWarnings("unchecked")
     public static <T> T unmarshallAndValidate(File xmlFile, File xsdFile, Class<T> clazz)
             throws JAXBException, SAXException {
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
