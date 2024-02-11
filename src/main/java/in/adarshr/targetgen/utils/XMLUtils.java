@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -30,22 +31,21 @@ public class XMLUtils {
     /**
      * Parse content.xml to get the list of units
      *
-     * @param xmlStream XML stream
+     * @param xml XML stream
      * @return List of unit
      */
-    public static List<Unit> parseXml(InputStream xmlStream) {
-        if (xmlStream == null || xmlStream.equals(new ByteArrayInputStream(new byte[0]))) {
-            LOG.error("XML stream is null or empty");
+    public static List<Unit> parseXml(String xml) {
+        if (xml == null || xml.isBlank()) {
+            LOG.error("XML is null or empty");
             return new ArrayList<>();
         }
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db;
         List<Unit> unitList = new ArrayList<>();
-
         try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(xml)));
 
-            db = dbf.newDocumentBuilder();
-            Document doc = db.parse(xmlStream);
+            doc.getDocumentElement().normalize();
 
             // Normalize the XML structure
             doc.getDocumentElement().normalize();
@@ -90,10 +90,10 @@ public class XMLUtils {
      * @param repoInputStreamMap Map of repo and input stream
      * @return Map of repo and list of unit
      */
-    public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, InputStream> repoInputStreamMap) {
+    public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, String> repoInputStreamMap) {
         return repoInputStreamMap.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
-                .parallel()
+               // .parallel()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
 

@@ -55,7 +55,7 @@ public class TargetGen {
             LOG.info("*** Repo Jar Urls creation completed. ***");
 
             //Download jar and get input stream
-            Map<Repo, InputStream> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
+            Map<Repo, String> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
             LOG.info("*** Repo Jar Urls download completed. ***");
 
             // Parse the XML from the jar file
@@ -96,11 +96,9 @@ public class TargetGen {
 
             XMLUtils.createXmlFiles(stringTargetMap);
             LOG.info("*** Target files are written to disk. ***");
+            LOG.info("*** All tasks completed. ***");
         }else {
             LOG.error("ComponentInfo is null");
         }
     }
-
-
-
 }
