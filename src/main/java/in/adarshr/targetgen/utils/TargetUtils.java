@@ -217,7 +217,7 @@ public class TargetUtils {
         if(isValidUnitConditions(unit)){
             return true;
         }else{
-            LOG.error("Unit is not valid, filtering: {}", unit);
+            LOG.info("Unit is not valid, filtering: {}", unit);
             return false;
         }
     }
