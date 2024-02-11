@@ -1,6 +1,5 @@
 package in.adarshr.targetgen.dto;
 
-import in.adarshr.targetgen.bo.ComponentRepo;
 import in.adarshr.targetgen.bo.Repo;
 import in.adarshr.targetgen.bo.Report;
 import in.adarshr.targetgen.bo.Unit;
@@ -16,7 +15,7 @@ public class TargetVO {
     private String currentComponentName;
     private ComponentInfo componentInfo;
     private Map<Repo, List<Unit>> repoUnitMap;
-    private Map<String, ComponentRepo> componentRepoMap;
+    private Map<String, ComponentRepoVO> componentRepoMap;
     private List<Report> deliveryReportData;
     private Map<String, List<Repo>> repoMapList;
 }

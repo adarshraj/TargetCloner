@@ -1,6 +1,6 @@
 package in.adarshr.targetgen.utils;
 
-import in.adarshr.targetgen.bo.ComponentRepo;
+import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.bo.Report;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
@@ -51,16 +51,16 @@ public class TargetUtils {
         return distinctRepoList;
     }
 
-    public Map<String, ComponentRepo> getComponentRepoMap(ComponentInfo componentInfo) {
-        Map<String, ComponentRepo> componentRepoMap = new HashMap<>();
+    public static Map<String, ComponentRepoVO> getComponentRepoMap(ComponentInfo componentInfo) {
+        Map<String, ComponentRepoVO> componentRepoMap = new HashMap<>();
         if((componentInfo == null) || (componentInfo.getComponents() == null)) {
             LOG.error("ComponentInfo is null");
             throw new RuntimeException("ComponentInfo is null");
         }else {
             componentInfo.getComponents().getComponent().forEach(component -> {
-                ComponentRepo componentRepo = new ComponentRepo();
-                componentRepo.setComponent(component);
-                componentRepo.setRepos(component.getRepository().getRepos().getRepo());
+                ComponentRepoVO componentRepo = new ComponentRepoVO();
+                componentRepo.setComponentName(component.getName());
+                componentRepo.setRepos(getRepoMapList(componentInfo).get(component.getName()));
                 componentRepoMap.put(component.getName(), componentRepo);
             });
         }
