@@ -1,13 +1,12 @@
 package in.adarshr.targetgen.build;
 
-import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.bo.Repo;
+import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.dto.TargetVO;
 import in.adarshr.targetgen.utils.TargetUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

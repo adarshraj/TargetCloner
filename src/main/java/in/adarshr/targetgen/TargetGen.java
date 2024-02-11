@@ -54,8 +54,15 @@ public class TargetGen {
             targetVO.setRepoUnitMap(repoListMap);
 
             //Set delivery report data
-            List<Report> reportData = TargetUtils.getReportData("report/DeliveryReport.txt", 2);
-            targetVO.setDeliveryReportData(reportData);
+            if(TargetUtils.isUrl(componentInfo.getReportLocation())){
+                String reportLocation = componentInfo.getReportLocation();
+                String createRepoUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
+                List<Report> reportDataFromUrl = TargetUtils.getReportData(componentInfo.getReportLocation(), 1, 1);
+                targetVO.setDeliveryReportData(reportDataFromUrl);
+            }else {
+                List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
+                targetVO.setDeliveryReportData(reportData);
+            }
 
             //Set Repo List
             targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));

@@ -6,6 +6,7 @@ import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
@@ -93,10 +94,16 @@ public class TargetUtils {
      * @param linesToSkip Lines to skip
      * @return List of Report
      */
-    public static List<Report> getReportData(String reportFileLocation, int linesToSkip) {
+    public static List<Report> getReportData(String reportFileLocation, int linesToSkip, int sourceType) {
         List<Report> reports = new ArrayList<>();
         try {
-            String reportFile = readFileFromDirectory(reportFileLocation, linesToSkip);
+            String reportFile;
+            if(sourceType == 1) {
+                reportFile = readFileFromUrl(reportFileLocation, linesToSkip);
+            }else {
+                reportFile = readFileFromDirectory(reportFileLocation, linesToSkip);
+            }
+
             if (reportFile == null) {
                 LOG.error("Report file is null/empty or cannot be read");
                 throw new RuntimeException("Report file is null/empty or cannot be read");
@@ -120,7 +127,7 @@ public class TargetUtils {
      * @return String
      * @throws IOException Throws IOException
      */
-    public static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
+    private static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
         File file = new File(fileName);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
@@ -134,7 +141,7 @@ public class TargetUtils {
      * @return String
      * @throws IOException Throws IOException
      */
-    public static String readFileFromUrl(String fileUrl, final int linesToSkip) throws IOException {
+    private static String readFileFromUrl(String fileUrl, final int linesToSkip) throws IOException {
         URI uri = URI.create(fileUrl);
         URL url = uri.toURL();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -144,5 +151,22 @@ public class TargetUtils {
 
     public static String getTargetName(String componentName, String version) {
         return componentName + "_" + version + ".target";
+    }
+
+    public static boolean isUrl(String location) {
+        try {
+            new URL(location);
+            return true;
+        } catch (MalformedURLException e) {
+            LOG.error("Invalid delivery report url: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public static String createDeliveryReportUrl(String reportLocation, String version) {
+        if(reportLocation != null && reportLocation.contains("<VERSION>")){
+            reportLocation = reportLocation.replace("<VERSION>", version);
+        }
+        return reportLocation;
     }
 }
