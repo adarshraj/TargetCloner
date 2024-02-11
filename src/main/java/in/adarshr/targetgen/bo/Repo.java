@@ -2,6 +2,9 @@ package in.adarshr.targetgen.bo;
 
 import lombok.Data;
 
+/**
+ * This class is used to store the repo information
+ */
 @Data
 public class Repo {
     private String group;

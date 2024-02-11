@@ -13,6 +13,9 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This class contains the utility methods for the application which are used to generate the target file.
+ */
 public class TargetUtils {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
 
@@ -85,8 +88,9 @@ public class TargetUtils {
             location = location.replace("<GROUP>", group);
         }
 
-        return location + "/" +
-                "content.jar";
+        String repoUrl = location + "/" + "content.jar";
+        LOG.info("Repo URL: {}", repoUrl);
+        return repoUrl;
     }
 
     /**
@@ -150,10 +154,21 @@ public class TargetUtils {
         }
     }
 
+    /**
+     * Get target name
+     * @param componentName Component name
+     * @param version Version
+     * @return String
+     */
     public static String getTargetName(String componentName, String version) {
         return componentName + "_" + version + ".target";
     }
 
+    /**
+     * Check if the location is URL
+     * @param location Location
+     * @return boolean
+     */
     public static boolean isUrl(String location) {
         try {
             new URL(location);
@@ -164,6 +179,12 @@ public class TargetUtils {
         }
     }
 
+    /**
+     * Create delivery report URL
+     * @param reportLocation Report location
+     * @param version Version
+     * @return String
+     */
     public static String createDeliveryReportUrl(String reportLocation, String version) {
         if(reportLocation != null && reportLocation.contains("<VERSION>")){
             reportLocation = reportLocation.replace("<VERSION>", version);
@@ -171,6 +192,11 @@ public class TargetUtils {
         return reportLocation;
     }
 
+    /**
+     * Filter repo units.
+     * @param repoListMap Repo list map
+     * @return Map
+     */
     public static Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filterRepoUnits(Map<in.adarshr.targetgen.bo.Repo, List<Unit>> repoListMap) {
         Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filteredRepoListMap = new HashMap<>();
         repoListMap.forEach((repo, units) -> {
@@ -182,6 +208,11 @@ public class TargetUtils {
         return filteredRepoListMap;
     }
 
+    /**
+     * Check if the unit is valid
+     * @param unit Unit
+     * @return boolean
+     */
     private static boolean isUnitValid(Unit unit) {
         return unit.getSingleton().equals("true");
     }

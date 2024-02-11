@@ -21,9 +21,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * This class contains the methods to parse the jar XML and other XML related operations
+ */
 public class XMLUtils {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
 
+    /**
+     * Parse content.xml to get the list of units
+     *
+     * @param xmlStream XML stream
+     * @return List of unit
+     */
     public static List<Unit> parseXml(InputStream xmlStream) {
         if (xmlStream == null || xmlStream.equals(new ByteArrayInputStream(new byte[0]))) {
             LOG.error("XML stream is null or empty");
@@ -75,13 +84,25 @@ public class XMLUtils {
         return unitList;
     }
 
+    /**
+     * Parse all XML
+     *
+     * @param repoInputStreamMap Map of repo and input stream
+     * @return Map of repo and list of unit
+     */
     public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, InputStream> repoInputStreamMap) {
         return repoInputStreamMap.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
-                .parallel() // Enable parallel processing
+                .parallel()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
 
+    /**
+     * Create XML file
+     *
+     * @param target Target
+     * @return String
+     */
     public static String createXmlFile(Target target) {
         String xml = null;
         try {
@@ -93,6 +114,11 @@ public class XMLUtils {
         return xml;
     }
 
+    /**
+     * Create XML files
+     *
+     * @param stringTargetMap Map of target name and target
+     */
     public static void createXmlFiles(Map<String, Target> stringTargetMap) {
         for (Map.Entry<String, Target> entry : stringTargetMap.entrySet()) {
             String xml = createXmlFile(entry.getValue());
@@ -105,6 +131,13 @@ public class XMLUtils {
         }
     }
 
+    /**
+     * Save the content to a file
+     *
+     * @param content  Content
+     * @param fileName File name
+     * @return boolean
+     */
     private static boolean saveToFile(String content, String fileName) {
         // Get the current working directory
         String currentWorkingDir = System.getProperty("user.dir");

@@ -15,10 +15,20 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 
+/**
+ * This class provides utility methods for downloading JARs and extracting XMLs from them.
+ */
 public class ConnectionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionUtil.class);
 
+    /**
+     * Downloads the JAR from the given URL and returns an InputStream of the XML file inside the JAR.
+     *
+     * @param jarUrl the URL of the JAR file
+     * @return an InputStream of the XML file inside the JAR
+     * @throws IOException if an I/O error occurs
+     */
     private static InputStream downloadJar(String jarUrl) throws IOException {
         URI uri = URI.create(jarUrl);
         URL url = uri.toURL();
@@ -36,6 +46,13 @@ public class ConnectionUtil {
         return new ByteArrayInputStream(new byte[0]); // empty InputStream
     }
 
+    /**
+     * Downloads the JAR from the given URL for each distinct repository and returns a map of the repository and the
+     * InputStream of the XML file inside the JAR.
+     *
+     * @param distinctRepos the set of distinct repositories
+     * @return a map of the repository and the InputStream of the XML file inside the JAR
+     */
     public static Map<Repo, InputStream> downloadSpecificXMLFromJar(Set<Repo> distinctRepos) {
         return distinctRepos.stream()
                 .parallel() // Enable parallel processing

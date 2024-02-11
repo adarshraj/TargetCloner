@@ -9,6 +9,9 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is used to store the target information
+ */
 @Data
 public class TargetVO {
     private String targetName;

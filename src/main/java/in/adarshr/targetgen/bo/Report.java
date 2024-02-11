@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.util.Arrays;
 
+/**
+ * This class is used to store the delivery report information
+ */
 @Data
 public class Report {
 

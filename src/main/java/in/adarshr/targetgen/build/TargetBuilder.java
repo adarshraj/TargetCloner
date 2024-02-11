@@ -11,8 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is used to build the target
+ */
 public class TargetBuilder {
 
+    /**
+     * This method is used to build the targets
+     * @param targetVO  TargetVO
+     * @return Map<String, Target>
+     */
     public Map<String, Target> buildTargets(TargetVO targetVO) {
         Map<String, Target> targets = new HashMap<>();
         Map<String, ComponentRepoVO> componentRepoMap = targetVO.getComponentRepoMap();
@@ -25,6 +33,12 @@ public class TargetBuilder {
 
         return targets;
     }
+
+    /**
+     * This method is used to create the target
+     * @param targetVO  TargetVO
+     * @return Target
+     */
     private Target createTarget(TargetVO targetVO) {
         ComponentInfo componentInfo = targetVO.getComponentInfo();
         ObjectFactory ObjectFactory = new ObjectFactory();
@@ -38,6 +52,11 @@ public class TargetBuilder {
         return target;
     }
 
+    /**
+     * This method is used to create the locations
+     * @param targetVO  TargetVO
+     * @return Locations
+     */
     private Locations createLocations(TargetVO targetVO) {
         Locations locations = new Locations();
         //Each location is a Repo
@@ -46,6 +65,12 @@ public class TargetBuilder {
         return locations;
     }
 
+    /**
+     * This method is used to create the location
+     * @param targetVO  TargetVO
+     * @param repo  Repo
+     * @return Location
+     */
     private Location createLocation(TargetVO targetVO, in.adarshr.targetgen.bo.Repo repo) {
         ComponentInfo componentInfo = targetVO.getComponentInfo();
         Map<String, List<Repo>> repoMapList = targetVO.getRepoMapList();
@@ -67,12 +92,22 @@ public class TargetBuilder {
         return location;
     }
 
+    /**
+     * This method is used to create the target repository
+     * @param repo  Repo
+     * @return TargetRepository
+     */
     private TargetRepository createTargetRepository(Repo repo) {
         TargetRepository targetRepository = new TargetRepository();
         targetRepository.setLocation(repo.getLocation());
         return targetRepository;
     }
 
+    /**
+     * This method is used to create the unit
+     * @param boUnit  in.adarshr.targetgen.bo.Unit
+     * @return Unit
+     */
     private Unit createUnit(in.adarshr.targetgen.bo.Unit boUnit) {
         Unit unit = new Unit();
         unit.setId(boUnit.getId());
@@ -80,12 +115,22 @@ public class TargetBuilder {
         return unit;
     }
 
+    /**
+     * This method is used to create the environment
+     * @param componentInfo  ComponentInfo
+     * @return Environment
+     */
     private Environment createEnvironment(ComponentInfo componentInfo) {
         Environment environment = new Environment();
         environment.setNl(componentInfo.getEnvironment());
         return environment;
     }
 
+    /**
+     * This method is used to create the target JRE
+     * @param componentInfo  ComponentInfo
+     * @return TargetJRE
+     */
     private TargetJRE createTargetJRE(ComponentInfo componentInfo) {
         TargetJRE targetJRE = new TargetJRE();
         targetJRE.setPath(componentInfo.getJrePath());
