@@ -1,8 +1,7 @@
 package in.adarshr.targetgen;
 
-import in.adarshr.targetgen.bo.ComponentRepo;
-import in.adarshr.targetgen.bo.Report;
-import in.adarshr.targetgen.bo.TargetVO;
+import in.adarshr.targetgen.bo.*;
+import in.adarshr.targetgen.dto.TargetVO;
 import in.adarshr.targetgen.build.TargetBuilder;
 import in.adarshr.targetgen.utils.ConnectionUtil;
 import in.adarshr.targetgen.utils.JaxbUtils;
@@ -15,10 +14,10 @@ import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TargetGen {
     private static final Logger LOG = LoggerFactory.getLogger(TargetGen.class);
@@ -47,26 +46,27 @@ public class TargetGen {
             LOG.info("ComponentInfo is not null");
         }
 
-        List<String> jarUrls = TargetUtils.getJarUrls(componentInfo);
-        List<InputStream> jarStreams;
-        try {
-            jarStreams = ConnectionUtil.downloadJars(jarUrls);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //Get jar urls
+        Set<Repo> repoJarUrls = TargetUtils.getJarUrls(componentInfo);
+
+        //Download jar and get input stream
+        Map<Repo, InputStream> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
 
         // Parse the XML from the jar file
-        List<in.adarshr.targetgen.bo.Unit> boUnits = XMLUtils.parseAllXml(jarStreams);
-        targetVO.setUnits(boUnits);
+        Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
+        targetVO.setRepoUnitMap(repoListMap);
 
+        //Set delivery report data
         List<Report> reportData = TargetUtils.getReportData("report/DeliveryReport.txt", 2);
-        targetVO.setReportData(reportData);
+        targetVO.setDeliveryReportData(reportData);
+
+        //Set Repo List
+        targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));
 
         // Create xml file from jaxb
         TargetBuilder targetBuilder = new TargetBuilder();
-        Target target = targetBuilder.buildTarget(targetVO);
         List<Target> targets = targetBuilder.buildTargets(targetVO);
-        XMLUtils.createXmlFile(target);
+        XMLUtils.createXmlFiles(targets);
     }
 
 

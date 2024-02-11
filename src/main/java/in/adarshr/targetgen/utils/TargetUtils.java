@@ -14,59 +14,65 @@ import java.util.stream.Collectors;
 public class TargetUtils {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
 
-    public static List<String> getJarUrls(ComponentInfo componentInfo) {
-        List<ComponentRepo> componentRepos = getComponentRepos(componentInfo);
-        Set<String> repoUrls = getRepoUrls(componentRepos);
-        List<String> jarUrls = new ArrayList<>();
-        repoUrls.forEach(repoUrl -> jarUrls.add(repoUrl + "content.jar"));
-        return jarUrls;
+    public static Set<in.adarshr.targetgen.bo.Repo> getJarUrls(ComponentInfo componentInfo) {
+        return getDistinctRepoList(componentInfo);
     }
 
-    private static Map<String, Map<Repo, String>> getRepoMap(ComponentInfo componentInfo) {
-        Map<String, Map<Repo, String>> repoMap = new HashMap<>();
-        componentInfo.getComponents().getComponent().forEach(component -> {
-            Map<Repo, String> repoStringMap = new HashMap<>();
-            component.getRepository().getRepos().getRepo().forEach(repo -> {
-                String repoUrl = createRepoUrl(repo);
-                repoStringMap.put(repo, repoUrl);
+    public static Map<String, List<in.adarshr.targetgen.bo.Repo>> getRepoMapList(ComponentInfo componentInfo) {
+        Map<String, List<in.adarshr.targetgen.bo.Repo>> repoMap = new HashMap<>();
+        if((componentInfo == null) || (componentInfo.getComponents() == null)) {
+            LOG.error("ComponentInfo is null");
+            throw new RuntimeException("ComponentInfo is null");
+        }else {
+            componentInfo.getComponents().getComponent().forEach(component -> {
+                List<in.adarshr.targetgen.bo.Repo> repoStore = new ArrayList<>();
+                if(component.getRepository() == null || component.getRepository().getRepos() == null) {
+                    LOG.error("Repository is null for component: {}", component.getName());
+                    throw new RuntimeException("Repository is null for component: " + component.getName());
+                }else {
+                    component.getRepository().getRepos().getRepo().forEach(repo -> {
+                        in.adarshr.targetgen.bo.Repo repoBo = new in.adarshr.targetgen.bo.Repo();
+                        repoBo.setArtifact(repo.getArtifact());
+                        repoBo.setGroup(repo.getGroup());
+                        repoBo.setLocation(createRepoUrl(repo));
+                        repoStore.add(repoBo);
+                    });
+                    repoMap.put(component.getName(), repoStore);
+                }
             });
-            repoMap.put(component.getName(), repoStringMap);
-        });
+        }
         return repoMap;
     }
 
-    public static Map<Repo, String> getDistinctRepoMap(ComponentInfo componentInfo) {
-        Map<String, Map<Repo, String>> repoMap = getRepoMap(componentInfo);
-        Map<Repo, String> distinctRepoMap = new HashMap<>();
-        repoMap.forEach((component, repoStringMap) -> repoStringMap.forEach((repo, repoUrl) -> {
-            if (!distinctRepoMap.containsKey(repo)) {
-                distinctRepoMap.put(repo, repoUrl);
-            }
-        }));
-        return distinctRepoMap;
+    private static Set<in.adarshr.targetgen.bo.Repo> getDistinctRepoList(ComponentInfo componentInfo) {
+        Map<String, List<in.adarshr.targetgen.bo.Repo>> repoMapList = getRepoMapList(componentInfo);
+        Set<in.adarshr.targetgen.bo.Repo> distinctRepoList = new HashSet<>();
+        repoMapList.forEach((component, repoList) -> distinctRepoList.addAll(repoList));
+        return distinctRepoList;
     }
 
-    public static List<ComponentRepo> getComponentRepos(ComponentInfo componentInfo) {
-        List<ComponentRepo> componentRepos = new ArrayList<>();
-        componentInfo.getComponents().getComponent().forEach(component -> {
-            ComponentRepo componentRepo = new ComponentRepo();
-            componentRepo.setComponent(component);
-            componentRepo.setRepos(component.getRepository().getRepos().getRepo());
-            componentRepos.add(componentRepo);
-        });
-        return componentRepos;
+    public Map<String, ComponentRepo> getComponentRepoMap(ComponentInfo componentInfo) {
+        Map<String, ComponentRepo> componentRepoMap = new HashMap<>();
+        if((componentInfo == null) || (componentInfo.getComponents() == null)) {
+            LOG.error("ComponentInfo is null");
+            throw new RuntimeException("ComponentInfo is null");
+        }else {
+            componentInfo.getComponents().getComponent().forEach(component -> {
+                ComponentRepo componentRepo = new ComponentRepo();
+                componentRepo.setComponent(component);
+                componentRepo.setRepos(component.getRepository().getRepos().getRepo());
+                componentRepoMap.put(component.getName(), componentRepo);
+            });
+        }
+        return componentRepoMap;
     }
 
-    public static Set<String> getRepoUrls(List<ComponentRepo> componentRepos) {
-        Set<String> repoUrls = new HashSet<>();
-        componentRepos.forEach(componentRepo -> componentRepo.getRepos().forEach(repo -> {
-            String repoUrl = createRepoUrl(repo);
-            repoUrls.add(repoUrl);
-        }));
-        return repoUrls;
-    }
-
-    public static String createRepoUrl(Repo repo) {
+    /**
+     * Create repo URL
+     * @param repo Repo
+     * @return String
+     */
+    private static String createRepoUrl(Repo repo) {
         String group = repo.getGroup();
         String artifact = repo.getArtifact();
         String location = repo.getLocation();
@@ -76,9 +82,17 @@ public class TargetUtils {
         if(location != null && location.contains("<GROUP>")){
             location = location.replace("<GROUP>", group);
         }
-        return location;
+
+        return location + "/" +
+                "content.jar";
     }
 
+    /**
+     * Get report data from the delivery report file
+     * @param reportFileLocation Report file location
+     * @param linesToSkip Lines to skip
+     * @return List of Report
+     */
     public static List<Report> getReportData(String reportFileLocation, int linesToSkip) {
         List<Report> reports = new ArrayList<>();
         try {
@@ -99,14 +113,13 @@ public class TargetUtils {
         }
     }
 
-
-    public static String readFileFromDirectory(String fileName) throws IOException {
-        File file = new File(fileName);
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        }
-    }
-
+    /**
+     * Read file from directory. For Local testing
+     * @param fileName File name
+     * @param linesToSkip Lines to skip
+     * @return String
+     * @throws IOException Throws IOException
+     */
     public static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
         File file = new File(fileName);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -114,13 +127,18 @@ public class TargetUtils {
         }
     }
 
-    public static String readFile(String fileUrl) throws IOException {
+    /**
+     * Read file from URL. For production
+     * @param fileUrl File URL
+     * @param linesToSkip Lines to skip
+     * @return String
+     * @throws IOException Throws IOException
+     */
+    public static String readFileFromUrl(String fileUrl, final int linesToSkip) throws IOException {
         URI uri = URI.create(fileUrl);
         URL url = uri.toURL();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return reader.lines().collect(Collectors.joining("\n"));
+            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
         }
     }
-
-
 }

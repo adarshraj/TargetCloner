@@ -1,5 +1,6 @@
 package in.adarshr.targetgen.utils;
 
+import in.adarshr.targetgen.bo.Repo;
 import in.adarshr.targetgen.bo.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class XMLUtils {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
@@ -30,6 +33,7 @@ public class XMLUtils {
             // Here we choose to get NodeList of all "unit" elements directly
             NodeList nodeList = doc.getElementsByTagName("unit");
 
+            //Iterate through all "unit" elements
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Element element = (Element) nodeList.item(i);
 
@@ -51,10 +55,6 @@ public class XMLUtils {
                 LOG.info("Generation : {}", generation);
 
                 unitList.add(unit);
-
-                // If there are more details you want,
-                // just use element.getAttribute with the attribute name as argument.
-
                 LOG.info("");
                 return unitList;
             }
@@ -64,12 +64,10 @@ public class XMLUtils {
         return unitList;
     }
 
-    public static List<Unit> parseAllXml(List<InputStream> xmlStreams) {
-        List<Unit> unitList = new ArrayList<>();
-        for (InputStream xmlStream : xmlStreams) {
-            unitList.addAll(parseXml(xmlStream));
-        }
-        return unitList;
+    public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, InputStream> repoInputStreamMap) {
+        return repoInputStreamMap.entrySet().stream()
+                .parallel() // Enable parallel processing
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
 
     public static String createXmlFile(Target target) {
@@ -94,4 +92,10 @@ public class XMLUtils {
         }
     }
 
+    public static void createXmlFiles(List<Target> targets) {
+        for (Target target : targets) {
+            String xml = createXmlFile(target);
+            saveXmlFile(xml, target.getName() + ".xml");
+        }
+    }
 }

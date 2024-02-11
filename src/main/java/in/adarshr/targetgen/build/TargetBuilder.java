@@ -1,24 +1,25 @@
 package in.adarshr.targetgen.build;
 
 import in.adarshr.targetgen.bo.ComponentRepo;
-import in.adarshr.targetgen.bo.TargetVO;
+import in.adarshr.targetgen.bo.Repo;
+import in.adarshr.targetgen.dto.TargetVO;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TargetBuilder {
-    public Target buildTarget(TargetVO targetVO) {
-        return createTarget(targetVO);
-    }
 
     public List<Target> buildTargets(TargetVO targetVO) {
         List<Target> targets = new ArrayList<>();
         ComponentInfo componentInfo = targetVO.getComponentInfo();
-        for (ComponentRepo componentRepo : targetVO.getComponentRepos()) {
-            targets.add(createTarget(targetVO));
-        }
+        targetVO.getComponentRepoMap().forEach((componentName, componentRepo) -> {
+            Target target = createTarget(targetVO);
+            targets.add(target);
+        });
+
         return targets;
     }
     private Target createTarget(TargetVO targetVO) {
@@ -61,8 +62,8 @@ public class TargetBuilder {
     }
 
     private Unit createUnit(TargetVO targetVO) {
-        List<ComponentRepo> componentRepos = targetVO.getComponentRepos();
-        List<in.adarshr.targetgen.bo.Unit> units = targetVO.getUnits();
+        Map<String, List<Repo>> repoMapList = targetVO.getRepoMapList();
+        Map<Repo, List<in.adarshr.targetgen.bo.Unit>> repoUnitMap = targetVO.getRepoUnitMap();
 
         Unit unit = new Unit();
         unit.setId("org.eclipse.egit");

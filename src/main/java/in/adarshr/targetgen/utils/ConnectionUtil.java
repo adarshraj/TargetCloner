@@ -1,6 +1,6 @@
 package in.adarshr.targetgen.utils;
 
-import input.targetgen.adarshr.in.input.Repo;
+import in.adarshr.targetgen.bo.Repo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
@@ -34,31 +35,14 @@ public class ConnectionUtil {
         return null; // No XML found
     }
 
-    public static List<InputStream> downloadJars(List<String> jarUrls) throws IOException {
-        return jarUrls.stream()
+    public static Map<Repo, InputStream> downloadSpecificXMLFromJar(Set<Repo> distinctRepos) {
+        return distinctRepos.stream()
                 .parallel() // Enable parallel processing
-                .map(jarUrl -> {
+                .collect(Collectors.toMap(repo -> repo, repo -> {
                     try {
-                        // Use downloadSpecificXMLFromJar for optimized download
-                        return downloadJar(jarUrl);
+                        return downloadJar(repo.getLocation());
                     } catch (IOException e) {
-                        LOG.error("Failed to download JAR from URL: {}", jarUrl);
-                        return new ByteArrayInputStream(new byte[0]);
-                    }
-                })
-                .filter(Objects::nonNull) // Filter out any failed downloads
-                .collect(Collectors.toList());
-    }
-
-    //create a List<Inputstream> from TargetUtils.getDistinctRepoMap() method result
-    public static Map<Repo, InputStream> downloadSpecificXMLFromJar(Map<Repo, String> distinctRepoMap) {
-        return distinctRepoMap.entrySet().stream()
-                .parallel() // Enable parallel processing
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                    try {
-                        return downloadJar(entry.getValue());
-                    } catch (IOException e) {
-                        LOG.error("Failed to download JAR from URL: {}", entry.getValue());
+                        LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
                         return null;
                     }
                 }));
