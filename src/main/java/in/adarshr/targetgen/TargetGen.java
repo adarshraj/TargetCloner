@@ -10,12 +10,12 @@ import in.adarshr.targetgen.utils.JaxbUtils;
 import in.adarshr.targetgen.utils.TargetUtils;
 import in.adarshr.targetgen.utils.XMLUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
+import jakarta.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import output.targetgen.adarshr.in.output.Target;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class TargetGen {
         ComponentInfo componentInfo = null;
         try {
             File xmlFile = new File("input/input.xml");
-            File inputSchemaFile = new File("src/main/resources/schema/input.xsd");
+            File inputSchemaFile = new File("schema/input.xsd");
             //componentInfo = JaxbUtils.unmarshal(xmlFile, ComponentInfo.class);
             componentInfo = JaxbUtils.unmarshallAndValidate(xmlFile, inputSchemaFile, ComponentInfo.class);
             LOG.info("JAXBUtils: {}", componentInfo);
@@ -100,6 +100,7 @@ public class TargetGen {
             LOG.info("*** All tasks completed. ***");
         }else {
             LOG.error("ComponentInfo is null");
+            LOG.error("*** Application is exiting ***");
         }
     }
 }

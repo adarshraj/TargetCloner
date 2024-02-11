@@ -155,6 +155,7 @@ public class XMLUtils {
             } else {
                 // Create the file and write the content
                 Files.write(Paths.get(fileLocation), content.getBytes());
+                LOG.info("File created successfully {}", fileLocation);
             }
         } catch (IOException e) {
             LOG.error("Failed to create directory: {}", e.getMessage());

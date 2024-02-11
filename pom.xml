@@ -14,18 +14,21 @@
     </properties>
 
     <dependencies>
-        <!-- include JAXB dependencies-->
+        <!-- https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>4.0.0</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+
+        <!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
         <dependency>
-            <groupId>org.glassfish.jaxb</groupId>
-            <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.3</version>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>4.0.0</version>
+            <scope>runtime</scope>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.dom4j/dom4j -->
         <dependency>
             <groupId>org.dom4j</groupId>
@@ -80,9 +83,9 @@
         <finalName>${project.artifactId}</finalName> <!--Jar name. Optional field -->
         <plugins>
             <plugin>
-                <groupId>org.jvnet.jaxb2.maven2</groupId>
-                <artifactId>maven-jaxb2-plugin</artifactId>
-                <version>0.14.0</version>
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb-maven-plugin</artifactId>
+                <version>4.0.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -91,7 +94,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <schemaDirectory>src/main/resources/schema</schemaDirectory>
+                    <schemaDirectory>schema</schemaDirectory>
                     <schemaIncludes>
                         <include>input.xsd</include>
                         <include>output.xsd</include>
