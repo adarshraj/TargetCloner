@@ -36,7 +36,7 @@ public class JaxbUtils {
         return clazz.cast(jaxbUnmarshaller.unmarshal(xmlFile));
     }
 
-    public static <T> T unmarshallAndValidate(Class<T> clazz, File xmlFile, File xsdFile)
+    public static <T> T unmarshallAndValidate(File xmlFile, File xsdFile, Class<T> clazz)
             throws JAXBException, SAXException {
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = sf.newSchema(xsdFile);

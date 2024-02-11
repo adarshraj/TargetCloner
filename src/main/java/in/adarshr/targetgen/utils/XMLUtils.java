@@ -12,6 +12,10 @@ import output.targetgen.adarshr.in.output.Target;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +23,18 @@ import java.util.stream.Collectors;
 
 public class XMLUtils {
     private static final Logger LOG = LoggerFactory.getLogger(XMLUtils.class);
+
     public static List<Unit> parseXml(InputStream xmlStream) {
+        if (xmlStream == null || xmlStream.equals(new ByteArrayInputStream(new byte[0]))) {
+            LOG.error("XML stream is null or empty");
+            return new ArrayList<>();
+        }
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db;
         List<Unit> unitList = new ArrayList<>();
+
         try {
+
             db = dbf.newDocumentBuilder();
             Document doc = db.parse(xmlStream);
 
@@ -34,8 +45,9 @@ public class XMLUtils {
             NodeList nodeList = doc.getElementsByTagName("unit");
 
             //Iterate through all "unit" elements
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Element element = (Element) nodeList.item(i);
+            int nodeListLength = nodeList.getLength();
+            while (nodeListLength-- > 0) {
+                Element element = (Element) nodeList.item(nodeListLength);
 
                 // Getting attributes of 'unit' element
                 String id = element.getAttribute("id");
@@ -56,7 +68,6 @@ public class XMLUtils {
 
                 unitList.add(unit);
                 LOG.info("");
-                return unitList;
             }
         } catch (Exception e) {
             LOG.error("Failed to parse XML: {}", e.getMessage());
@@ -66,6 +77,7 @@ public class XMLUtils {
 
     public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, InputStream> repoInputStreamMap) {
         return repoInputStreamMap.entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
                 .parallel() // Enable parallel processing
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
@@ -81,21 +93,41 @@ public class XMLUtils {
         return xml;
     }
 
-    //Save XML file to disk
-    public static void saveXmlFile(String xml, String fileName) {
-        File file = new File(fileName);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(xml);
-            LOG.info("XML file {} saved to disk", fileName);
-        } catch (IOException e) {
-            LOG.error("Failed to write to file: {}", e.getMessage());
+    public static void createXmlFiles(Map<String, Target> stringTargetMap) {
+        for (Map.Entry<String, Target> entry : stringTargetMap.entrySet()) {
+            String xml = createXmlFile(entry.getValue());
+            boolean is = saveToFile(xml, entry.getKey());
+            if (is) {
+                LOG.info("XML file created successfully");
+            } else {
+                LOG.error("Failed to create XML file");
+            }
         }
     }
 
-    public static void createXmlFiles(List<Target> targets) {
-        for (Target target : targets) {
-            String xml = createXmlFile(target);
-            saveXmlFile(xml, target.getName() + ".xml");
+    private static boolean saveToFile(String content, String fileName) {
+        // Get the current working directory
+        String currentWorkingDir = System.getProperty("user.dir");
+
+        String fileSep = FileSystems.getDefault().getSeparator();
+
+        // Define the path to the file
+        String fileLocation = currentWorkingDir + fileSep + "output" + fileSep + fileName;
+
+        // Make sure to create the directory if it doesn't exit
+        Path currentOutputPath = Paths.get(currentWorkingDir + fileSep + "output" + fileSep);
+        try {
+            if (!Files.exists(currentOutputPath)) {
+                Files.createDirectories(currentOutputPath);
+            } else {
+                // Create the file and write the content
+                Files.write(Paths.get(fileLocation), content.getBytes());
+            }
+        } catch (IOException e) {
+            LOG.error("Failed to create directory: {}", e.getMessage());
+            return false;
         }
+        return true;
     }
+
 }

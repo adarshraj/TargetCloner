@@ -10,6 +10,7 @@ import in.adarshr.targetgen.utils.XMLUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.bind.JAXBException;
@@ -26,45 +27,52 @@ public class TargetGen {
 
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: {}", exception.getMessage()));
 
-
-        TargetVO targetVO = new TargetVO();
         ComponentInfo componentInfo = null;
         //Read input xml
         try {
-            File xmlFile = new File("input/input.xsd.xml");
+            File xmlFile = new File("input/input.xml");
+            File inputSchemaFile = new File("src/main/resources/schema/input.xsd");
             componentInfo = JaxbUtils.unmarshal(xmlFile, ComponentInfo.class);
-            targetVO.setComponentInfo(componentInfo);
-        } catch (JAXBException e) {
+            Object jaxbUtils = JaxbUtils.unmarshallAndValidate(xmlFile, inputSchemaFile, ComponentInfo.class);
+            LOG.info("JAXBUtils: {}", jaxbUtils);
+        } catch (JAXBException | SAXException e) {
             LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
         }
 
-        //Get jar urls
-        Set<Repo> repoJarUrls = TargetUtils.getJarUrls(componentInfo);
+        if(componentInfo != null) {
+            TargetVO targetVO = new TargetVO();
+            targetVO.setComponentInfo(componentInfo);
 
-        //Download jar and get input stream
-        Map<Repo, InputStream> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
+            //Get jar urls
+            Set<Repo> repoJarUrls = TargetUtils.getJarUrls(componentInfo);
 
-        // Parse the XML from the jar file
-        Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
-        targetVO.setRepoUnitMap(repoListMap);
+            //Download jar and get input stream
+            Map<Repo, InputStream> repoInputStreamMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
 
-        //Set delivery report data
-        List<Report> reportData = TargetUtils.getReportData("report/DeliveryReport.txt", 2);
-        targetVO.setDeliveryReportData(reportData);
+            // Parse the XML from the jar file
+            Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
+            targetVO.setRepoUnitMap(repoListMap);
 
-        //Set Repo List
-        targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));
+            //Set delivery report data
+            List<Report> reportData = TargetUtils.getReportData("report/DeliveryReport.txt", 2);
+            targetVO.setDeliveryReportData(reportData);
 
-        //Set Component Repos
-        targetVO.setComponentRepoMap(TargetUtils.getComponentRepoMap(componentInfo));
+            //Set Repo List
+            targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));
 
-        //Set version
-        targetVO.setVersion(componentInfo.getVersion());
+            //Set Component Repos
+            targetVO.setComponentRepoMap(TargetUtils.getComponentRepoMap(componentInfo));
 
-        // Create xml file from jaxb
-        TargetBuilder targetBuilder = new TargetBuilder();
-        List<Target> targets = targetBuilder.buildTargets(targetVO);
-        XMLUtils.createXmlFiles(targets);
+            //Set version
+            targetVO.setVersion(componentInfo.getVersion());
+
+            // Create xml file from jaxb
+            TargetBuilder targetBuilder = new TargetBuilder();
+            Map<String, Target> stringTargetMap = targetBuilder.buildTargets(targetVO);
+            XMLUtils.createXmlFiles(stringTargetMap);
+        }else {
+            LOG.error("ComponentInfo is null");
+        }
     }
 
 

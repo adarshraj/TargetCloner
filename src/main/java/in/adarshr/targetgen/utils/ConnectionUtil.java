@@ -4,12 +4,12 @@ import in.adarshr.targetgen.bo.Repo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -19,7 +19,7 @@ public class ConnectionUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionUtil.class);
 
-    public static InputStream downloadJar(String jarUrl) throws IOException {
+    private static InputStream downloadJar(String jarUrl) throws IOException {
         URI uri = URI.create(jarUrl);
         URL url = uri.toURL();
         try (InputStream in = url.openStream()) { // Use URL directly for conciseness
@@ -32,7 +32,8 @@ public class ConnectionUtil {
                 }
             }
         }
-        return null; // No XML found
+         // return an empty stream if no XML found
+        return new ByteArrayInputStream(new byte[0]); // empty InputStream
     }
 
     public static Map<Repo, InputStream> downloadSpecificXMLFromJar(Set<Repo> distinctRepos) {
@@ -43,7 +44,7 @@ public class ConnectionUtil {
                         return downloadJar(repo.getLocation());
                     } catch (IOException e) {
                         LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
-                        return null;
+                        return new ByteArrayInputStream(new byte[0]); // empty InputStream;
                     }
                 }));
     }

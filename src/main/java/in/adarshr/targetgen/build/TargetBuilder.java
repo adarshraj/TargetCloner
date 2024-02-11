@@ -8,19 +8,20 @@ import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class TargetBuilder {
 
-    public List<Target> buildTargets(TargetVO targetVO) {
-        List<Target> targets = new ArrayList<>();
+    public Map<String, Target> buildTargets(TargetVO targetVO) {
+        Map<String, Target> targets = new HashMap<>();
         Map<String, ComponentRepoVO> componentRepoMap = targetVO.getComponentRepoMap();
         componentRepoMap.forEach((componentName, componentRepo) -> {
             targetVO.setTargetName(TargetUtils.getTargetName(componentName, targetVO.getVersion()));
             targetVO.setCurrentComponentName(componentName);
             Target target = createTarget(targetVO);
-            targets.add(target);
+            targets.put(targetVO.getTargetName(), target);
         });
 
         return targets;
