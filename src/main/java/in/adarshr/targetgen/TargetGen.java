@@ -65,6 +65,7 @@ public class TargetGen {
         // Create xml file from jaxb
         TargetBuilder targetBuilder = new TargetBuilder();
         Target target = targetBuilder.buildTarget(targetVO);
+        List<Target> targets = targetBuilder.buildTargets(targetVO);
         XMLUtils.createXmlFile(target);
     }
 

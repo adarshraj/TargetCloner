@@ -5,11 +5,15 @@ import in.adarshr.targetgen.bo.Report;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TargetUtils {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
+
     public static List<String> getJarUrls(ComponentInfo componentInfo) {
         List<ComponentRepo> componentRepos = getComponentRepos(componentInfo);
         Set<String> repoUrls = getRepoUrls(componentRepos);
@@ -31,7 +35,6 @@ public class TargetUtils {
         return repoMap;
     }
 
-    //create distinct repo. means no duplicate repo
     public static Map<Repo, String> getDistinctRepoMap(ComponentInfo componentInfo) {
         Map<String, Map<Repo, String>> repoMap = getRepoMap(componentInfo);
         Map<Repo, String> distinctRepoMap = new HashMap<>();
@@ -79,7 +82,7 @@ public class TargetUtils {
     public static List<Report> getReportData(String reportFileLocation, int linesToSkip) {
         List<Report> reports = new ArrayList<>();
         try {
-            String reportFile = ConnectionUtil.readFileFromDirectory(reportFileLocation, linesToSkip);
+            String reportFile = readFileFromDirectory(reportFileLocation, linesToSkip);
             if (reportFile == null) {
                 LOG.error("Report file is null/empty or cannot be read");
                 throw new RuntimeException("Report file is null/empty or cannot be read");
@@ -95,4 +98,29 @@ public class TargetUtils {
             return Collections.emptyList();
         }
     }
+
+
+    public static String readFileFromDirectory(String fileName) throws IOException {
+        File file = new File(fileName);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+    public static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
+        File file = new File(fileName);
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
+        }
+    }
+
+    public static String readFile(String fileUrl) throws IOException {
+        URI uri = URI.create(fileUrl);
+        URL url = uri.toURL();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+
 }

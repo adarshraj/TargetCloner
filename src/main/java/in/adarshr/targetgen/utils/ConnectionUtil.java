@@ -63,29 +63,4 @@ public class ConnectionUtil {
                     }
                 }));
     }
-
-
-    public static String readFile(String fileUrl) throws IOException {
-        URI uri = URI.create(fileUrl);
-        URL url = uri.toURL();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        }
-    }
-
-    public static String readFileFromDirectory(String fileName) throws IOException {
-        File file = new File(fileName);
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().collect(Collectors.joining("\n"));
-        }
-    }
-
-    public static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
-        File file = new File(fileName);
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
-        }
-    }
-
-
 }

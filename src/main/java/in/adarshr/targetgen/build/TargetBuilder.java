@@ -5,11 +5,21 @@ import in.adarshr.targetgen.bo.TargetVO;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import output.targetgen.adarshr.in.output.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TargetBuilder {
     public Target buildTarget(TargetVO targetVO) {
         return createTarget(targetVO);
+    }
+
+    public List<Target> buildTargets(TargetVO targetVO) {
+        List<Target> targets = new ArrayList<>();
+        ComponentInfo componentInfo = targetVO.getComponentInfo();
+        for (ComponentRepo componentRepo : targetVO.getComponentRepos()) {
+            targets.add(createTarget(targetVO));
+        }
+        return targets;
     }
     private Target createTarget(TargetVO targetVO) {
         ComponentInfo componentInfo = targetVO.getComponentInfo();
@@ -72,5 +82,6 @@ public class TargetBuilder {
         targetJRE.setValue(componentInfo.getJreValue());
         return targetJRE;
     }
+
 
 }
