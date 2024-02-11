@@ -52,13 +52,13 @@ public class TargetGen {
             // Parse the XML from the jar file
             Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoInputStreamMap);
             Map<Repo, List<Unit>> filteredRepoListMap = TargetUtils.filterRepoUnits(repoListMap);
-            targetVO.setRepoUnitMap(repoListMap);
+            targetVO.setRepoUnitMap(filteredRepoListMap);
 
             //Set delivery report data
             if(TargetUtils.isUrl(componentInfo.getReportLocation())){
                 String reportLocation = componentInfo.getReportLocation();
                 String createRepoUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
-                List<Report> reportDataFromUrl = TargetUtils.getReportData(componentInfo.getReportLocation(), 1, 1);
+                List<Report> reportDataFromUrl = TargetUtils.getReportData(createRepoUrl, 1, 1);
                 targetVO.setDeliveryReportData(reportDataFromUrl);
             }else {
                 List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
