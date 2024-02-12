@@ -3,6 +3,7 @@ package in.adarshr.targetgen.utils;
 import in.adarshr.targetgen.bo.Unit;
 import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.bo.Report;
+import in.adarshr.targetgen.dto.TargetVO;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
 
@@ -19,10 +20,20 @@ import java.util.stream.Collectors;
 public class TargetUtils {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
 
+    /**
+     * Get jar urls
+     * @param componentInfo ComponentInfo
+     * @return Set
+     */
     public static Set<in.adarshr.targetgen.bo.Repo> getJarUrls(ComponentInfo componentInfo) {
         return getDistinctRepoList(componentInfo);
     }
 
+    /**
+     * Get repo map list
+     * @param componentInfo ComponentInfo
+     * @return Map
+     */
     public static Map<String, List<in.adarshr.targetgen.bo.Repo>> getRepoMapList(ComponentInfo componentInfo) {
         Map<String, List<in.adarshr.targetgen.bo.Repo>> repoMap = new HashMap<>();
         if((componentInfo == null) || (componentInfo.getComponents() == null)) {
@@ -49,6 +60,11 @@ public class TargetUtils {
         return repoMap;
     }
 
+    /**
+     * Get distinct repo list
+     * @param componentInfo ComponentInfo
+     * @return Set
+     */
     private static Set<in.adarshr.targetgen.bo.Repo> getDistinctRepoList(ComponentInfo componentInfo) {
         Map<String, List<in.adarshr.targetgen.bo.Repo>> repoMapList = getRepoMapList(componentInfo);
         Set<in.adarshr.targetgen.bo.Repo> distinctRepoList = new HashSet<>();
@@ -56,6 +72,11 @@ public class TargetUtils {
         return distinctRepoList;
     }
 
+    /**
+     * Get component repo map
+     * @param componentInfo ComponentInfo
+     * @return Map
+     */
     public static Map<String, ComponentRepoVO> getComponentRepoMap(ComponentInfo componentInfo) {
         Map<String, ComponentRepoVO> componentRepoMap = new HashMap<>();
         if((componentInfo == null) || (componentInfo.getComponents() == null)) {
@@ -65,6 +86,7 @@ public class TargetUtils {
             componentInfo.getComponents().getComponent().forEach(component -> {
                 ComponentRepoVO componentRepo = new ComponentRepoVO();
                 componentRepo.setComponentName(component.getName());
+                componentRepo.setComponent(component);
                 componentRepo.setRepos(getRepoMapList(componentInfo).get(component.getName()));
                 componentRepoMap.put(component.getName(), componentRepo);
             });
@@ -81,11 +103,11 @@ public class TargetUtils {
         String group = repo.getGroup();
         String artifact = repo.getArtifact();
         String location = repo.getLocation();
-        if(location != null && location.contains("<ARTIFACT>")){
-            location = location.replace("<ARTIFACT>", artifact);
+        if(location != null && location.contains("$ARTIFACT$")){
+            location = location.replace("$ARTIFACT$", artifact);
         }
-        if(location != null && location.contains("<GROUP>")){
-            location = location.replace("<GROUP>", group);
+        if(location != null && location.contains("$GROUP$")){
+            location = location.replace("$GROUP$", group);
         }
 
         String repoUrl = location + "/" + "content.jar";
@@ -161,7 +183,7 @@ public class TargetUtils {
      * @return String
      */
     public static String getTargetName(String componentName, String version) {
-        return componentName + "_" + version + ".target";
+        return componentName + "_" + version;
     }
 
     /**
@@ -197,6 +219,7 @@ public class TargetUtils {
      * @param repoListMap Repo list map
      * @return Map
      */
+    @SuppressWarnings("unused")
     public static Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filterRepoUnits(Map<in.adarshr.targetgen.bo.Repo, List<Unit>> repoListMap) {
         Map<in.adarshr.targetgen.bo.Repo, List<Unit>> filteredRepoListMap = new HashMap<>();
         repoListMap.forEach((repo, units) -> {
@@ -224,5 +247,21 @@ public class TargetUtils {
 
     private static boolean isValidUnitConditions(Unit unit) {
        return unit.getSingleton().equals("true");
+    }
+
+    /**
+     * This method is used to format the target name
+     * @param targetVO  TargetVO
+     * @param targetName  String
+     * @return String
+     */
+    public static String getTargetNameFormatted(TargetVO targetVO, String targetName) {
+        if(targetName.contains("$COMPONENT$")) {
+            targetName = targetName.replace("$COMPONENT$", targetVO.getCurrentComponentName());
+        }
+        if(targetName.contains("$VERSION$")) {
+            targetName = targetName.replace("$VERSION$", targetVO.getVersion());
+        }
+        return targetName;
     }
 }

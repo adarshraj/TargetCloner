@@ -110,8 +110,8 @@ public class XMLUtils {
     public static String createXmlFile(Target target) {
         String xml = null;
         try {
-            xml = JaxbUtils.marshal(target, Target.class);
-            LOG.info("XML: {}", xml);
+            xml = JaxbUtils.marshalWithInstruction(target, Target.class);
+            LOG.info("Output XML: \n{}", xml);
         } catch (Exception e) {
             LOG.error("Failed to create XML file: {}", e.getMessage());
         }

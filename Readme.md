@@ -6,6 +6,10 @@
 - The tool can be run as a normal java application.
 - The tool is tested on Windows with Java 21 with custom inputs. Should work in Java 17.
 
+# Drawbacks
+- When target is generated in Eclipse, the required units can be defined based on the dependencies. But this tool does not have that feature.
+- It may include unnecessary dependencies also in the target.xml
+
 # How to use
 - The tool is a command line tool and requires the following inputs:
   - Delivery report file

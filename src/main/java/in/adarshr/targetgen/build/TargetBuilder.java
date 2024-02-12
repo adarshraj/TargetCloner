@@ -5,6 +5,7 @@ import in.adarshr.targetgen.dto.ComponentRepoVO;
 import in.adarshr.targetgen.dto.TargetVO;
 import in.adarshr.targetgen.utils.TargetUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
+import input.targetgen.adarshr.in.input.SelectedGroups;
 import output.targetgen.adarshr.in.output.*;
 
 import java.util.HashMap;
@@ -28,10 +29,20 @@ public class TargetBuilder {
             targetVO.setTargetName(TargetUtils.getTargetName(componentName, targetVO.getVersion()));
             targetVO.setCurrentComponentName(componentName);
             Target target = createTarget(targetVO);
-            targets.put(targetVO.getTargetName(), target);
+            targets.put(createTargetFileName(targetVO), target);
         });
 
         return targets;
+    }
+
+    /**
+     * This method is used to create the target file name
+     * @param targetVO  TargetVO
+     * @return String
+     */
+    private String createTargetFileName(TargetVO targetVO) {
+        String targetNameFormatted = TargetUtils.getTargetNameFormatted(targetVO, targetVO.getTargetSaveFormat());
+        return targetNameFormatted + ".target";
     }
 
     /**
@@ -43,14 +54,38 @@ public class TargetBuilder {
         ComponentInfo componentInfo = targetVO.getComponentInfo();
         ObjectFactory ObjectFactory = new ObjectFactory();
         Target target =  ObjectFactory.createTarget();
-        target.setName(componentInfo.getTargetName());
-        target.setIncludeMode(componentInfo.getIncludeMode());
+        target.setName(createTargetName(targetVO));
+        target.setIncludeMode(componentInfo.getTargetIncludeMode());
         target.setSequenceNumber(componentInfo.getSequenceNumber());
+        target.setLauncherArgs(createLauncherArgs(componentInfo));
         target.setTargetJRE(createTargetJRE(componentInfo));
-        target.setEnvironment(createEnvironment(componentInfo));
+        target.setEnvironment(createEnvironment(targetVO));
         target.setLocations(createLocations(targetVO));
         return target;
     }
+
+    /**
+     * This method is used to create the launcher args
+     * @param componentInfo  ComponentInfo
+     * @return LauncherArgs
+     */
+    private LauncherArgs createLauncherArgs(ComponentInfo componentInfo) {
+        LauncherArgs launcherArgs = new LauncherArgs();
+        launcherArgs.setProgramArgs(componentInfo.getProgramArguments());
+        launcherArgs.setVmArgs(componentInfo.getVmArguments());
+        return launcherArgs;
+    }
+
+    /**
+     * This method is used to create the target name
+     * @param targetVO  TargetVO
+     * @return String
+     */
+    private String createTargetName(TargetVO targetVO) {
+        String targetName = targetVO.getTargetName();
+        return TargetUtils.getTargetNameFormatted(targetVO, targetName);
+    }
+
 
     /**
      * This method is used to create the locations
@@ -76,8 +111,8 @@ public class TargetBuilder {
         Map<String, List<Repo>> repoMapList = targetVO.getRepoMapList();
 
         Location location = new Location();
-        location.setIncludeMode(componentInfo.getIncludeMode());
-        location.setType(componentInfo.getTargetType());
+        location.setIncludeMode(componentInfo.getLocationIncludeMode());
+        location.setType(componentInfo.getTargetLocationType());
         location.setIncludeAllPlatforms(componentInfo.getIncludeAllPlatforms());
         location.setIncludeConfigurePhase(componentInfo.getIncludeConfigurePhase());
 
@@ -85,7 +120,11 @@ public class TargetBuilder {
         repoMapList.get(targetVO.getCurrentComponentName()).forEach(currentRepo -> {
             if(currentRepo.equals(repo)) {
                 location.setRepository(createTargetRepository(currentRepo));
-                repoUnitMap.get(currentRepo).forEach(unit -> location.getUnit().add(createUnit(unit))
+                repoUnitMap.get(currentRepo).forEach(unit -> {
+                            if (filterUnit(unit, targetVO)) {
+                                location.getUnit().add(createUnit(unit));
+                            }
+                        }
                 );
             }
         });
@@ -93,15 +132,36 @@ public class TargetBuilder {
     }
 
     /**
-     * This method is used to create the target repository
-     * @param repo  Repo
-     * @return TargetRepository
+     * This method is used to filter the unit
+     * @param unit  in.adarshr.targetgen.bo.Unit
+     * @param targetVO  TargetVO
+     * @return boolean
      */
-    private TargetRepository createTargetRepository(Repo repo) {
-        TargetRepository targetRepository = new TargetRepository();
-        targetRepository.setLocation(repo.getLocation());
-        return targetRepository;
+    private boolean filterUnit(in.adarshr.targetgen.bo.Unit unit, TargetVO targetVO) {
+        SelectedGroups includeGroups = targetVO.getComponentInfo().getIncludeGroups();
+        SelectedGroups excludeGroups = targetVO.getComponentInfo().getExcludeGroups();
+        if(includeGroups != null && includeGroups.getGroup() != null) {
+            return includeGroups.getGroup().stream().anyMatch(unit.getId()::contains);
+        }
+        if(excludeGroups != null && excludeGroups.getGroup() != null) {
+            boolean isMatched = excludeGroups.getGroup().stream().anyMatch(unit.getId()::contains);
+            return !isMatched;
+        }
+        return true;
+
     }
+
+    /**
+     * This method is used to create the target repository
+     * @param currentRepo  Repo
+     * @return RepositoryLocation
+     */
+    private RepositoryLocation createTargetRepository(Repo currentRepo) {
+        RepositoryLocation repositoryLocation = new RepositoryLocation();
+        repositoryLocation.setLocation(currentRepo.getLocation());
+        return repositoryLocation;
+    }
+
 
     /**
      * This method is used to create the unit
@@ -117,12 +177,17 @@ public class TargetBuilder {
 
     /**
      * This method is used to create the environment
-     * @param componentInfo  ComponentInfo
+     * @param targetVO  TargetVO
      * @return Environment
      */
-    private Environment createEnvironment(ComponentInfo componentInfo) {
+    private Environment createEnvironment(TargetVO targetVO) {
         Environment environment = new Environment();
-        environment.setNl(componentInfo.getEnvironment());
+        ComponentRepoVO componentRepoVO = targetVO.getComponentRepoMap().get(targetVO.getCurrentComponentName());
+        input.targetgen.adarshr.in.input.Environment environmentBo = componentRepoVO.getComponent().getEnvironment();
+        environment.setNl(environmentBo.getNl());
+        environment.setArch(ArchitectureType.fromValue(environmentBo.getArch()));
+        environment.setOs(OperatingSystem.fromValue(environmentBo.getOs()));
+        environment.setWs(environmentBo.getWs());
         return environment;
     }
 
@@ -134,7 +199,6 @@ public class TargetBuilder {
     private TargetJRE createTargetJRE(ComponentInfo componentInfo) {
         TargetJRE targetJRE = new TargetJRE();
         targetJRE.setPath(componentInfo.getJrePath());
-        targetJRE.setValue(componentInfo.getJreValue());
         return targetJRE;
     }
 }

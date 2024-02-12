@@ -7,6 +7,8 @@ import jakarta.xml.bind.Unmarshaller;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -37,6 +39,53 @@ public class JaxbUtils {
     }
 
     /**
+     * Marshals the given object to XML with  instruction.
+     *
+     * @param object      the object to marshal
+     * @param clazz       the class of the object
+     * @param <T>         the type of the object
+     * @return the XML string
+     * @throws JAXBException if an error occurs during marshalling
+     */
+    @SuppressWarnings("unused")
+    public static <T> String marshalWithPde(T object, Class<T> clazz) throws Exception {
+        JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+        StringWriter sw = new StringWriter();
+        XMLOutputFactory xof = XMLOutputFactory.newFactory();
+        XMLStreamWriter streamWriter = xof.createXMLStreamWriter(sw);
+
+        streamWriter.writeStartDocument();
+        streamWriter.writeProcessingInstruction("pde", "version=\"3.8\"");
+        jaxbMarshaller.marshal(object, streamWriter);
+        streamWriter.writeEndDocument();
+
+        streamWriter.close();
+
+        return sw.toString();
+    }
+
+    /**
+     * Marshals the given object to XML with the given instruction.
+     *
+     * @param object      the object to marshal
+     * @param clazz       the class of the object
+     * @param <T>         the type of the object
+     * @return the XML string
+     * @throws JAXBException if an error occurs during marshalling
+     */
+    public static <T> String marshalWithInstruction(T object, Class<T> clazz) throws JAXBException {
+        String xml = marshal(object, clazz);
+        int insertIndex = xml.indexOf("?>") + 2;
+        String xmlString =  xml.substring(0, insertIndex) + "\n" +  "<?pde version=\"3.8\"?>" + xml.substring(insertIndex);
+        xmlString = xmlString.replaceAll("ns2:","");
+        xmlString = xmlString.replaceAll("xmlns:ns2=\"http://in.adarshr.targetgen.output/output.xsd\"","");
+        return xmlString;
+    }
+
+    /**
      * Unmarshal the given XML string to an object.
      *
      * @param xml   the XML string
@@ -45,6 +94,7 @@ public class JaxbUtils {
      * @return the unmarshalled object
      * @throws JAXBException if an error occurs during unmarshalling
      */
+    @SuppressWarnings("unused")
     public static <T> T unmarshal(String xml, Class<T> clazz) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
@@ -61,6 +111,7 @@ public class JaxbUtils {
      * @return the unmarshalled object
      * @throws JAXBException if an error occurs during unmarshalling
      */
+    @SuppressWarnings("unused")
     public static <T> T unmarshal(File xmlFile, Class<T> clazz) throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();

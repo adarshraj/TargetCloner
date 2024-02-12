@@ -9,20 +9,29 @@
                 <xs:element name="version" type="xs:string"/>
                 <xs:element name="reportLocation" type="xs:string"/>
                 <xs:element name="jrePath" type="xs:string"/>
-                <xs:element name="jreValue" type="xs:string"/>
-                <xs:element name="targetName" type="xs:string"/>
-                <xs:element name="includeMode" type="xs:string"/>
+                <xs:element name="targetNameFormat" type="xs:string"/>
+                <xs:element name="targetSaveFormat" type="xs:string"/>
+                <xs:element name="targetIncludeMode" type="xs:string"/>
+                <xs:element name="locationIncludeMode" type="xs:string"/>
                 <xs:element name="sequenceNumber" type="xs:string"/>
-                <xs:element name="environment" type="xs:string"/>
                 <xs:element name="includeAllPlatforms" type="xs:string"/>
                 <xs:element name="includeConfigurePhase" type="xs:string"/>
                 <xs:element name="includeSource" type="xs:string"/>
-                <xs:element name="targetType" type="xs:string"/>
-                <xs:element name="targetLocation" type="xs:string"/>
+                <xs:element name="targetLocationType" type="xs:string"/>
+                <xs:element name="programArguments" type="xs:string" minOccurs="0"/>
+                <xs:element name="vmArguments" type="xs:string" minOccurs="0"/>
+                <xs:element name="includeGroups" type="selectedGroups" minOccurs="0"/>
+                <xs:element name="excludeGroups" type="selectedGroups" minOccurs="0"/>
                 <xs:element name="components" type="components"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
+
+    <xs:complexType name="selectedGroups">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="group" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 
     <xs:complexType name="components">
         <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -33,8 +42,18 @@
     <xs:complexType name="component">
         <xs:all>
             <xs:element name="name" type="xs:string"/>
+            <xs:element name="environment" type="environment" minOccurs="0"/>
             <xs:element name="version" type="xs:string" minOccurs="0"/>
             <xs:element name="repository" type="repository"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="environment">
+        <xs:all>
+            <xs:element name="nl" type="xs:string"/>
+            <xs:element name="os" type="operatingSystem" minOccurs="0"/>
+            <xs:element name="ws" type="windowSystem" minOccurs="0"/>
+            <xs:element name="arch" type="architectureType" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 
@@ -59,4 +78,33 @@
             <xs:element name="location" type="xs:string"/>
         </xs:all>
     </xs:complexType>
+
+    <xs:simpleType name="windowSystem">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="rap"/>
+            <xs:enumeration value="win32"/>
+            <xs:enumeration value="gtk"/>
+            <xs:enumeration value="wpf"/>
+            <xs:enumeration value="cocoa"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="operatingSystem">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="linux"/>
+            <xs:enumeration value="macosx"/>
+            <xs:enumeration value="win32"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="architectureType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="x86_64"/>
+            <xs:enumeration value="x86"/>
+            <xs:enumeration value="aarch64"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>

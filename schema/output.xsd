@@ -7,8 +7,9 @@
     <xs:element name="target">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="environment" type="environment"/>
+                <xs:element name="environment" type="environment" minOccurs="0"/>
                 <xs:element name="targetJRE" type="targetJRE"/>
+                <xs:element name="launcherArgs" type="launcherArgs" minOccurs="0"/>
                 <xs:element name="locations" type="locations"/>
             </xs:sequence>
             <xs:attribute name="includeMode" type="xs:string" use="required"/>
@@ -20,6 +21,9 @@
     <xs:complexType name="environment">
         <xs:all>
             <xs:element name="nl" type="xs:string"/>
+            <xs:element name="os" type="operatingSystem" minOccurs="0"/>
+            <xs:element name="ws" type="windowSystem" minOccurs="0"/>
+            <xs:element name="arch" type="architectureType" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 
@@ -39,7 +43,7 @@
 
     <xs:complexType name="location">
         <xs:sequence>
-            <xs:element name="repository" type="targetRepository"/>
+            <xs:element name="repository" type="repositoryLocation"/>
             <xs:element name="unit" type="unit" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="includeAllPlatforms" type="xs:string" use="required"/>
@@ -49,7 +53,7 @@
         <xs:attribute name="type" type="xs:string" use="required"/>
     </xs:complexType>
 
-    <xs:complexType name="targetRepository">
+    <xs:complexType name="repositoryLocation">
         <xs:simpleContent>
             <xs:extension base="xs:string">
                 <xs:attribute name="location" type="xs:string" use="required"/>
@@ -60,5 +64,38 @@
     <xs:complexType name="unit">
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="windowSystem" id="windowSystem">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value=""/>
+            <xs:enumeration value="win32"/>
+            <xs:enumeration value="gtk"/>
+            <xs:enumeration value="wpf"/>
+            <xs:enumeration value="cocoa"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="operatingSystem">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="linux"/>
+            <xs:enumeration value="macosx"/>
+            <xs:enumeration value="win32"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="architectureType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="x86_64"/>
+            <xs:enumeration value="x86"/>
+            <xs:enumeration value="aarch64"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="launcherArgs">
+        <xs:all>
+            <xs:element name="programArgs" type="xs:string" minOccurs="0"/>
+            <xs:element name="vmArgs" type="xs:string" minOccurs="0"/>
+        </xs:all>
     </xs:complexType>
 </xs:schema>

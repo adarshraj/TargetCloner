@@ -60,8 +60,8 @@ public class TargetGen {
 
             // Parse the XML from the jar file
             Map<Repo, List<Unit>> repoListMap = XMLUtils.parseAllXml(repoStringMap);
-            Map<Repo, List<Unit>> filteredRepoListMap = TargetUtils.filterRepoUnits(repoListMap);
-            targetVO.setRepoUnitMap(filteredRepoListMap);
+            //Map<Repo, List<Unit>> filteredRepoListMap = TargetUtils.filterRepoUnits(repoListMap);
+            targetVO.setRepoUnitMap(repoListMap);
             LOG.info("*** Repo Jar Urls parsing completed. ***");
 
             //Set delivery report data. If report location is URL, then create URL and get report data
@@ -88,6 +88,7 @@ public class TargetGen {
 
             //Set version
             targetVO.setVersion(componentInfo.getVersion());
+            targetVO.setTargetSaveFormat(componentInfo.getTargetSaveFormat());
 
             // Create xml file from jaxb
             TargetBuilder targetBuilder = new TargetBuilder();
