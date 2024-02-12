@@ -50,7 +50,7 @@ public class TargetUtils {
                         in.adarshr.targetgen.bo.Repo repoBo = new in.adarshr.targetgen.bo.Repo();
                         repoBo.setArtifact(repo.getArtifact());
                         repoBo.setGroup(repo.getGroup());
-                        repoBo.setLocation(createRepoUrl(repo));
+                        repoBo.setLocation(createRepoUrl(repo, componentInfo));
                         repoStore.add(repoBo);
                     });
                     repoMap.put(component.getName(), repoStore);
@@ -99,15 +99,32 @@ public class TargetUtils {
      * @param repo Repo
      * @return String
      */
-    private static String createRepoUrl(Repo repo) {
+    private static String createRepoUrl(Repo repo, ComponentInfo componentInfo) {
         String group = repo.getGroup();
         String artifact = repo.getArtifact();
         String location = repo.getLocation();
         if(location != null && location.contains("$ARTIFACT$")){
-            location = location.replace("$ARTIFACT$", artifact);
+            String artifactUrlPattern = componentInfo.getArtifactUrlPattern();
+            if(artifactUrlPattern != null && artifactUrlPattern.contains("/")){
+               location = location.replace("$ARTIFACT$", artifact.replaceAll("\\.", "/"));
+            }else {
+                location = location.replace("$ARTIFACT$", artifact);
+            }
         }
         if(location != null && location.contains("$GROUP$")){
-            location = location.replace("$GROUP$", group);
+            String groupUrlPattern = componentInfo.getGroupUrlPattern();
+            if(groupUrlPattern != null && groupUrlPattern.contains("/")){
+                location = location.replace("$GROUP$", group.replaceAll("\\.", "/"));
+            }else {
+                location = location.replace("$GROUP$", group);
+            }
+        }
+        if(location != null && location.contains("$VERSION$")){
+            if(repo.getVersion() != null && !repo.getVersion().isEmpty()){
+                location = location.replace("$VERSION$", repo.getVersion());
+            }else{
+                location = location.replace("$VERSION$", componentInfo.getVersion());
+            }
         }
 
         String repoUrl = location + "/" + "content.jar";

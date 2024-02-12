@@ -20,6 +20,8 @@
                 <xs:element name="targetLocationType" type="xs:string"/>
                 <xs:element name="programArguments" type="xs:string" minOccurs="0"/>
                 <xs:element name="vmArguments" type="xs:string" minOccurs="0"/>
+                <xs:element name="groupUrlPattern" type="xs:string" minOccurs="0"/>
+                <xs:element name="artifactUrlPattern" type="xs:string" minOccurs="0"/>
                 <xs:element name="includeGroups" type="selectedGroups" minOccurs="0"/>
                 <xs:element name="excludeGroups" type="selectedGroups" minOccurs="0"/>
                 <xs:element name="components" type="components"/>

@@ -13,6 +13,8 @@
   <targetLocationType>InstallableUnit</targetLocationType>
   <programArguments></programArguments>
   <vmArguments></vmArguments>
+  <groupUrlPattern></groupUrlPattern>
+  <artifactUrlPattern></artifactUrlPattern>
   <includeGroups>
     <group>org.eclipse</group>
     <group>org.apache</group>

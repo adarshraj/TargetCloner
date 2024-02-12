@@ -140,10 +140,10 @@ public class TargetBuilder {
     private boolean filterUnit(in.adarshr.targetgen.bo.Unit unit, TargetVO targetVO) {
         SelectedGroups includeGroups = targetVO.getComponentInfo().getIncludeGroups();
         SelectedGroups excludeGroups = targetVO.getComponentInfo().getExcludeGroups();
-        if(includeGroups != null && includeGroups.getGroup() != null) {
+        if(includeGroups != null && includeGroups.getGroup() != null && !includeGroups.getGroup().isEmpty()) {
             return includeGroups.getGroup().stream().anyMatch(unit.getId()::contains);
         }
-        if(excludeGroups != null && excludeGroups.getGroup() != null) {
+        if(excludeGroups != null && excludeGroups.getGroup() != null && !excludeGroups.getGroup().isEmpty()) {
             boolean isMatched = excludeGroups.getGroup().stream().anyMatch(unit.getId()::contains);
             return !isMatched;
         }
