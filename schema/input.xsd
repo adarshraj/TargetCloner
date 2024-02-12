@@ -76,7 +76,7 @@
         <xs:all>
             <xs:element name="group" type="xs:string"/>
             <xs:element name="artifact" type="xs:string"/>
-            <xs:element name="version" type="xs:string"/>
+            <xs:element name="version" type="xs:string" minOccurs="0"/>
             <xs:element name="location" type="xs:string"/>
         </xs:all>
     </xs:complexType>
