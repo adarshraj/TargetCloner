@@ -81,6 +81,7 @@
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName> <!--Jar name. Optional field -->
+        <testSourceDirectory>src/test</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jvnet.jaxb</groupId>

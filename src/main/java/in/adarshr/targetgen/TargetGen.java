@@ -45,7 +45,7 @@ public class TargetGen {
         }
 
         //Proceed only when we have the Input XML data
-        if(componentInfo != null) {
+        if (componentInfo != null) {
             //Set the data to TargetVO for target file generation
             TargetVO targetVO = new TargetVO();
             targetVO.setComponentInfo(componentInfo);
@@ -66,13 +66,13 @@ public class TargetGen {
 
             //Set delivery report data. If report location is URL, then create URL and get report data
             //If report location is file, then get report data from file
-            if(TargetUtils.isUrl(componentInfo.getReportLocation())){
+            if (TargetUtils.isUrl(componentInfo.getReportLocation())) {
                 String reportLocation = componentInfo.getReportLocation();
                 String createRepoUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
                 List<Report> reportDataFromUrl = TargetUtils.getReportData(createRepoUrl, 1, 1);
                 targetVO.setDeliveryReportData(reportDataFromUrl);
                 LOG.info("*** Delivery Report Data from URL: {} ***", reportDataFromUrl);
-            }else {
+            } else {
                 List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
                 targetVO.setDeliveryReportData(reportData);
                 LOG.info("*** Delivery Report Data from File: {} ***", reportData);
@@ -98,7 +98,7 @@ public class TargetGen {
             XMLUtils.createXmlFiles(stringTargetMap);
             LOG.info("*** Target files are written to disk. ***");
             LOG.info("*** All tasks completed. ***");
-        }else {
+        } else {
             LOG.error("ComponentInfo is null");
             LOG.error("*** Application is exiting ***");
         }
