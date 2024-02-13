@@ -2,14 +2,11 @@ package in.adarshr.targetgen.utils;
 
 import in.adarshr.targetgen.bo.Unit;
 import in.adarshr.targetgen.dto.ComponentRepoVO;
-import in.adarshr.targetgen.bo.Report;
 import in.adarshr.targetgen.dto.TargetVO;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.Repo;
 
-import java.io.*;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +19,8 @@ public class TargetUtils {
 
     /**
      * This method is used to build the targets
-     * @param targetVO  TargetVO
+     *
+     * @param targetVO TargetVO
      * @return Map<String, Target>
      */
     public static Set<in.adarshr.targetgen.bo.Repo> getJarUrls(TargetVO targetVO) {
@@ -31,21 +29,22 @@ public class TargetUtils {
 
     /**
      * Get repo map list
+     *
      * @param componentInfo ComponentInfo
      * @return Map
      */
     public static Map<String, List<in.adarshr.targetgen.bo.Repo>> getRepoMapList(ComponentInfo componentInfo) {
         Map<String, List<in.adarshr.targetgen.bo.Repo>> repoMap = new HashMap<>();
-        if((componentInfo == null) || (componentInfo.getComponents() == null)) {
+        if ((componentInfo == null) || (componentInfo.getComponents() == null)) {
             LOG.error("ComponentInfo is null");
             throw new RuntimeException("ComponentInfo is null");
-        }else {
+        } else {
             componentInfo.getComponents().getComponent().forEach(component -> {
                 List<in.adarshr.targetgen.bo.Repo> repoStore = new ArrayList<>();
-                if(component.getRepository() == null || component.getRepository().getRepos() == null) {
+                if (component.getRepository() == null || component.getRepository().getRepos() == null) {
                     LOG.error("Repository is null for component: {}", component.getName());
                     throw new RuntimeException("Repository is null for component: " + component.getName());
-                }else {
+                } else {
                     component.getRepository().getRepos().getRepo().forEach(repo -> {
                         in.adarshr.targetgen.bo.Repo repoBo = new in.adarshr.targetgen.bo.Repo();
                         repoBo.setArtifact(repo.getArtifact());
@@ -62,6 +61,7 @@ public class TargetUtils {
 
     /**
      * Get distinct repo list
+     *
      * @param componentInfo ComponentInfo
      * @return Set
      */
@@ -74,15 +74,16 @@ public class TargetUtils {
 
     /**
      * Get component repo map
+     *
      * @param componentInfo ComponentInfo
      * @return Map
      */
     public static Map<String, ComponentRepoVO> getComponentRepoMap(ComponentInfo componentInfo) {
         Map<String, ComponentRepoVO> componentRepoMap = new HashMap<>();
-        if((componentInfo == null) || (componentInfo.getComponents() == null)) {
+        if ((componentInfo == null) || (componentInfo.getComponents() == null)) {
             LOG.error("ComponentInfo is null");
             throw new RuntimeException("ComponentInfo is null");
-        }else {
+        } else {
             componentInfo.getComponents().getComponent().forEach(component -> {
                 ComponentRepoVO componentRepo = new ComponentRepoVO();
                 componentRepo.setComponentName(component.getName());
@@ -96,6 +97,7 @@ public class TargetUtils {
 
     /**
      * Create repo URL
+     *
      * @param repo Repo
      * @return String
      */
@@ -103,26 +105,26 @@ public class TargetUtils {
         String group = repo.getGroup();
         String artifact = repo.getArtifact();
         String location = repo.getLocation();
-        if(location != null && location.contains("$ARTIFACT$")){
+        if (location != null && location.contains("$ARTIFACT$")) {
             String artifactUrlPattern = componentInfo.getArtifactUrlPattern();
-            if(artifactUrlPattern != null && artifactUrlPattern.contains("/")){
-               location = location.replace("$ARTIFACT$", artifact.replaceAll("\\.", "/"));
-            }else {
+            if (artifactUrlPattern != null && artifactUrlPattern.contains("/")) {
+                location = location.replace("$ARTIFACT$", artifact.replaceAll("\\.", "/"));
+            } else {
                 location = location.replace("$ARTIFACT$", artifact);
             }
         }
-        if(location != null && location.contains("$GROUP$")){
+        if (location != null && location.contains("$GROUP$")) {
             String groupUrlPattern = componentInfo.getGroupUrlPattern();
-            if(groupUrlPattern != null && groupUrlPattern.contains("/")){
+            if (groupUrlPattern != null && groupUrlPattern.contains("/")) {
                 location = location.replace("$GROUP$", group.replaceAll("\\.", "/"));
-            }else {
+            } else {
                 location = location.replace("$GROUP$", group);
             }
         }
-        if(location != null && location.contains("$VERSION$")){
-            if(repo.getVersion() != null && !repo.getVersion().isEmpty()){
+        if (location != null && location.contains("$VERSION$")) {
+            if (repo.getVersion() != null && !repo.getVersion().isEmpty()) {
                 location = location.replace("$VERSION$", repo.getVersion());
-            }else{
+            } else {
                 location = location.replace("$VERSION$", componentInfo.getVersion());
             }
         }
@@ -133,72 +135,10 @@ public class TargetUtils {
     }
 
     /**
-     * Get report data from the delivery report file
-     * @param reportFileLocation Report file location
-     * @param linesToSkip Lines to skip
-     * @return List of Report
-     */
-    public static List<Report> getReportData(String reportFileLocation, int linesToSkip, int sourceType) {
-        List<Report> reports = new ArrayList<>();
-        try {
-            String reportFile;
-            if(sourceType == 1) {
-                reportFile = readFileFromUrl(reportFileLocation, linesToSkip);
-            }else {
-                reportFile = readFileFromDirectory(reportFileLocation, linesToSkip);
-            }
-
-            if (reportFile == null) {
-                LOG.error("Report file is null/empty or cannot be read");
-                throw new RuntimeException("Report file is null/empty or cannot be read");
-            } else {
-                for (String line : reportFile.split("\n")) {
-                    Report report = Report.fromDelimitedString(line, ":");
-                    reports.add(report);
-                }
-            }
-            return reports;
-        } catch (IOException e) {
-            LOG.error("Failed to read file from directory: {}", e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * Read file from directory. For Local testing
-     * @param fileName File name
-     * @param linesToSkip Lines to skip
-     * @return String
-     * @throws IOException Throws IOException
-     */
-    private static String readFileFromDirectory(String fileName, final int linesToSkip) throws IOException {
-        File file = new File(fileName);
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
-        }
-    }
-
-    /**
-     * Read file from URL. For production
-     * @param fileUrl File URL
-     * @param linesToSkip Lines to skip
-     * @return String
-     * @throws IOException Throws IOException
-     */
-    private static String readFileFromUrl(String fileUrl, final int linesToSkip) throws IOException {
-        URI uri = URI.create(fileUrl);
-        URL url = uri.toURL();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            String reportFromUrl =  reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
-            LOG.info("Report from URL: {}", reportFromUrl);
-            return reportFromUrl;
-        }
-    }
-
-    /**
      * Get target name
+     *
      * @param componentName Component name
-     * @param version Version
+     * @param version       Version
      * @return String
      */
     public static String getTargetName(String componentName, String version) {
@@ -207,6 +147,7 @@ public class TargetUtils {
 
     /**
      * Check if the location is URL
+     *
      * @param location Location
      * @return boolean
      */
@@ -222,19 +163,22 @@ public class TargetUtils {
 
     /**
      * Create delivery report URL
+     *
      * @param reportLocation Report location
-     * @param version Version
+     * @param version        Version
      * @return String
      */
     public static String createDeliveryReportUrl(String reportLocation, String version) {
-        if(reportLocation != null && reportLocation.contains("$VERSION$")){
+        if (reportLocation != null && reportLocation.contains("$VERSION$")) {
             reportLocation = reportLocation.replace("$VERSION$", version);
         }
+        LOG.info("*** Delivery Report URL: {} ***", reportLocation);
         return reportLocation;
     }
 
     /**
      * Filter repo units.
+     *
      * @param repoListMap Repo list map
      * @return Map
      */
@@ -252,33 +196,35 @@ public class TargetUtils {
 
     /**
      * Check if the unit is valid
+     *
      * @param unit Unit
      * @return boolean
      */
     private static boolean isUnitValid(Unit unit) {
-        if(isValidUnitConditions(unit)){
+        if (isValidUnitConditions(unit)) {
             return true;
-        }else{
+        } else {
             LOG.info("Unit is not valid, filtering: {}", unit);
             return false;
         }
     }
 
     private static boolean isValidUnitConditions(Unit unit) {
-       return unit.getSingleton().equals("true");
+        return unit.getSingleton().equals("true");
     }
 
     /**
      * This method is used to format the target name
-     * @param targetVO  TargetVO
-     * @param targetName  String
+     *
+     * @param targetVO   TargetVO
+     * @param targetName String
      * @return String
      */
     public static String getTargetNameFormatted(TargetVO targetVO, String targetName) {
-        if(targetName.contains("$COMPONENT$")) {
+        if (targetName.contains("$COMPONENT$")) {
             targetName = targetName.replace("$COMPONENT$", targetVO.getCurrentComponentName());
         }
-        if(targetName.contains("$VERSION$")) {
+        if (targetName.contains("$VERSION$")) {
             targetName = targetName.replace("$VERSION$", targetVO.getVersion());
         }
         return targetName;
