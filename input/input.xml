@@ -1,5 +1,6 @@
 <inp:componentInfo xmlns:inp="http://in.adarshr.targetgen.input/input.xsd">
   <version>26.4.73</version>
+  <createBasedOnReport>true</createBasedOnReport>
   <reportLocation>report/DeliveryReport.txt</reportLocation>
   <jrePath>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_66</jrePath>
   <targetNameFormat>$COMPONENT$_$VERSION$</targetNameFormat>

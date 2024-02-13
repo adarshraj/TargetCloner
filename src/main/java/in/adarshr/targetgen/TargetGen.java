@@ -5,10 +5,7 @@ import in.adarshr.targetgen.bo.Report;
 import in.adarshr.targetgen.bo.Unit;
 import in.adarshr.targetgen.build.TargetBuilder;
 import in.adarshr.targetgen.dto.TargetVO;
-import in.adarshr.targetgen.utils.ConnectionUtil;
-import in.adarshr.targetgen.utils.JaxbUtils;
-import in.adarshr.targetgen.utils.TargetUtils;
-import in.adarshr.targetgen.utils.XMLUtils;
+import in.adarshr.targetgen.utils.*;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import jakarta.xml.bind.JAXBException;
 import org.slf4j.Logger;
@@ -50,9 +47,32 @@ public class TargetGen {
             TargetVO targetVO = new TargetVO();
             targetVO.setComponentInfo(componentInfo);
 
-            //Get jar urls
-            Set<Repo> repoJarUrls = TargetUtils.getJarUrls(componentInfo);
-            LOG.info("*** Repo Jar Urls creation completed. ***");
+            //Set delivery report data. If report location is URL, then create URL and get report data
+            //If report location is file, then get report data from file
+            if (TargetUtils.isUrl(componentInfo.getReportLocation())) {
+                String reportLocation = componentInfo.getReportLocation();
+                String deliveryReportUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
+                LOG.info("*** Delivery Report URL: {} ***", deliveryReportUrl);
+                List<Report> reportDataFromUrl = TargetUtils.getReportData(deliveryReportUrl, 2, 1);
+                targetVO.setDeliveryReportData(reportDataFromUrl);
+                LOG.info("*** Delivery Report Data from URL: {} ***", reportDataFromUrl);
+            } else {
+                List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
+                targetVO.setDeliveryReportData(reportData);
+                LOG.info("*** Delivery Report Data from File: {} ***", reportData);
+            }
+
+            Set<Repo> repoJarUrls;
+            boolean isCreateBasedOnReport = componentInfo.isCreateBasedOnReport();
+            if(isCreateBasedOnReport){
+                //Get jar urls
+                repoJarUrls = ReportUtils.getJarUrls(targetVO);
+                LOG.info("*** Repo Jar Urls creation completed. ***");
+            }else {
+                //Get jar urls
+                repoJarUrls = TargetUtils.getJarUrls(targetVO);
+                LOG.info("*** Repo Jar Urls creation completed. ***");
+            }
 
             //Download jar and get input stream
             Map<Repo, String> repoStringMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
@@ -64,19 +84,7 @@ public class TargetGen {
             targetVO.setRepoUnitMap(repoListMap);
             LOG.info("*** Repo Jar Urls parsing completed. ***");
 
-            //Set delivery report data. If report location is URL, then create URL and get report data
-            //If report location is file, then get report data from file
-            if (TargetUtils.isUrl(componentInfo.getReportLocation())) {
-                String reportLocation = componentInfo.getReportLocation();
-                String createRepoUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
-                List<Report> reportDataFromUrl = TargetUtils.getReportData(createRepoUrl, 2, 1);
-                targetVO.setDeliveryReportData(reportDataFromUrl);
-                LOG.info("*** Delivery Report Data from URL: {} ***", reportDataFromUrl);
-            } else {
-                List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
-                targetVO.setDeliveryReportData(reportData);
-                LOG.info("*** Delivery Report Data from File: {} ***", reportData);
-            }
+
 
             //Set Repo List. This is used to create location in target file
             targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));

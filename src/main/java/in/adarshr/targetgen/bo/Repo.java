@@ -12,6 +12,7 @@ public class Repo {
     private String group;
     private String artifact;
     private String location;
+    private String version;
 
     public String toString() {
         return "Repo: " + group + ":" + artifact;

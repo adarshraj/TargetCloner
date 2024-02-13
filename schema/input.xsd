@@ -7,6 +7,7 @@
         <xs:complexType>
             <xs:all>
                 <xs:element name="version" type="xs:string"/>
+                <xs:element name="createBasedOnReport" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="reportLocation" type="xs:string"/>
                 <xs:element name="jrePath" type="xs:string"/>
                 <xs:element name="targetNameFormat" type="xs:string"/>

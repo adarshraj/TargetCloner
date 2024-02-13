@@ -21,12 +21,12 @@ public class TargetUtils {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetUtils.class);
 
     /**
-     * Get jar urls
-     * @param componentInfo ComponentInfo
-     * @return Set
+     * This method is used to build the targets
+     * @param targetVO  TargetVO
+     * @return Map<String, Target>
      */
-    public static Set<in.adarshr.targetgen.bo.Repo> getJarUrls(ComponentInfo componentInfo) {
-        return getDistinctRepoList(componentInfo);
+    public static Set<in.adarshr.targetgen.bo.Repo> getJarUrls(TargetVO targetVO) {
+        return getDistinctRepoList(targetVO.getComponentInfo());
     }
 
     /**
@@ -189,7 +189,9 @@ public class TargetUtils {
         URI uri = URI.create(fileUrl);
         URL url = uri.toURL();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
+            String reportFromUrl =  reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
+            LOG.info("Report from URL: {}", reportFromUrl);
+            return reportFromUrl;
         }
     }
 
