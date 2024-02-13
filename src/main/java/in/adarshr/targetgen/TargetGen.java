@@ -69,7 +69,7 @@ public class TargetGen {
             if (TargetUtils.isUrl(componentInfo.getReportLocation())) {
                 String reportLocation = componentInfo.getReportLocation();
                 String createRepoUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
-                List<Report> reportDataFromUrl = TargetUtils.getReportData(createRepoUrl, 1, 1);
+                List<Report> reportDataFromUrl = TargetUtils.getReportData(createRepoUrl, 2, 1);
                 targetVO.setDeliveryReportData(reportDataFromUrl);
                 LOG.info("*** Delivery Report Data from URL: {} ***", reportDataFromUrl);
             } else {
