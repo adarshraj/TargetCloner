@@ -225,8 +225,8 @@ public class TargetUtils {
      * @return String
      */
     public static String createDeliveryReportUrl(String reportLocation, String version) {
-        if(reportLocation != null && reportLocation.contains("<VERSION>")){
-            reportLocation = reportLocation.replace("<VERSION>", version);
+        if(reportLocation != null && reportLocation.contains("$VERSION$")){
+            reportLocation = reportLocation.replace("$VERSION$", version);
         }
         return reportLocation;
     }
