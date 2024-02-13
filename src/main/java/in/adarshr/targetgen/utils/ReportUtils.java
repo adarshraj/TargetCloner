@@ -105,6 +105,7 @@ public class ReportUtils {
     }
 
     private static String createRepoUrl(Repo repo, Report report, ComponentInfo componentInfo) {
+        LOG.info("Before repo URL: {} ", repo.getLocation());
         String group = repo.getGroup();
         String artifact = repo.getArtifact();
         String location = repo.getLocation();
@@ -117,7 +118,7 @@ public class ReportUtils {
             location = location.replace(VERSION_PLACEHOLDER, version);
         }
         String repoUrl = location + "/" + "content.jar";
-        LOG.info("Repo URL: {}", repoUrl);
+        LOG.info("After repo URL: {}", repoUrl);
         return repoUrl;
     }
 }

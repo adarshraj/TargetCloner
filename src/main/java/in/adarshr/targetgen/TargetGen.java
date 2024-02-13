@@ -74,6 +74,10 @@ public class TargetGen {
                 LOG.info("*** Repo Jar Urls creation completed. ***");
             }
 
+            if(repoJarUrls.isEmpty()){
+                LOG.error("*** No jar urls found. Exiting the application. ***");
+                return;
+            }
             //Download jar and get input stream
             Map<Repo, String> repoStringMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
             LOG.info("*** Repo Jar Urls download completed. ***");

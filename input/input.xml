@@ -39,8 +39,8 @@
           <repo>
             <group>in.adarshr</group>
             <artifact>targetgen</artifact>
-            <version>1.0</version>
-            <location>https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0</location>
+            <version>4.29.0</version>
+            <location>https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/$VERSION$</location>
           </repo>
         </repos>
       </repository>
