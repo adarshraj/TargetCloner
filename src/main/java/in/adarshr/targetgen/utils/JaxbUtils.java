@@ -9,6 +9,7 @@ import org.xml.sax.SAXException;
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -129,7 +130,6 @@ public class JaxbUtils {
      * @throws JAXBException if an error occurs during unmarshalling
      * @throws SAXException  if an error occurs during validation
      */
-    @SuppressWarnings("unchecked")
     public static <T> T unmarshallAndValidate(File xmlFile, File xsdFile, Class<T> clazz)
             throws JAXBException, SAXException {
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -137,6 +137,6 @@ public class JaxbUtils {
         JAXBContext jc = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = jc.createUnmarshaller();
         unmarshaller.setSchema(schema);
-        return (T) unmarshaller.unmarshal(xmlFile);
+        return unmarshaller.unmarshal(new StreamSource(xmlFile), clazz).getValue();
     }
 }

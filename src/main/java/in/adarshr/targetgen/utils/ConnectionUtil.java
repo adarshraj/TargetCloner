@@ -24,10 +24,10 @@ public class ConnectionUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionUtil.class);
 
     /**
-     * Downloads the JAR from the given URL and returns the InputStream of the XML file inside the JAR.
+     * Downloads the JAR from the given URL and returns the content of the XML file inside the JAR.
      *
      * @param jarUrl the URL of the JAR
-     * @return the InputStream of the XML file inside the JAR
+     * @return the content of the XML file inside the JAR
      * @throws IOException if an I/O error occurs
      */
     private static String downloadJar(String jarUrl) throws IOException {
@@ -35,9 +35,11 @@ public class ConnectionUtil {
         URL url = uri.toURL();
         StringBuilder xmlContent = new StringBuilder();
 
-        try (InputStream in = url.openStream();
-             JarInputStream jarStream = new JarInputStream(in);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(jarStream))) {
+        try (
+            InputStream in = url.openStream();
+            JarInputStream jarStream = new JarInputStream(in);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(jarStream))
+        ) {
 
             JarEntry entry;
             while ((entry = jarStream.getNextJarEntry()) != null) {
@@ -54,23 +56,26 @@ public class ConnectionUtil {
     }
 
     /**
-     * Downloads the JAR from the given URL for each distinct repository and returns a map of the repository and the
-     * InputStream of the XML file inside the JAR.
+     * Downloads the JAR from the URL of each distinct repository and returns a map of the repository and the
+     * content of the XML file inside the JAR.
      *
      * @param distinctRepos the set of distinct repositories
-     * @return a map of the repository and the InputStream of the XML file inside the JAR
+     * @return a map of the repository and the content of the XML file inside the JAR
      */
     public static Map<Repo, String> downloadSpecificXMLFromJar(Set<Repo> distinctRepos) {
-        return distinctRepos.stream()
-                .parallel() // Enable parallel processing
-                .collect(Collectors.toMap(repo -> repo, repo -> {
-                    try {
-                        LOG.info("Downloading JAR from URL: {}", repo.getLocation());
-                        return downloadJar(repo.getLocation());
-                    } catch (IOException e) {
-                        LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
-                        return "";
-                    }
-                }));
+        return distinctRepos.parallelStream() // Enable parallel processing
+                .collect(Collectors.toMap(
+                    repo -> repo, // Key mapper
+                    repo -> { // Value mapper
+                        try {
+                            LOG.info("Downloading JAR from URL: {}", repo.getLocation());
+                            return downloadJar(repo.getLocation());
+                        } catch (IOException e) {
+                            LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
+                            return "";
+                        }
+                    },
+                    (value1, value2) -> value1 // Merge function for handling key collision
+                ));
     }
 }
