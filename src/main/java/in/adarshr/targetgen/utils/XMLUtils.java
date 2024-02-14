@@ -8,11 +8,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import output.targetgen.adarshr.in.output.Target;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,11 +62,11 @@ public class XMLUtils {
                 Element element = (Element) nodeList.item(nodeListLength);
                 // Getting attributes of 'unit' element
                 Unit unit = getUnit(element);
-                LOG.info("Unit: {}", unit);
+                //LOG.info("Unit: {}", unit);
                 unitList.add(unit);
             }
-        } catch (Exception e) {
-            LOG.error("Failed to parse XML: {}", e.getMessage());
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            LOG.error("Failed to parse XML: {}. XML Content: {}", e.getMessage(), xml);
         }
         return unitList;
     }
@@ -88,16 +91,10 @@ public class XMLUtils {
         return unit;
     }
 
-    /**
-     * Parse all XML
-     *
-     * @param repoInputStreamMap Map of repo and input stream
-     * @return Map of repo and list of unit
-     */
-    public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, String> repoInputStreamMap) {
-        return repoInputStreamMap.entrySet().stream()
+    public static Map<Repo, List<Unit>> parseAllXml(Map<Repo, String> xmlInputStreamMap) {
+        return xmlInputStreamMap.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
-               // .parallel()
+                .parallel()  // the thread-safety of parseXml needs to be guaranteed
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
 
@@ -111,7 +108,7 @@ public class XMLUtils {
         String xml = null;
         try {
             xml = JaxbUtils.marshalWithInstruction(target, Target.class);
-            LOG.info("Output XML: \n{}", xml);
+            //LOG.info("Output XML: \n{}", xml);
         } catch (Exception e) {
             LOG.error("Failed to create XML file: {}", e.getMessage());
         }

@@ -28,7 +28,7 @@ public class TargetGen {
         LOG.info("*** Starting TargetGen application. ***");
 
         // Set global exception handler
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: {}", exception.getMessage()));
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: ", exception));
 
         //Read input xml file
         ComponentInfo componentInfo = null;
@@ -49,35 +49,26 @@ public class TargetGen {
 
             //Set delivery report data. If report location is URL, then create URL and get report data
             //If report location is file, then get report data from file
-            if (TargetUtils.isUrl(componentInfo.getReportLocation())) {
-                String reportLocation = componentInfo.getReportLocation();
-                String deliveryReportUrl = TargetUtils.createDeliveryReportUrl(reportLocation, componentInfo.getVersion());
-                LOG.info("*** Delivery Report URL: {} ***", deliveryReportUrl);
-                List<Report> reportDataFromUrl = TargetUtils.getReportData(deliveryReportUrl, 2, 1);
-                targetVO.setDeliveryReportData(reportDataFromUrl);
-                LOG.info("*** Delivery Report Data from URL: {} ***", reportDataFromUrl);
-            } else {
-                List<Report> reportData = TargetUtils.getReportData(componentInfo.getReportLocation(), 2, 2);
-                targetVO.setDeliveryReportData(reportData);
-                LOG.info("*** Delivery Report Data from File: {} ***", reportData);
-            }
+            List<Report> reportData = ReportUtils.getReportData(componentInfo);
+            targetVO.setDeliveryReportData(reportData);
 
             Set<Repo> repoJarUrls;
             boolean isCreateBasedOnReport = componentInfo.isCreateBasedOnReport();
-            if(isCreateBasedOnReport){
+            if (isCreateBasedOnReport) {
                 //Get jar urls
                 repoJarUrls = ReportUtils.getJarUrls(targetVO);
-                LOG.info("*** Repo Jar Urls creation completed. ***");
-            }else {
+                LOG.info("*** Repo Jar Urls creation based on delivery report is completed. ***");
+            } else {
                 //Get jar urls
                 repoJarUrls = TargetUtils.getJarUrls(targetVO);
                 LOG.info("*** Repo Jar Urls creation completed. ***");
             }
 
-            if(repoJarUrls.isEmpty()){
+            if (repoJarUrls.isEmpty()) {
                 LOG.error("*** No jar urls found. Exiting the application. ***");
                 return;
             }
+
             //Download jar and get input stream
             Map<Repo, String> repoStringMap = ConnectionUtil.downloadSpecificXMLFromJar(repoJarUrls);
             LOG.info("*** Repo Jar Urls download completed. ***");
@@ -89,10 +80,16 @@ public class TargetGen {
             LOG.info("*** Repo Jar Urls parsing completed. ***");
 
 
+            if (isCreateBasedOnReport) {
+                //Set Repo List. This is used to create location in target file
+                targetVO.setRepoMapList(ReportUtils.updateRepoMapWithLocation(targetVO));
+                LOG.info("*** Repo Map List created based on delivery report completed. ***");
+            }else {
+                //Set Repo List. This is used to create location in target file
+                targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));
+                LOG.info("*** Repo Map List created completed. ***");
+            }
 
-            //Set Repo List. This is used to create location in target file
-            targetVO.setRepoMapList(TargetUtils.getRepoMapList(componentInfo));
-            LOG.info("*** Repo Map List created completed. ***");
 
             //Set Component Repos. This is used to create location in target file
             targetVO.setComponentRepoMap(TargetUtils.getComponentRepoMap(componentInfo));
@@ -111,8 +108,7 @@ public class TargetGen {
             LOG.info("*** Target files are written to disk. ***");
             LOG.info("*** All tasks completed. ***");
         } else {
-            LOG.error("ComponentInfo is null");
-            LOG.error("*** Application is exiting ***");
+            LOG.error("*** Unable to parse input XML file. Exiting the application. ***");
         }
     }
 }

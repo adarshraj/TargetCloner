@@ -36,7 +36,7 @@ public class Report {
     public static Report fromDelimitedString(String currentLine, String delimiter) {
         String[] parts = currentLine.split(delimiter);
         parts = Arrays.stream(parts).map(String::trim).toArray(String[]::new);
-        LOG.info("Current Line To Parse: {}  Parts Created: {}", currentLine, parts);
+        //LOG.info("Current Line To Parse: {}  Parts Created: {}", currentLine, parts);
         if (parts.length < 4) {
             LOG.error("Insufficient fields to create a Report object");
             throw new IllegalArgumentException("Insufficient fields to create a Report object");
