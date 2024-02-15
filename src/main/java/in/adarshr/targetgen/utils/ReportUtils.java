@@ -129,7 +129,7 @@ public class ReportUtils {
 
         if (location != null && location.contains(VERSION_PLACEHOLDER)) {
             String version = (repo.getVersion() != null && !repo.getVersion().isEmpty()) ? repo.getVersion() : report.getVersion();
-            LOG.info("Repo Version: {}, Report Version: {}, Final Version: {}", repo.getVersion(), report.getVersion(), version);
+            //LOG.info("Repo Version: {}, Report Version: {}, Final Version: {}", repo.getVersion(), report.getVersion(), version);
             location = location.replace(VERSION_PLACEHOLDER, version);
         }
         String repoUrl = location + "/" + "content.jar";
@@ -216,7 +216,7 @@ public class ReportUtils {
             reportData = getReportData(componentInfo.getReportLocation(), 2, 2);
             LOG.info("*** Delivery Report Data from File. ***");
         }
-        return filterDeliveryReport(reportData);
+        return filterDeliveryReport(reportData, componentInfo);
     }
 
     /**
@@ -225,10 +225,10 @@ public class ReportUtils {
      * @param reportData Report data
      * @return List
      */
-    private static List<Report> filterDeliveryReport(List<Report> reportData) {
+    private static List<Report> filterDeliveryReport(List<Report> reportData, ComponentInfo componentInfo) {
         return reportData.stream()
                 .filter(report -> StringUtils.isNotEmpty(report.getExtension())
-                        && report.getExtension().equalsIgnoreCase("zip"))
+                        && report.getExtension().equalsIgnoreCase(componentInfo.getReportExtensionToUse()))
                 .collect(Collectors.toList());
     }
 }

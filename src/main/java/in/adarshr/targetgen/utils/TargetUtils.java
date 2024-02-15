@@ -210,7 +210,7 @@ public class TargetUtils {
     }
 
     private static boolean isValidUnitConditions(Unit unit) {
-        return unit.getSingleton().equals("true");
+        return true;
     }
 
     /**

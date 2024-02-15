@@ -2,6 +2,7 @@
     <version>4.29.0</version>
     <createBasedOnReport>true</createBasedOnReport>
     <reportLocation>report/DeliveryReport.txt</reportLocation>
+    <reportExtensionToUse>zip</reportExtensionToUse>
     <jrePath>
         org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_66
     </jrePath>

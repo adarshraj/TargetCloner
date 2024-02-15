@@ -9,6 +9,7 @@
                 <xs:element name="version" type="xs:string"/>
                 <xs:element name="createBasedOnReport" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="reportLocation" type="xs:string"/>
+                <xs:element name="reportExtensionToUse" type="xs:string"/>
                 <xs:element name="jrePath" type="xs:string"/>
                 <xs:element name="targetNameFormat" type="xs:string"/>
                 <xs:element name="targetSaveFormat" type="xs:string"/>
