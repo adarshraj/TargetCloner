@@ -11,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import output.targetgen.adarshr.in.output.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This class is used to build the target
@@ -128,6 +126,8 @@ public class TargetBuilder {
         location.setIncludeAllPlatforms(componentInfo.getIncludeAllPlatforms());
         location.setIncludeConfigurePhase(componentInfo.getIncludeConfigurePhase());
 
+        Set<in.adarshr.targetgen.bo.Unit> units = new HashSet<>();
+        targetVO.setUnitSet(units);
         Map<Repo, List<in.adarshr.targetgen.bo.Unit>> repoUnitMap = targetVO.getRepoUnitMap();
         List<Repo> repos = repoMapList.get(targetVO.getCurrentComponentName());
         if (repos != null && !repos.isEmpty()) {
@@ -150,7 +150,7 @@ public class TargetBuilder {
                 }
             });
         }
-
+        targetVO.setUnitSet(null); //To avoid issue of not adding units in other components
         return location;
     }
 
@@ -170,6 +170,9 @@ public class TargetBuilder {
         if (excludeGroups != null && excludeGroups.getGroup() != null && !excludeGroups.getGroup().isEmpty()) {
             boolean isMatched = excludeGroups.getGroup().stream().anyMatch(unit.getId()::contains);
             return !isMatched;
+        }
+        if(targetVO.getComponentInfo().isRemoveDuplicates()){
+            return true;
         }
         return true;
 

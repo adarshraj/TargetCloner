@@ -19,6 +19,7 @@
     <vmArguments></vmArguments>
     <groupUrlPattern></groupUrlPattern>
     <artifactUrlPattern></artifactUrlPattern>
+    <removeDuplicates>true</removeDuplicates>
     <includeGroups>
         <group>org.eclipse</group>
         <group>org.apache</group>

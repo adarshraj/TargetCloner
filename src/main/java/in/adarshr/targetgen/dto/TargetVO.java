@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is used to store the target information
@@ -23,4 +24,5 @@ public class TargetVO {
     private Map<String, ComponentRepoVO> componentRepoMap;
     private List<Report> deliveryReportData;
     private Map<String, List<Repo>> repoMapList;
+    private Set<Unit> unitSet;
 }
