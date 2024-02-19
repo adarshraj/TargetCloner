@@ -84,31 +84,55 @@
     </xs:complexType>
 
     <xs:simpleType name="windowSystem">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value=""/>
-            <xs:enumeration value="rap"/>
-            <xs:enumeration value="win32"/>
-            <xs:enumeration value="gtk"/>
-            <xs:enumeration value="wpf"/>
-            <xs:enumeration value="cocoa"/>
-        </xs:restriction>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="rap"/>
+                    <xs:enumeration value="win32"/>
+                    <xs:enumeration value="gtk"/>
+                    <xs:enumeration value="wpf"/>
+                    <xs:enumeration value="cocoa"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>
 
     <xs:simpleType name="operatingSystem">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value=""/>
-            <xs:enumeration value="linux"/>
-            <xs:enumeration value="macosx"/>
-            <xs:enumeration value="win32"/>
-        </xs:restriction>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="linux"/>
+                    <xs:enumeration value="macosx"/>
+                    <xs:enumeration value="win32"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>
 
     <xs:simpleType name="architectureType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value=""/>
-            <xs:enumeration value="x86_64"/>
-            <xs:enumeration value="x86"/>
-            <xs:enumeration value="aarch64"/>
-        </xs:restriction>
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="x86_64"/>
+                    <xs:enumeration value="x86"/>
+                    <xs:enumeration value="aarch64"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
     </xs:simpleType>
 </xs:schema>
