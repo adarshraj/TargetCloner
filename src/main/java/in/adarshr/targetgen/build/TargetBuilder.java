@@ -137,6 +137,9 @@ public class TargetBuilder {
                         repoUnitMap.get(currentRepo).forEach(unit -> {
                                     if (filterUnit(unit, targetVO)) {
                                         location.getUnit().add(createUnit(unit));
+                                    }else{
+                                        LOG.info("Unit is not valid, filtering: {}", unit);
+
                                     }
                                 }
                         );
