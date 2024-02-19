@@ -6,6 +6,7 @@ import in.adarshr.targetgen.dto.TargetVO;
 import in.adarshr.targetgen.utils.TargetUtils;
 import input.targetgen.adarshr.in.input.ComponentInfo;
 import input.targetgen.adarshr.in.input.SelectedGroups;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import output.targetgen.adarshr.in.output.*;
@@ -221,9 +222,15 @@ public class TargetBuilder {
         ComponentRepoVO componentRepoVO = targetVO.getComponentRepoMap().get(targetVO.getCurrentComponentName());
         input.targetgen.adarshr.in.input.Environment environmentBo = componentRepoVO.getComponent().getEnvironment();
         environment.setNl(environmentBo.getNl());
-        environment.setArch(ArchitectureType.fromValue(environmentBo.getArch()));
-        environment.setOs(OperatingSystem.fromValue(environmentBo.getOs()));
-        environment.setWs(environmentBo.getWs());
+        if(StringUtils.isNotEmpty(environmentBo.getArch())) {
+            environment.setArch(ArchitectureType.fromValue(environmentBo.getArch()));
+        }
+        if(StringUtils.isNotEmpty(environmentBo.getOs())) {
+            environment.setOs(OperatingSystem.fromValue(environmentBo.getOs()));
+        }
+        if(StringUtils.isNotEmpty(environmentBo.getWs())) {
+            environment.setWs(environmentBo.getWs());
+        }
         return environment;
     }
 

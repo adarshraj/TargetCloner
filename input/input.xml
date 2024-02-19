@@ -31,9 +31,9 @@
             <name>ABC</name>
             <environment>
                 <nl>fr</nl>
-                <os>linux</os>
-                <ws>win32</ws>
-                <arch>x86_64</arch>
+                <os></os>
+                <ws></ws>
+                <arch></arch>
             </environment>
             <version>string</version>
             <repository>
