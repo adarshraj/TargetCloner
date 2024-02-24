@@ -88,6 +88,7 @@ public class XMLHelper {
         repoUnit.setVersion(version);
         repoUnit.setSingleton(singleton);
         repoUnit.setGeneration(generation);
+
         return repoUnit;
     }
 
@@ -97,6 +98,7 @@ public class XMLHelper {
                 .parallel()  // the thread-safety of parseXml needs to be guaranteed
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> parseXml(entry.getValue())));
     }
+
     /**
      * Create XML file
      *
@@ -118,15 +120,17 @@ public class XMLHelper {
      *
      * @param stringTargetMap Map of target name and target
      */
-    public static void createXmlFiles(Map<String, Target> stringTargetMap) {
-        for (Map.Entry<String, Target> entry : stringTargetMap.entrySet()) {
-            String xml = createXmlFile(entry.getValue());
-            boolean is = saveToFile(xml, entry.getKey());
-            if (is) {
-                LOG.info("XML file created successfully");
-            } else {
-                LOG.error("Failed to create XML file");
-            }
+    public static void saveFilesToDisk(Map<String, Target> stringTargetMap) {
+        Map<String, Boolean> fileSaveStatus = stringTargetMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> saveToFile(createXmlFile(entry.getValue()), entry.getKey())));
+        if(LOG.isInfoEnabled()) {
+            fileSaveStatus.forEach((key, value) -> {
+                if (value) {
+                    LOG.info("File created successfully: {}", key);
+                } else {
+                    LOG.error("Failed to create file: {}", key);
+                }
+            });
         }
     }
 
@@ -151,9 +155,8 @@ public class XMLHelper {
             if (!Files.exists(currentOutputPath)) {
                 Files.createDirectories(currentOutputPath);
             } else {
-                // Create the file and write the content
                 Files.write(Paths.get(fileLocation), content.getBytes());
-                LOG.info("File created successfully {}", fileLocation);
+                LOG.info("File created successfully: {}", fileLocation);
             }
         } catch (IOException e) {
             LOG.error("Failed to create directory: {}", e.getMessage());
@@ -161,5 +164,4 @@ public class XMLHelper {
         }
         return true;
     }
-
 }

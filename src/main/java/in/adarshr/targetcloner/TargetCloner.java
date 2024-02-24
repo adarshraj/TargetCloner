@@ -88,7 +88,7 @@ public class TargetCloner {
                 LOG.info("*** Target file creation completed. ***");
 
                 //Write the target files to disk
-                XMLHelper.createXmlFiles(stringTargetMap);
+                XMLHelper.saveFilesToDisk(stringTargetMap);
                 LOG.info("*** Target files are written to disk. ***");
                 LOG.info("*** All tasks completed. ***");
             } else {
