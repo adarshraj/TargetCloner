@@ -55,6 +55,10 @@ public class TargetCloner {
                 targetData.setDeliveryReports(ReportHelper.getReportData(targetDetails));
                 LOG.info("*** Delivery report data set completed. ***");
 
+                //Set Repo List. This is used to create location in target file
+                targetData.setRepoMap(ReportHelper.getRepoMap(targetData, targetDetails));
+                LOG.info("*** Repo Map List created completed. ***");
+
                 //Get repository jar urls
                 Set<RepoData> repoDataJarUrls = ReportHelper.getJarUrls(targetData);
                 LOG.info("*** Repo Jar Urls creation completed. ***");
@@ -73,10 +77,6 @@ public class TargetCloner {
                 Map<RepoData, List<RepoUnit>> repoListMap = XMLHelper.parseAllXml(repoStringMap);
                 targetData.setRepoUnitsMap(repoListMap);
                 LOG.info("*** Repo Jar Urls parsing completed. ***");
-
-                //Set Repo List. This is used to create location in target file
-                targetData.setRepoMap(ReportHelper.getRepoMap(targetData, targetDetails));
-                LOG.info("*** Repo Map List created completed. ***");
 
                 //Set version. Use to create target file name
                 targetData.setVersion(targetDetails.getVersion());

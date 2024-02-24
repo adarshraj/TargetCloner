@@ -32,18 +32,7 @@ public class ReportHelper {
      * @return Set
      */
     public static Set<RepoData> getJarUrls(TargetData targetData) {
-        return getJarUrlsFromReport(targetData);
-    }
-
-    /**
-     * Get jar urls from report
-     *
-     * @param targetData TargetData
-     * @return Set
-     */
-    public static Set<RepoData> getJarUrlsFromReport(TargetData targetData) {
-        LOG.info("Begin getting jar urls from report");
-        Map<String, List<RepoData>> repoMap = updateRepoMapWithLocation(targetData);
+        Map<String, List<RepoData>> repoMap = targetData.getRepoMap();
         Set<RepoData> jarUrls = new HashSet<>();
         repoMap.forEach((component, repoList) -> jarUrls.addAll(repoList));
         LOG.info("Jar urls from report: {}", jarUrls);
@@ -337,5 +326,3 @@ public class ReportHelper {
         return repoUrl;
     }
 }
-
-
