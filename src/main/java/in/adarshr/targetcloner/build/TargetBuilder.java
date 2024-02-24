@@ -3,12 +3,9 @@ package in.adarshr.targetcloner.build;
 import in.adarshr.targetcloner.bo.DeliveryReport;
 import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
-import in.adarshr.targetcloner.dto.TargetData;
-import in.adarshr.targetcloner.utils.TargetClonerUtil;
 import in.adarshr.targetcloner.data.*;
+import in.adarshr.targetcloner.dto.TargetData;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -16,8 +13,6 @@ import java.util.*;
  * This class is used to build the target
  */
 public class TargetBuilder {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TargetBuilder.class);
 
     /**
      * This method is used to build the targets

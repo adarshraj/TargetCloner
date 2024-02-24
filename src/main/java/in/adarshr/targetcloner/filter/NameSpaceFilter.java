@@ -11,9 +11,8 @@ import org.xml.sax.helpers.XMLFilterImpl;
  * <a href="https://copyprogramming.com/howto/jaxb-how-to-ignore-namespace-during-unmarshalling-xml-document">...</a>
  */
 public class NameSpaceFilter extends XMLFilterImpl {
-    private String usedNamespaceUri;
-    private boolean addNamespace;
-    //State variable
+    private final String usedNamespaceUri;
+    private final boolean addNamespace;
     private boolean addedNamespace = false;
     public NameSpaceFilter(String namespaceUri,
                            boolean addNamespace) {
@@ -46,15 +45,13 @@ public class NameSpaceFilter extends XMLFilterImpl {
             throws SAXException {
         if (addNamespace) {
             this.startControlledPrefixMapping();
-        } else {
-            //Remove the namespace, i.e. don´t call startPrefixMapping for parent!
         }
     }
     private void startControlledPrefixMapping() throws SAXException {
         if (this.addNamespace && !this.addedNamespace) {
             //We should add namespace since it is set and has not yet been done.
             super.startPrefixMapping("", this.usedNamespaceUri);
-            //Make sure we dont do it twice
+            //Make sure we don't do it twice
             this.addedNamespace = true;
         }
     }

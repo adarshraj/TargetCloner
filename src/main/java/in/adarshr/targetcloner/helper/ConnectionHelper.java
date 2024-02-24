@@ -36,7 +36,7 @@ public class ConnectionHelper {
         StringBuilder xmlContent = new StringBuilder();
         try (
                 InputStream in = url.openStream();
-                JarInputStream jarStream = new JarInputStream(in);
+                JarInputStream jarStream = new JarInputStream(in)
         ) {
             JarEntry entry;
             while ((entry = jarStream.getNextJarEntry()) != null) {

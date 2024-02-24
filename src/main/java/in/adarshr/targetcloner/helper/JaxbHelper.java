@@ -12,7 +12,10 @@ import org.xml.sax.XMLReader;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -90,13 +93,19 @@ public class JaxbHelper {
      * @param <T>     the type of the object
      * @return the unmarshalled object
      */
-    public static <T> T unmarshallWithoutNamespace(File xmlFile) {
+    public static <T> T unmarshallWithoutNamespace(File xmlFile, Class<T> clazz) {
         try {
-            JAXBContext jc = JAXBContext.newInstance(JAXB_PACKAGE);
-            Unmarshaller u = jc.createUnmarshaller();
+            JAXBContext jaxbContext = JAXBContext.newInstance(JAXB_PACKAGE);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             SAXSource source = createFilteredSource(xmlFile);
-            return (T) u.unmarshal(source);
-        } catch (JAXBException | ParserConfigurationException | IOException | SAXException e) {
+
+            StringWriter stringWriter = new StringWriter();
+            StreamResult streamResult = new StreamResult(stringWriter);
+            TransformerFactory.newInstance().newTransformer().transform(source, streamResult);
+            StreamSource streamSource = new StreamSource(new StringReader(stringWriter.toString()));
+
+            return unmarshaller.unmarshal(streamSource, clazz).getValue();
+        } catch (JAXBException | ParserConfigurationException | IOException | SAXException | TransformerException e) {
             throw new RuntimeException(e);
         }
     }
