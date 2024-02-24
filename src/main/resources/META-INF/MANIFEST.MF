@@ -1,1 +1,1 @@
-Main-Class: in.adarshr.targetgen.TargetGen
+Main-Class: in.adarshr.targetcloner.TargetCloner

@@ -1,0 +1,64 @@
+2024-02-21 07:50:16 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 07:50:17 [main] ERROR i.adarshr.targetgen.TargetGenCloner - Failed to unmarshal input XML file: null
+2024-02-21 07:50:17 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** Unable to parse input XML file. Exiting the application. ***
+2024-02-21 18:10:35 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:10:36 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@645aa696
+2024-02-21 18:10:36 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** No target files found to copy. Exiting the application. ***
+2024-02-21 18:11:09 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:11:09 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@645aa696
+2024-02-21 18:11:09 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** No target files found to copy. Exiting the application. ***
+2024-02-21 18:11:15 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:11:15 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@31c7528f
+2024-02-21 18:11:35 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** No target files found to copy. Exiting the application. ***
+2024-02-21 18:11:37 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:11:38 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@645aa696
+2024-02-21 18:11:38 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** No target files found to copy. Exiting the application. ***
+2024-02-21 18:11:42 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:11:42 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@31c7528f
+2024-02-21 18:12:23 [main] ERROR i.adarshr.targetgen.TargetGenCloner - *** No target files found to copy. Exiting the application. ***
+2024-02-21 18:12:38 [main] INFO  i.adarshr.targetgen.TargetGenCloner - *** Starting TargetGen application. ***
+2024-02-21 18:12:38 [main] INFO  i.adarshr.targetgen.TargetGenCloner - JAXBUtils: data.targetgencloner.adarshr.in.targetgencloner.TargetDetails@645aa696
+2024-02-21 18:12:39 [main] ERROR i.adarshr.targetgen.TargetGenCloner - Global exception handler caught: 
+java.lang.RuntimeException: jakarta.xml.bind.UnmarshalException: unexpected element (uri:"", local:"target"). Expected elements are <{http://in.adarshr.targetcloner.data/TargetGenCloner.xsd}target>
+	at in.adarshr.targetcloner.helper.JaxbHelper.unmarshall(JaxbUtils.java:92)
+	at in.adarshr.targetcloner.TargetCloner.apply(TargetGenCloner.java:153)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.AbstractList$RandomAccessSpliterator.forEachRemaining(AbstractList.java:722)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:622)
+	at java.base/java.util.stream.ReferencePipeline.toList(ReferencePipeline.java:627)
+	at in.adarshr.targetcloner.TargetCloner.unmarshalTargetFiles(TargetGenCloner.java:150)
+	at in.adarshr.targetcloner.TargetCloner.main(TargetGenCloner.java:49)
+Caused by: jakarta.xml.bind.UnmarshalException: unexpected element (uri:"", local:"target"). Expected elements are <{http://in.adarshr.targetcloner.data/TargetGenCloner.xsd}target>
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallingContext.handleEvent(UnmarshallingContext.java:693)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.Loader.reportError(Loader.java:230)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.Loader.reportError(Loader.java:225)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.Loader.reportUnexpectedChildElement(Loader.java:92)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallingContext$DefaultRootLoader.childElement(UnmarshallingContext.java:1098)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallingContext._startElement(UnmarshallingContext.java:527)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallingContext.startElement(UnmarshallingContext.java:509)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.SAXConnector.startElement(SAXConnector.java:137)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.startElement(AbstractSAXParser.java:518)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.scanStartElement(XMLNSDocumentScannerImpl.java:376)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl$NSContentDriver.scanRootElementHook(XMLNSDocumentScannerImpl.java:615)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl$FragmentContentDriver.next(XMLDocumentFragmentScannerImpl.java:3079)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl$PrologDriver.next(XMLDocumentScannerImpl.java:836)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:605)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:114)
+	at java.xml/com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:542)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:889)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:825)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(XMLParser.java:141)
+	at java.xml/com.sun.org.apache.xerces.internal.parsers.AbstractSAXParser.parse(AbstractSAXParser.java:1224)
+	at java.xml/com.sun.org.apache.xerces.internal.jaxp.SAXParserImpl$JAXPSAXParser.parse(SAXParserImpl.java:637)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.unmarshal0(UnmarshallerImpl.java:218)
+	at org.glassfish.jaxb.runtime.v2.runtime.unmarshaller.UnmarshallerImpl.unmarshal(UnmarshallerImpl.java:189)
+	at jakarta.xml.bind.helpers.AbstractUnmarshallerImpl.unmarshal(AbstractUnmarshallerImpl.java:146)
+	at jakarta.xml.bind.helpers.AbstractUnmarshallerImpl.unmarshal(AbstractUnmarshallerImpl.java:188)
+	at jakarta.xml.bind.helpers.AbstractUnmarshallerImpl.unmarshal(AbstractUnmarshallerImpl.java:172)
+	at in.adarshr.targetcloner.helper.JaxbHelper.unmarshall(JaxbUtils.java:90)
+	... 12 common frames omitted

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://in.adarshr.targetcloner.data/TargetCloner.xsd"
+           xmlns="https://in.adarshr.targetcloner.data/TargetCloner.xsd">
+
+    <xs:element name="target">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="environment" type="environment" minOccurs="0"/>
+                <xs:element name="targetJRE" type="targetJRE"/>
+                <xs:element name="launcherArgs" type="launcherArgs" minOccurs="0"/>
+                <xs:element name="locations" type="locations"/>
+            </xs:sequence>
+            <xs:attribute name="includeMode" type="xs:string" use="required"/>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="sequenceNumber" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="targetDetails">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="version" type="xs:string"/>
+                <xs:element name="createBasedOnReport" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="reportLocation" type="xs:string"/>
+                <xs:element name="targetNameFormat" type="xs:string"/>
+                <xs:element name="targetSaveFormat" type="xs:string"/>
+                <xs:element name="sequenceNumber" type="xs:string"/>
+                <xs:element name="groupUrlPattern" type="xs:string" minOccurs="0"/>
+                <xs:element name="artifactUrlPattern" type="xs:string" minOccurs="0"/>
+                <xs:element name="includeGroups" type="selectedGroups" minOccurs="0"/>
+                <xs:element name="excludeGroups" type="selectedGroups" minOccurs="0"/>
+                <xs:element name="removeDuplicates" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="components" type="components"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="environment">
+        <xs:all>
+            <xs:element name="nl" type="xs:string"/>
+            <xs:element name="os" type="operatingSystem" minOccurs="0"/>
+            <xs:element name="ws" type="windowSystem" minOccurs="0"/>
+            <xs:element name="arch" type="architectureType" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="targetJRE">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="path" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="locations">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="location" type="location"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="location">
+        <xs:sequence>
+            <xs:element name="repository" type="repositoryLocation"/>
+            <xs:element name="unit" type="unit" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="includeAllPlatforms" type="xs:string" use="required"/>
+        <xs:attribute name="includeConfigurePhase" type="xs:string" use="required"/>
+        <xs:attribute name="includeMode" type="xs:string" use="required"/>
+        <xs:attribute name="includeSource" type="xs:string" use="required"/>
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="repositoryLocation">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="location" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="unit">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="launcherArgs">
+        <xs:all>
+            <xs:element name="programArgs" type="xs:string" minOccurs="0"/>
+            <xs:element name="vmArgs" type="xs:string" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="repository">
+        <xs:all>
+            <xs:element name="version" type="xs:string" minOccurs="0"/>
+            <xs:element name="repos" type="repos"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="repos">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="repo" type="repo"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="repo">
+        <xs:all>
+            <xs:element name="group" type="xs:string"/>
+            <xs:element name="artifact" type="xs:string"/>
+            <xs:element name="version" type="xs:string" minOccurs="0"/>
+            <xs:element name="location" type="xs:string"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:simpleType name="windowSystem">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="rap"/>
+                    <xs:enumeration value="win32"/>
+                    <xs:enumeration value="gtk"/>
+                    <xs:enumeration value="wpf"/>
+                    <xs:enumeration value="cocoa"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="operatingSystem">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="linux"/>
+                    <xs:enumeration value="macosx"/>
+                    <xs:enumeration value="win32"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:simpleType name="architectureType">
+        <xs:union>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="x86_64"/>
+                    <xs:enumeration value="x86"/>
+                    <xs:enumeration value="aarch64"/>
+                </xs:restriction>
+            </xs:simpleType>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:union>
+    </xs:simpleType>
+
+    <xs:complexType name="selectedGroups">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="group" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="components">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="component" type="component"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="component">
+        <xs:all>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="environment" type="environment" minOccurs="0"/>
+            <xs:element name="version" type="xs:string" minOccurs="0"/>
+            <xs:element name="includeGroups" type="selectedGroups" minOccurs="0"/>
+            <xs:element name="excludeGroups" type="selectedGroups" minOccurs="0"/>
+            <xs:element name="removeDuplicates" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="repository" type="repository"/>
+        </xs:all>
+    </xs:complexType>
+</xs:schema>

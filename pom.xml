@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>in.adarshr</groupId>
-    <artifactId>targetgen</artifactId>
+    <artifactId>targetgencloner</artifactId>
     <version>1.0</version>
-    <name>TargetGen</name>
+    <name>TargetGenCloner</name>
     <url>https://adarshr.in</url>
 
     <properties>
@@ -72,6 +72,13 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.14.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.4</version>
+        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
@@ -86,6 +93,13 @@
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin -->
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName> <!--Jar name. Optional field -->
@@ -105,12 +119,30 @@
                 <configuration>
                     <schemaDirectory>schema</schemaDirectory>
                     <schemaIncludes>
-                        <include>input.xsd</include>
-                        <include>output.xsd</include>
+                        <include>TargetCloner.xsd</include>
                     </schemaIncludes>
-                    <!--<generatePackage>in.adarshr.targetgen.data</generatePackage>-->
+                    <generatePackage>in.adarshr.targetcloner.data</generatePackage>
                     <generateDirectory>${project.build.directory}/generated-sources/jaxb</generateDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/jaxb</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -128,7 +160,7 @@
                                 <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                                 <manifest>
                                     <mainClass>
-                                        in.adarshr.targetgen.TargetGen
+                                        in.adarshr.targetcloner.TargetCloner
                                     </mainClass>
                                 </manifest>
                             </archive>
