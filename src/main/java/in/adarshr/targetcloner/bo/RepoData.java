@@ -2,6 +2,7 @@ package in.adarshr.targetcloner.bo;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,6 +14,7 @@ public class RepoData {
     private String artifact;
     private String location;
     private String version;
+    private List<RepoUnit> repoUnits;
 
     public String toString() {
         return "Repo: " + group + ":" + artifact;

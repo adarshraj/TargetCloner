@@ -1,7 +1,6 @@
 package in.adarshr.targetcloner;
 
 import in.adarshr.targetcloner.bo.RepoData;
-import in.adarshr.targetcloner.bo.RepoUnit;
 import in.adarshr.targetcloner.build.TargetBuilder;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.data.TargetDetails;
@@ -38,45 +37,45 @@ public class TargetCloner {
 
         //Proceed only when we have the Input XML data
         if (targetDetails != null) {
+            LOG.info("*** Step 1 *** TargetDetails input successfully parsed ***");
             //Read the input target files
             TargetData targetData = new TargetData();
             List<File> targetFilesToCopy = TargetClonerUtil.getTargetFilesToCopy("input/targets/");
             List<Target> targets = TargetClonerUtil.unmarshalTargetFiles(targetFilesToCopy);
             if (CollectionUtils.isNotEmpty(targets)) {
+                LOG.info("*** Step 2 *** Input target files successfully parsed ***");
                 //Set the data to TargetData for target file generation
                 targetData.setTargetDetails(targetDetails);
 
                 //Set the target data
                 targetData.setTargets(targets);
 
-                /*Set delivery report data. If report location is URL, then create URL and get report data
-                If report location is file, then get report data from file
-                 */
-                targetData.setDeliveryReports(ReportHelper.getReportData(targetDetails));
-                LOG.info("*** Delivery report data set completed. ***");
-
-                //Set Repo List. This is used to create location in target file
-                targetData.setRepoMap(ReportHelper.getRepoMap(targetData, targetDetails));
-                LOG.info("*** Repo Map List created completed. ***");
+                //Delivery report data
+                targetData.setDeliveryReports(ReportHelper.getReportData(targetData));
+                LOG.info("*** Step 3 *** Delivery report data obtained ***");
 
                 //Get repository jar urls
                 Set<RepoData> repoDataJarUrls = ReportHelper.getJarUrls(targetData);
-                LOG.info("*** Repo Jar Urls creation completed. ***");
+                LOG.info("*** Step 4 *** Repo Jar Urls creation completed. ***");
                 targetData.setRepoDataUrlSet(repoDataJarUrls);
 
                 if (repoDataJarUrls.isEmpty()) {
-                    LOG.error("*** No jar urls found. Exiting the application. ***");
+                    LOG.error("*** Error *** No jar urls found. Exiting the application. ***");
                     return;
                 }
 
                 //Download jar and get input stream
                 Map<RepoData, String> repoStringMap = ConnectionHelper.downloadAllJars(repoDataJarUrls);
-                LOG.info("*** Repo Jar Urls download completed. ***");
+                LOG.info("*** Step 5 ***  Repo Jar download completed. ***");
 
                 // Parse the XML from the jar file
-                Map<RepoData, List<RepoUnit>> repoListMap = XMLHelper.parseAllXml(repoStringMap);
-                targetData.setRepoUnitsMap(repoListMap);
-                LOG.info("*** Repo Jar Urls parsing completed. ***");
+                targetData.setRepoUnitsMap(XMLHelper.parseAllXml(repoStringMap));
+                LOG.info("*** Step 6 ***  Repo Jar Urls parsing completed. ***");
+
+                if(targetData.getRepoUnitsMap().isEmpty()) {
+                    LOG.error("*** Error *** No XML files found in the jar. Exiting the application. ***");
+                    return;
+                }
 
                 //Set version. Use to create target file name
                 targetData.setVersion(targetDetails.getVersion());
@@ -85,11 +84,11 @@ public class TargetCloner {
                 // Create target files
                 TargetBuilder targetBuilder = new TargetBuilder();
                 Map<String, Target> stringTargetMap = targetBuilder.buildTargets(targetData);
-                LOG.info("*** Target file creation completed. ***");
+                LOG.info("*** Step 7 *** Target file creation completed. ***");
 
                 //Write the target files to disk
                 XMLHelper.saveFilesToDisk(stringTargetMap);
-                LOG.info("*** Target files are written to disk. ***");
+                LOG.info("*** Step 8 ***  Target files are written to disk. ***");
                 LOG.info("*** All tasks completed. ***");
             } else {
                 LOG.error("*** No target files found to copy. Exiting the application. ***");

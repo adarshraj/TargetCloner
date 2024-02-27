@@ -81,6 +81,6 @@ public class TargetClonerUtil {
      * @return the unmarshalled object
      */
     private static Target apply(File file) {
-        return JaxbHelper.unmarshallWithoutNamespace(file, Target.class);
+        return JaxbHelper.unmarshall(file, Target.class);
     }
 }

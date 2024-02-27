@@ -13,6 +13,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 public class NameSpaceFilter extends XMLFilterImpl {
     private final String usedNamespaceUri;
     private final boolean addNamespace;
+    //State variable
     private boolean addedNamespace = false;
     public NameSpaceFilter(String namespaceUri,
                            boolean addNamespace) {
@@ -56,3 +57,4 @@ public class NameSpaceFilter extends XMLFilterImpl {
         }
     }
 }
+

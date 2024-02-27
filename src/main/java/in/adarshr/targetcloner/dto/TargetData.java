@@ -26,4 +26,5 @@ public class TargetData {
     private Map<String, List<RepoData>> repoMap;
     private Map<RepoData, List<RepoUnit>> repoUnitsMap;
     private Set<RepoData> repoDataUrlSet;
+    private Map<String, RepoData> repoDataMap;
 }

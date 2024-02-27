@@ -25,7 +25,7 @@ public class TargetBuilder {
         for(Target inpTarget: targetData.getTargets()){
             setTargetVOData(inpTarget, targetData);
             targetData.setTargetName(getTargetName(targetData.getCurrentComponentName(), targetData.getVersion()));
-            targetData.setCurrentComponentName(inpTarget.getName());
+            targetData.setCurrentComponentName(targetData.getCurrentComponentName());
             Target target = createTarget(targetData, inpTarget);
             outputTargets.put(createTargetFileName(targetData), target);
         }
@@ -106,14 +106,12 @@ public class TargetBuilder {
         Locations locations = new Locations();
         if(inpTarget.getLocations() != null && CollectionUtils.isNotEmpty(inpTarget.getLocations().getLocation())) {
             List<Location> inputLocations = inpTarget.getLocations().getLocation();
-            Set<RepoData> repoDataSet = targetData.getRepoDataUrlSet();
+            Map<String, RepoData> repoDataMap = targetData.getRepoDataMap();
             for (Location inpLocation : inputLocations) {
                 String inpRepoLocation = inpLocation.getRepository().getLocation();
-                Optional<RepoData> repo = repoDataSet.stream()
-                        .filter(repos -> repos.getLocation().contains(inpRepoLocation))
-                        .findFirst();
-                if(repo.isPresent()) {
-                    RepoData repoData = repo.get();
+                Optional<String> repoLocation = repoDataMap.keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
+                if(repoLocation.isPresent()) {
+                    RepoData repoData = repoDataMap.get(repoLocation.get());
                     Optional<DeliveryReport> reportData = deliveryReports.stream().filter(deliveryReport -> deliveryReport.getGroup().equals(repoData.getGroup())
                                     && deliveryReport.getArtifact().equals(repoData.getArtifact()))
                             .findFirst();
@@ -122,6 +120,13 @@ public class TargetBuilder {
             }
         }
         return locations;
+    }
+
+    private CharSequence filterUrl(String inpRepoLocation) {
+        if(inpRepoLocation.contains("content.jar")) {
+            return inpRepoLocation.replace("content.jar", "");
+        }
+        return inpRepoLocation;
     }
 
     /**
