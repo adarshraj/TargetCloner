@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>in.adarshr</groupId>
-    <artifactId>targetgencloner</artifactId>
+    <artifactId>targetcloner</artifactId>
     <version>1.0</version>
-    <name>TargetGenCloner</name>
+    <name>TargetCloner</name>
     <url>https://adarshr.in</url>
 
     <properties>

@@ -25,6 +25,7 @@ public class ReportHelper {
     private static final String PLACEHOLDER_GROUP = "$GROUP$";
     private static final String PLACEHOLDER_ARTIFACT = "$ARTIFACT$";
     private static final String PLACEHOLDER_VERSION = "$VERSION$";
+    private static final String PLACEHOLDER_VERSION_2 = "$VERSION2$";
     /**
      * Get jar urls
      *
@@ -59,6 +60,7 @@ public class ReportHelper {
                 for (Location location : locations) {
                     String repoUrl = location.getRepository().getLocation();
                     if (deliveryReports != null) {
+                        //TODO Not efficient. Need to optimize
                         for (DeliveryReport deliveryReport : deliveryReports) {
                             if (StringUtils.isNotEmpty(deliveryReport.getGroup())
                                     && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
@@ -67,6 +69,7 @@ public class ReportHelper {
                                         && repoData.getGroup().equalsIgnoreCase(deliveryReport.getGroup())
                                     && repoData.getArtifact().equalsIgnoreCase(deliveryReport.getArtifact())) {
                                     repoDataMap.put(repoUrl, repoData);
+                                    break;
                                 }
                             }
                         }
@@ -78,23 +81,35 @@ public class ReportHelper {
     }
 
     private static RepoData createRepoData(String repoUrl, DeliveryReport deliveryReport, Location location, TargetData targetData) {
+        LOG.info("repoUrl: {}", repoUrl);
         RepoData repoData = null;
         try {
             List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
             for (Pattern pattern : patterns) {
                 String group = deliveryReport.getGroup().replace(".", pattern.getGroupUrlPatternSeparator());
+                LOG.info("Group: {}", group);
                 String artifact = deliveryReport.getArtifact().replace(".", pattern.getArtifactUrlPatternSeparator());
+                LOG.info("Artifact: {}", artifact);
                 String version = deliveryReport.getVersion();
+                LOG.info("Version: {}", version);
                 if(repoUrl.contains(group) && repoUrl.contains(artifact)) {
                     String newUrl = pattern.getUrl().replace(PLACEHOLDER_GROUP, group).replace(PLACEHOLDER_ARTIFACT, artifact).replace(PLACEHOLDER_VERSION, version);
-                    int beginIndex = repoUrl.indexOf(group);
-                    int endIndex = beginIndex + group.length();
+                    /*int beginIndex = repoUrl.indexOf(group);
+                    int endIndex = beginIndex + group.length();*/
+                    if(newUrl.contains(PLACEHOLDER_VERSION_2) && targetData.getTargetDetails().getVersion2() != null) {
+                        newUrl = newUrl.replace(PLACEHOLDER_VERSION_2, targetData.getTargetDetails().getVersion2());
+                    }
 
                     repoData = new RepoData();
                     repoData.setGroup(deliveryReport.getGroup());   //Anyway b8oth should be same
                     repoData.setArtifact(deliveryReport.getArtifact());  //Anyway both should be same
                     repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
                     repoData.setLocation(newUrl);
+
+                    LOG.info("New URL: {}", newUrl);
+                    LOG.info("Group: {}", group);
+                    LOG.info("Artifact: {}", artifact);
+                    LOG.info("Version: {}", version);
 
                     repoData.setRepoUnits(setRepoUnits(location, deliveryReport));
                 }

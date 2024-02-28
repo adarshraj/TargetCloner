@@ -11,6 +11,7 @@
                 <xs:element name="targetJRE" type="targetJRE"/>
                 <xs:element name="launcherArgs" type="launcherArgs" minOccurs="0"/>
                 <xs:element name="locations" type="locations"/>
+                <xs:element name="includeBundles" type="includeBundles" minOccurs="0"/>
             </xs:sequence>
             <xs:attribute name="includeMode" type="xs:string" use="required"/>
             <xs:attribute name="name" type="xs:string" use="required"/>
@@ -22,6 +23,7 @@
         <xs:complexType>
             <xs:all>
                 <xs:element name="version" type="xs:string"/>
+                <xs:element name="version2" type="xs:string" minOccurs="0"/>
                 <xs:element name="createBasedOnReport" type="xs:boolean" minOccurs="0"/>
                 <xs:element name="reportLocation" type="xs:string"/>
                 <xs:element name="targetNameFormat" type="xs:string" minOccurs="0"/>
@@ -31,6 +33,17 @@
             </xs:all>
         </xs:complexType>
     </xs:element>
+
+    <xs:complexType name="includeBundles">
+        <xs:sequence>
+            <xs:element name="plugin" type="plugin" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="plugin">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="version" type="xs:string" use="optional" />
+    </xs:complexType>
 
     <xs:complexType name="repoUrlPatterns">
         <xs:sequence>

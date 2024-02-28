@@ -8,6 +8,7 @@ import in.adarshr.targetcloner.dto.TargetData;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class is used to build the target
@@ -79,10 +80,12 @@ public class TargetBuilder {
                 outTarget.setTargetJRE(inpTarget.getTargetJRE());
                 outTarget.setEnvironment(createEnvironment(inpTarget));
                 outTarget.setLocations(createLocations(inpTarget, targetData));
+                outTarget.setIncludeBundles(createIncludeBundles(inpTarget, targetData));
             }
         }
         return outTarget;
     }
+
 
     /**
      * This method is used to create the target name
@@ -218,6 +221,38 @@ public class TargetBuilder {
         }
         return environment;
     }
+
+    /**
+     * This method is used to create the include bundles
+     *
+     * @return IncludeBundles
+     */
+    private IncludeBundles createIncludeBundles(Target inpTarget, TargetData targetData) {
+        IncludeBundles outIncludeBundles = null;
+        IncludeBundles inpIncludeBundles = inpTarget.getIncludeBundles();
+        Map<RepoData, List<RepoUnit>> repoUnitsMap = targetData.getRepoUnitsMap();
+
+        //Create a single map of repo units with Unit ID as key and Unit as value from repoUnitsMap
+        Map<String, RepoUnit> unitMap = repoUnitsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toMap(RepoUnit::getId, repoUnit -> repoUnit));
+
+        //Iterate through the input include bundles, check in the unitMap and create the output include bundles
+        if(inpIncludeBundles != null && CollectionUtils.isNotEmpty(inpIncludeBundles.getPlugin())) {
+            outIncludeBundles = new IncludeBundles();
+            for (Plugin plugin : inpIncludeBundles.getPlugin()) {
+                if(unitMap.containsKey(plugin.getId())) {
+                    RepoUnit unit = unitMap.get(plugin.getId());
+                    Plugin outPlugin = new Plugin();
+                    outPlugin.setId(unit.getId());
+                    if(plugin.getVersion() != null) {
+                        outPlugin.setVersion(unit.getVersion());
+                    }
+                    outIncludeBundles.getPlugin().add(outPlugin);
+                }
+            }
+        }
+        return outIncludeBundles;
+    }
+
 
 
     /**
