@@ -3,10 +3,7 @@ package in.adarshr.targetcloner.helper;
 import in.adarshr.targetcloner.bo.DeliveryReport;
 import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
-import in.adarshr.targetcloner.data.Location;
-import in.adarshr.targetcloner.data.Target;
-import in.adarshr.targetcloner.data.TargetDetails;
-import in.adarshr.targetcloner.data.Unit;
+import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +22,9 @@ public class ReportHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ReportHelper.class);
     private static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
 
+    private static final String PLACEHOLDER_GROUP = "$GROUP$";
+    private static final String PLACEHOLDER_ARTIFACT = "$ARTIFACT$";
+    private static final String PLACEHOLDER_VERSION = "$VERSION$";
     /**
      * Get jar urls
      *
@@ -37,7 +37,11 @@ public class ReportHelper {
         Set<RepoData> jarUrls = new HashSet<>();
 
         repoDataMap.forEach((key, value) -> {
-            value.setLocation(value.getLocation() + "content.jar");
+            if(value != null && value.getLocation() != null && value.getLocation().endsWith("/")) {
+                value.setLocation(value.getLocation() + "content.jar");
+            }else if(value != null && value.getLocation() != null && !value.getLocation().endsWith("/")){
+                value.setLocation(value.getLocation() + "/content.jar");
+            }
             jarUrls.add(value);
         });
         LOG.info("Jar urls from report: {}", jarUrls);
@@ -58,8 +62,12 @@ public class ReportHelper {
                         for (DeliveryReport deliveryReport : deliveryReports) {
                             if (StringUtils.isNotEmpty(deliveryReport.getGroup())
                                     && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
-                                repoData = createRepoData(repoUrl, deliveryReport, location);
-                                repoDataMap.put(repoUrl, repoData);
+                                repoData = createRepoData(repoUrl, deliveryReport, location, targetData);
+                                if(repoData != null && repoData.getGroup() != null && repoData.getArtifact() != null
+                                        && repoData.getGroup().equalsIgnoreCase(deliveryReport.getGroup())
+                                    && repoData.getArtifact().equalsIgnoreCase(deliveryReport.getArtifact())) {
+                                    repoDataMap.put(repoUrl, repoData);
+                                }
                             }
                         }
                     }
@@ -69,62 +77,31 @@ public class ReportHelper {
         return repoDataMap;
     }
 
-    private static RepoData createRepoData(String repoUrl, DeliveryReport deliveryReport, Location location) {
-            try {
-                //https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$
-                URL url = new URL(repoUrl);
-                // get the path after the domain and remove leading and trailing `/` if any
-                String path = url.getPath().replaceAll("^/|/$", "");
+    private static RepoData createRepoData(String repoUrl, DeliveryReport deliveryReport, Location location, TargetData targetData) {
+        RepoData repoData = null;
+        try {
+            List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
+            for (Pattern pattern : patterns) {
+                String group = deliveryReport.getGroup().replace(".", pattern.getGroupUrlPatternSeparator());
+                String artifact = deliveryReport.getArtifact().replace(".", pattern.getArtifactUrlPatternSeparator());
+                String version = deliveryReport.getVersion();
+                if(repoUrl.contains(group) && repoUrl.contains(artifact)) {
+                    String newUrl = pattern.getUrl().replace(PLACEHOLDER_GROUP, group).replace(PLACEHOLDER_ARTIFACT, artifact).replace(PLACEHOLDER_VERSION, version);
+                    int beginIndex = repoUrl.indexOf(group);
+                    int endIndex = beginIndex + group.length();
 
-                // split the path by '/'
-                String[] pathComponents = path.split("/");
+                    repoData = new RepoData();
+                    repoData.setGroup(deliveryReport.getGroup());   //Anyway b8oth should be same
+                    repoData.setArtifact(deliveryReport.getArtifact());  //Anyway both should be same
+                    repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
+                    repoData.setLocation(newUrl);
 
-                // As per the URL format `https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$`,
-                // We know that the $ARTIFACT$ is at 3rd index from last, $VERSION$ at 1st index from last and all before artifact is $GROUP$
-
-                if(pathComponents.length < 4) {
-                    LOG.error("URL does not match the expected format");
-                    return null;
+                    repoData.setRepoUnits(setRepoUnits(location, deliveryReport));
                 }
-
-                String artifact = pathComponents[pathComponents.length - 3];
-                String version = pathComponents[pathComponents.length - 1];
-
-                StringBuilder groupBuilder = new StringBuilder();
-                for (int i = 0; i < pathComponents.length - 3; i++) {
-                    groupBuilder.append(pathComponents[i]);
-                    if (i != pathComponents.length - 4) {
-                        groupBuilder.append('/');
-                    }
-                }
-
-                String group = groupBuilder.toString();
-
-                // Construct the original URL
-                String newUrl;
-                if(deliveryReport.getGroup().equalsIgnoreCase(group.replace("/", "."))
-                        && deliveryReport.getArtifact().equalsIgnoreCase(artifact.replace("/", "."))){
-                    newUrl = String.format("https://%s/%s/%s/release/%s/", url.getHost(), deliveryReport.getGroup().replaceAll("\\.","/"), deliveryReport.getArtifact(), deliveryReport.getVersion());
-                } else {
-                    newUrl = String.format("https://%s/%s/%s/release/%s/", url.getHost(), group, artifact, version);
-                }
-                LOG.info("Original URL: " + repoUrl);
-                LOG.info("New URL: " + newUrl);
-                LOG.info("Group: " + group);
-                LOG.info("Artifact: " + artifact);
-                LOG.info("Version: " + version);
-
-                RepoData repoData = new RepoData();
-                repoData.setGroup(deliveryReport.getGroup());   //Anyway both should be same
-                repoData.setArtifact(deliveryReport.getArtifact());  //Anyway both should be same
-                repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
-                repoData.setLocation(newUrl);
-
-                repoData.setRepoUnits(setRepoUnits(location, deliveryReport));
-
+            }
                 return repoData;
 
-            } catch (MalformedURLException e) {
+            } catch (Exception e) {
                 LOG.error("Invalid URL: {}", e.getMessage());
                 throw new RuntimeException(e);
             }

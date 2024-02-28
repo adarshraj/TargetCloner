@@ -145,9 +145,7 @@ public class TargetBuilder {
         List<Unit> locationUnits = inpLocation.getUnit();
 
         for (Unit unit: locationUnits) {
-            Optional<RepoUnit> unitBo = targetData.getRepoUnitsMap().get(repoData).stream()
-                    .filter(units -> units.getId().equals(unit.getId()))
-                    .findFirst();
+            Optional<RepoUnit> unitBo = getInputUnit(repoData, targetData, unit);
             if(unitBo.isPresent()) {
                 RepoUnit boRepoUnit = unitBo.get();
                 outLocation.getUnit().add(createUnit(boRepoUnit));
@@ -155,6 +153,17 @@ public class TargetBuilder {
         }
 
         return outLocation;
+    }
+
+    private static Optional<RepoUnit> getInputUnit(RepoData repoData, TargetData targetData, Unit unit) {
+        Map<RepoData, List<RepoUnit>> repoUnitsMap = targetData.getRepoUnitsMap();
+        List<RepoUnit> repoUnits = repoUnitsMap.get(repoData);
+        for (RepoUnit repoUnit : repoUnits) {
+            if (repoUnit.getId().equals(unit.getId())) {
+                return Optional.of(repoUnit);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
