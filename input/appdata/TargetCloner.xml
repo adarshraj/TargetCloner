@@ -7,8 +7,10 @@
     <sequenceNumber>211</sequenceNumber>
     <repoUrlPatterns>
         <pattern>
-            <url>https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$</url>
+            <urlPattern>https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$</urlPattern>
             <groupUrlPatternSeparator>/</groupUrlPatternSeparator>
+            <artifactUrlPatternSeparator>.</artifactUrlPatternSeparator>
+            <useReport>true</useReport>
         </pattern>
     </repoUrlPatterns>
 </tar:targetDetails>

@@ -5,9 +5,7 @@ import in.adarshr.targetcloner.build.TargetBuilder;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.data.TargetDetails;
 import in.adarshr.targetcloner.dto.TargetData;
-import in.adarshr.targetcloner.helper.ConnectionHelper;
-import in.adarshr.targetcloner.helper.ReportHelper;
-import in.adarshr.targetcloner.helper.XMLHelper;
+import in.adarshr.targetcloner.helper.*;
 import in.adarshr.targetcloner.utils.TargetClonerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -26,7 +24,7 @@ public class TargetCloner {
 
     public static void main(String[] args) {
         LOG.info("*** Starting TargetCloner application. ***");
-
+        ArgumentParser argumentParser = new ArgumentParser(args);
         // Set global exception handler
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: ", exception));
 
@@ -89,6 +87,12 @@ public class TargetCloner {
                 //Write the target files to disk
                 XMLHelper.saveFilesToDisk(stringTargetMap);
                 LOG.info("*** Step 8 ***  Target files are written to disk. ***");
+
+                if(argumentParser.isCompare()) {
+                    //Compare the target files
+                    CompareHelper.compareTargetFiles(stringTargetMap, targets, targetData);
+                    LOG.info("*** Step 9 ***  Target files are compared. ***");
+                }
                 LOG.info("*** All tasks completed. ***");
             } else {
                 LOG.error("*** No target files found to copy. Exiting the application. ***");

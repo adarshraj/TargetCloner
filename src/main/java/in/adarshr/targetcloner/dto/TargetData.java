@@ -23,7 +23,7 @@ public class TargetData {
     private TargetDetails targetDetails;
     private Set<DeliveryReport> deliveryReports;
     private List<Target> targets;
-    private Map<String, List<RepoData>> repoMap;
+
     private Map<RepoData, List<RepoUnit>> repoUnitsMap;
     private Set<RepoData> repoDataUrlSet;
     private Map<String, RepoData> repoDataMap;

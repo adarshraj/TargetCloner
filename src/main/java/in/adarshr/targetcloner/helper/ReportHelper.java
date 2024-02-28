@@ -14,13 +14,11 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReportHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ReportHelper.class);
-    private static final String PATH_SEPARATOR = FileSystems.getDefault().getSeparator();
 
     private static final String PLACEHOLDER_GROUP = "$GROUP$";
     private static final String PLACEHOLDER_ARTIFACT = "$ARTIFACT$";
@@ -86,32 +84,30 @@ public class ReportHelper {
         try {
             List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
             for (Pattern pattern : patterns) {
-                String group = deliveryReport.getGroup().replace(".", pattern.getGroupUrlPatternSeparator());
-                LOG.info("Group: {}", group);
-                String artifact = deliveryReport.getArtifact().replace(".", pattern.getArtifactUrlPatternSeparator());
-                LOG.info("Artifact: {}", artifact);
-                String version = deliveryReport.getVersion();
-                LOG.info("Version: {}", version);
-                if(repoUrl.contains(group) && repoUrl.contains(artifact)) {
-                    String newUrl = pattern.getUrl().replace(PLACEHOLDER_GROUP, group).replace(PLACEHOLDER_ARTIFACT, artifact).replace(PLACEHOLDER_VERSION, version);
-                    /*int beginIndex = repoUrl.indexOf(group);
-                    int endIndex = beginIndex + group.length();*/
-                    if(newUrl.contains(PLACEHOLDER_VERSION_2) && targetData.getTargetDetails().getVersion2() != null) {
-                        newUrl = newUrl.replace(PLACEHOLDER_VERSION_2, targetData.getTargetDetails().getVersion2());
+                if(pattern.isUseReport()) {
+                    String group = deliveryReport.getGroup().replace(".", pattern.getGroupUrlPatternSeparator());
+                    String artifact = deliveryReport.getArtifact().replace(".", pattern.getArtifactUrlPatternSeparator());
+                    String version = deliveryReport.getVersion();
+                    if (repoUrl.contains(group) && repoUrl.contains(artifact)) {
+                        String newUrl = pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group).replace(PLACEHOLDER_ARTIFACT, artifact).replace(PLACEHOLDER_VERSION, version);
+                        repoData = new RepoData();
+                        repoData.setGroup(deliveryReport.getGroup());   //Anyway both should be same
+                        repoData.setArtifact(deliveryReport.getArtifact());  //Anyway both should be same
+                        repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
+                        repoData.setLocation(newUrl);
+                        repoData.setRepoUnits(setRepoUnits(location, deliveryReport.getVersion()));
                     }
-
+                }else{
+                    //we have only url here. So need to get the data from the url
+                    String newUrl = getNewUrlForNonReportCase(targetData, pattern);
                     repoData = new RepoData();
-                    repoData.setGroup(deliveryReport.getGroup());   //Anyway b8oth should be same
-                    repoData.setArtifact(deliveryReport.getArtifact());  //Anyway both should be same
-                    repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
+                    repoData.setGroup(pattern.getGroupId());
+                    repoData.setArtifact(pattern.getArtifact());
+                    repoData.setVersion(targetData.getTargetDetails().getVersion2());
                     repoData.setLocation(newUrl);
+                    repoData.setRepoUnits(setRepoUnits(location, targetData.getTargetDetails().getVersion2()));
 
-                    LOG.info("New URL: {}", newUrl);
-                    LOG.info("Group: {}", group);
-                    LOG.info("Artifact: {}", artifact);
-                    LOG.info("Version: {}", version);
-
-                    repoData.setRepoUnits(setRepoUnits(location, deliveryReport));
+                    targetData.getDeliveryReports().add(new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), targetData.getTargetDetails().getVersion2(), null, null));
                 }
             }
                 return repoData;
@@ -122,12 +118,21 @@ public class ReportHelper {
             }
     }
 
-    private static List<RepoUnit> setRepoUnits(Location location, DeliveryReport deliveryReport) {
+    private static String getNewUrlForNonReportCase(TargetData targetData, Pattern pattern) {
+        String newUrl = pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, pattern.getGroupId().replace(".", pattern.getGroupUrlPatternSeparator()))
+                .replace(PLACEHOLDER_ARTIFACT, pattern.getArtifact().replace(".", pattern.getArtifactUrlPatternSeparator()));
+        if (newUrl.contains(PLACEHOLDER_VERSION_2) && targetData.getTargetDetails().getVersion2() != null) {
+            newUrl = newUrl.replace(PLACEHOLDER_VERSION_2, targetData.getTargetDetails().getVersion2());
+        }
+        return newUrl;
+    }
+
+    private static List<RepoUnit> setRepoUnits(Location location, String version) {
         List<RepoUnit> repoUnits = new ArrayList<>();
         for (Unit unit : location.getUnit()) {
             RepoUnit repoUnit = new RepoUnit();
             repoUnit.setId(unit.getId());
-            repoUnit.setVersion(deliveryReport.getVersion());
+            repoUnit.setVersion(version);
             repoUnits.add(repoUnit);
         }
         return repoUnits;

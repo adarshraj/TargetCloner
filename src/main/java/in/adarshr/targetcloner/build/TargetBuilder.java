@@ -233,7 +233,8 @@ public class TargetBuilder {
         Map<RepoData, List<RepoUnit>> repoUnitsMap = targetData.getRepoUnitsMap();
 
         //Create a single map of repo units with Unit ID as key and Unit as value from repoUnitsMap
-        Map<String, RepoUnit> unitMap = repoUnitsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toMap(RepoUnit::getId, repoUnit -> repoUnit));
+        //handle key collison by taking the latest value
+        Map<String, RepoUnit> unitMap = repoUnitsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toMap(RepoUnit::getId, repoUnit -> repoUnit, (repoUnit1, repoUnit2) -> repoUnit2));
 
         //Iterate through the input include bundles, check in the unitMap and create the output include bundles
         if(inpIncludeBundles != null && CollectionUtils.isNotEmpty(inpIncludeBundles.getPlugin())) {

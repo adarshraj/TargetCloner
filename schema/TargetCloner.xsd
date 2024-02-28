@@ -53,9 +53,12 @@
 
     <xs:complexType name="pattern">
         <xs:all>
-            <xs:element name="url" type="xs:string"/>
+            <xs:element name="urlPattern" type="xs:string"/>
+            <xs:element name="groupId" type="xs:string" minOccurs="0"/>
+            <xs:element name="artifact" type="xs:string" minOccurs="0"/>
             <xs:element name="groupUrlPatternSeparator" type="xs:string" minOccurs="0"/>
             <xs:element name="artifactUrlPatternSeparator" type="xs:string" minOccurs="0"/>
+            <xs:element name="useReport" type="xs:boolean" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 
