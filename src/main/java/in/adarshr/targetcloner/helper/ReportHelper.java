@@ -94,6 +94,7 @@ public class ReportHelper {
         RepoData repoData = null;
         try {
             List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
+            boolean isReportUsed = false;
             for (Pattern pattern : patterns) {
                 if(pattern.isUseReport()) {
                     String group = deliveryReport.getGroup().replace(".", pattern.getGroupUrlPatternSeparator());
@@ -107,8 +108,11 @@ public class ReportHelper {
                         repoData.setVersion(deliveryReport.getVersion());  //Anyway both should be same
                         repoData.setLocation(newUrl);
                         repoData.setRepoUnits(setRepoUnits(location, deliveryReport.getVersion()));
+                        isReportUsed = true;
+                        continue;
                     }
-                }else{
+                }
+                if(!isReportUsed && !pattern.isUseReport()){
                     //we have only url here. So need to get the data from the url
                     String newUrl = getNewUrlForNonReportCase(targetData, pattern);
                     repoData = new RepoData();
@@ -117,6 +121,7 @@ public class ReportHelper {
                     repoData.setVersion(targetData.getTargetDetails().getVersion2());
                     repoData.setLocation(newUrl);
                     repoData.setRepoUnits(setRepoUnits(location, targetData.getTargetDetails().getVersion2()));
+                    break;
                 }
             }
                 return repoData;
