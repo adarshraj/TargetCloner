@@ -67,7 +67,7 @@ public class ReportHelper {
                         //TODO Not efficient. Need to optimize
                         updateDeliveryReportForNonReportCase(targetData, deliveryReports);
                         for (DeliveryReport deliveryReport : deliveryReports) {
-                            if(!delieryReportMap.containsKey(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl)){
+                            if(!delieryReportMap.containsKey(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl+target.getName())){
                                 if (StringUtils.isNotEmpty(deliveryReport.getGroup())
                                         && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
                                     repoData = createRepoData(repoUrl, deliveryReport, location, targetData);
@@ -75,11 +75,11 @@ public class ReportHelper {
                                             && repoData.getGroup().equalsIgnoreCase(deliveryReport.getGroup())
                                             && repoData.getArtifact().equalsIgnoreCase(deliveryReport.getArtifact())) {
                                         repoDataMap.put(repoUrl, repoData);
+                                        delieryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl+target.getName(),
+                                                deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl+target.getName());
                                         break;
                                     }
                                 }
-                                delieryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl,
-                                        deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl);
                             }
                         }
                     }
