@@ -15,8 +15,8 @@ public class CompareHelper {
     private static final Logger LOG = LoggerFactory.getLogger(CompareHelper.class);
 
     public static void compareTargetFiles(Map<String, Target> stringTargetMap, List<Target> targets, TargetData targetData) {
-        Map<String, RepoData> repoMap = targetData.getRepoDataMap();
         for (Target target : targets) {
+            Map<String, RepoData> repoMap = targetData.getComponentRepoDataMap().get(target.getName());
             String[] tarName = target.getName().split("_");
             for (Map.Entry<String, Target> entry : stringTargetMap.entrySet()) {
                 if (tarName[0].contains(entry.getKey())) {

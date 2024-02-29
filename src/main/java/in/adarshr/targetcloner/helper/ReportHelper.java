@@ -31,27 +31,33 @@ public class ReportHelper {
      * @return Set
      */
     public static Set<RepoData> getJarUrls(TargetData targetData) {
-        Map<String, RepoData> repoDataMap = createRepoDataMap(targetData);
-        targetData.setRepoDataMap(repoDataMap);
+        Map<String, Map<String, RepoData>> componentRepoMap = createRepoDataMap(targetData);
+        targetData.setComponentRepoDataMap(componentRepoMap);
         Set<RepoData> jarUrls = new HashSet<>();
 
-        repoDataMap.forEach((key, value) -> {
-            if(value != null && value.getLocation() != null && value.getLocation().endsWith("/")) {
-                value.setLocation(value.getLocation() + "content.jar");
-            }else if(value != null && value.getLocation() != null && !value.getLocation().endsWith("/")){
-                value.setLocation(value.getLocation() + "/content.jar");
+        componentRepoMap.forEach((key, value) -> {
+            if(value != null && !value.isEmpty()) {
+                value.forEach((k, v) -> {
+                    if(v != null && v.getLocation() != null && v.getLocation().endsWith("/")) {
+                        v.setLocation(v.getLocation() + "content.jar");
+                    }else if(v != null && v.getLocation() != null && !v.getLocation().endsWith("/")){
+                        v.setLocation(v.getLocation() + "/content.jar");
+                    }
+                    jarUrls.add(v);
+                });
             }
-            jarUrls.add(value);
         });
         LOG.info("Jar urls from report: {}", jarUrls);
         return jarUrls;
     }
 
-    private static Map<String, RepoData> createRepoDataMap(TargetData targetData) {
-        Map<String, RepoData> repoDataMap = new HashMap<>();
+    private static Map<String, Map<String, RepoData>> createRepoDataMap(TargetData targetData) {
+        Map<String, Map<String, RepoData>> compoenentRepoDataMap = new HashMap<>();
         Set<DeliveryReport> deliveryReports = targetData.getDeliveryReports();
         List<Target> targets = targetData.getTargets();
         for(Target target: targets) {
+            Map<String, RepoData> repoDataMap = new HashMap<>();
+            Map<String, String> delieryReportMap = new HashMap<>();
             if(target.getLocations() != null && CollectionUtils.isNotEmpty(target.getLocations().getLocation())) {
                 List<Location> locations = target.getLocations().getLocation();
                 RepoData repoData;
@@ -61,22 +67,27 @@ public class ReportHelper {
                         //TODO Not efficient. Need to optimize
                         updateDeliveryReportForNonReportCase(targetData, deliveryReports);
                         for (DeliveryReport deliveryReport : deliveryReports) {
-                            if (StringUtils.isNotEmpty(deliveryReport.getGroup())
-                                    && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
-                                repoData = createRepoData(repoUrl, deliveryReport, location, targetData);
-                                if(repoData != null && repoData.getGroup() != null && repoData.getArtifact() != null
-                                        && repoData.getGroup().equalsIgnoreCase(deliveryReport.getGroup())
-                                    && repoData.getArtifact().equalsIgnoreCase(deliveryReport.getArtifact())) {
-                                    repoDataMap.put(repoUrl, repoData);
-                                    break;
+                            if(!delieryReportMap.containsKey(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl)){
+                                if (StringUtils.isNotEmpty(deliveryReport.getGroup())
+                                        && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
+                                    repoData = createRepoData(repoUrl, deliveryReport, location, targetData);
+                                    if(repoData != null && repoData.getGroup() != null && repoData.getArtifact() != null
+                                            && repoData.getGroup().equalsIgnoreCase(deliveryReport.getGroup())
+                                            && repoData.getArtifact().equalsIgnoreCase(deliveryReport.getArtifact())) {
+                                        repoDataMap.put(repoUrl, repoData);
+                                        break;
+                                    }
                                 }
+                                delieryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl,
+                                        deliveryReport.getGroup() + deliveryReport.getArtifact()+repoUrl);
                             }
                         }
                     }
                 }
             }
+            compoenentRepoDataMap.put(target.getName(), repoDataMap);
         }
-        return repoDataMap;
+        return compoenentRepoDataMap;
     }
 
     private static void updateDeliveryReportForNonReportCase(TargetData targetData, Set<DeliveryReport> deliveryReports) {
