@@ -59,6 +59,7 @@ public class ReportHelper {
                     String repoUrl = location.getRepository().getLocation();
                     if (deliveryReports != null) {
                         //TODO Not efficient. Need to optimize
+                        updateDeliveryReportForNonReportCase(targetData, deliveryReports);
                         for (DeliveryReport deliveryReport : deliveryReports) {
                             if (StringUtils.isNotEmpty(deliveryReport.getGroup())
                                     && StringUtils.isNotEmpty(deliveryReport.getArtifact())) {
@@ -76,6 +77,16 @@ public class ReportHelper {
             }
         }
         return repoDataMap;
+    }
+
+    private static void updateDeliveryReportForNonReportCase(TargetData targetData, Set<DeliveryReport> deliveryReports) {
+        List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
+        for (Pattern pattern : patterns) {
+            if(!pattern.isUseReport()){
+                String newUrl = getNewUrlForNonReportCase(targetData, pattern);
+                targetData.getDeliveryReports().add(new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), targetData.getTargetDetails().getVersion2(), null, null));
+            }
+        }
     }
 
     private static RepoData createRepoData(String repoUrl, DeliveryReport deliveryReport, Location location, TargetData targetData) {
@@ -106,8 +117,6 @@ public class ReportHelper {
                     repoData.setVersion(targetData.getTargetDetails().getVersion2());
                     repoData.setLocation(newUrl);
                     repoData.setRepoUnits(setRepoUnits(location, targetData.getTargetDetails().getVersion2()));
-
-                    targetData.getDeliveryReports().add(new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), targetData.getTargetDetails().getVersion2(), null, null));
                 }
             }
                 return repoData;
