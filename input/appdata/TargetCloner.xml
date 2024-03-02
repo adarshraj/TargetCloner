@@ -7,10 +7,17 @@
     <sequenceNumber>211</sequenceNumber>
     <repoUrlPatterns>
         <pattern>
-            <urlPattern>https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$</urlPattern>
-            <groupUrlPatternSeparator>/</groupUrlPatternSeparator>
-            <artifactUrlPatternSeparator>.</artifactUrlPatternSeparator>
-            <useReport>true</useReport>
+            <urlPattern>https://download.eclipse.org/$GROUP$/$ARTIFACT$/release/$VERSION$/</urlPattern>
+            <groupId>tools.orbit.simrel</groupId>
+            <artifact>orbit-aggregation</artifact>
+            <version>4.30.0</version>
+            <currentGroupUrlPattern>.</currentGroupUrlPattern>
+            <futureGroupUrlPattern>/</futureGroupUrlPattern>
+            <currentArtifactUrlPattern></currentArtifactUrlPattern>
+            <futureArtifactUrlPattern></futureArtifactUrlPattern>
+            <currentVersionUrlPattern></currentVersionUrlPattern>
+            <futureVersionUrlPattern></futureVersionUrlPattern>
+            <useDeliveryReport>false</useDeliveryReport>
         </pattern>
     </repoUrlPatterns>
 </tar:targetDetails>

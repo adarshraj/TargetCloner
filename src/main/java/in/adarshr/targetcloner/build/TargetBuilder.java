@@ -16,6 +16,45 @@ import java.util.stream.Collectors;
 public class TargetBuilder {
 
     /**
+     * Get target name
+     *
+     * @param componentName Component name
+     * @param version       Version
+     * @return String
+     */
+    public static String getTargetName(String componentName, String version) {
+        return componentName + "_" + version;
+    }
+
+    private static Optional<RepoUnit> getInputUnit(RepoData repoData, TargetData targetData, Unit unit) {
+        Map<RepoData, List<RepoUnit>> repoUnitsMap = targetData.getRepoUnitsMap();
+        List<RepoUnit> repoUnits = repoUnitsMap.get(repoData);
+        for (RepoUnit repoUnit : repoUnits) {
+            if (repoUnit.getId().equals(unit.getId())) {
+                return Optional.of(repoUnit);
+            }
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * This method is used to format the target name
+     *
+     * @param targetData TargetData
+     * @param targetName String
+     * @return String
+     */
+    public static String getTargetNameFormatted(TargetData targetData, String targetName) {
+        if (targetName.contains("$COMPONENT$")) {
+            targetName = targetName.replace("$COMPONENT$", targetData.getCurrentComponentName());
+        }
+        if (targetName.contains("$VERSION$")) {
+            targetName = targetName.replace("$VERSION$", targetData.getVersion());
+        }
+        return targetName;
+    }
+
+    /**
      * This method is used to build the targets
      *
      * @param targetData TargetData
@@ -23,7 +62,7 @@ public class TargetBuilder {
      */
     public Map<String, Target> buildTargets(TargetData targetData) {
         Map<String, Target> outputTargets = new HashMap<>();
-        for(Target inpTarget: targetData.getTargets()){
+        for (Target inpTarget : targetData.getInputTargets()) {
             setTargetVOData(inpTarget, targetData);
             targetData.setTargetName(getTargetName(targetData.getCurrentComponentName(), targetData.getVersion()));
             targetData.setCurrentComponentName(targetData.getCurrentComponentName());
@@ -37,17 +76,6 @@ public class TargetBuilder {
         String[] componentVersion = inpTarget.getName().split("_");
         targetData.setCurrentComponentName(componentVersion[0]);
         targetData.setVersion(targetData.getTargetDetails().getVersion());
-    }
-
-    /**
-     * Get target name
-     *
-     * @param componentName Component name
-     * @param version       Version
-     * @return String
-     */
-    public static String getTargetName(String componentName, String version) {
-        return componentName + "_" + version;
     }
 
     /**
@@ -69,7 +97,7 @@ public class TargetBuilder {
      */
     private Target createTarget(TargetData targetData, Target iTarget) {
         Target outTarget = null;
-        for (Target inpTarget : targetData.getTargets()) {
+        for (Target inpTarget : targetData.getInputTargets()) {
             if (inpTarget.getName().equals(iTarget.getName())) {
                 ObjectFactory ObjectFactory = new ObjectFactory();
                 outTarget = ObjectFactory.createTarget();
@@ -86,7 +114,6 @@ public class TargetBuilder {
         return outTarget;
     }
 
-
     /**
      * This method is used to create the target name
      *
@@ -98,27 +125,26 @@ public class TargetBuilder {
         return getTargetNameFormatted(targetData, targetName);
     }
 
-
     /**
      * This method is used to create the locations
      *
      * @return Locations
      */
     private Locations createLocations(Target inpTarget, TargetData targetData) {
-        Set<DeliveryReport> deliveryReports = targetData.getDeliveryReports();
+        Map<String, DeliveryReport> deliveryReportMap = targetData.getDeliveryReportMap();
         Locations locations = new Locations();
-        if(inpTarget.getLocations() != null && CollectionUtils.isNotEmpty(inpTarget.getLocations().getLocation())) {
+        if (inpTarget.getLocations() != null && CollectionUtils.isNotEmpty(inpTarget.getLocations().getLocation())) {
             List<Location> inputLocations = inpTarget.getLocations().getLocation();
             Map<String, Map<String, RepoData>> componentRepoDataMap = targetData.getComponentRepoDataMap();
             for (Location inpLocation : inputLocations) {
                 String inpRepoLocation = inpLocation.getRepository().getLocation();
                 Optional<String> repoLocation = componentRepoDataMap.get(inpTarget.getName()).keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
-                if(repoLocation.isPresent()) {
+                if (repoLocation.isPresent()) {
                     RepoData repoData = componentRepoDataMap.get(inpTarget.getName()).get(repoLocation.get());
-                    Optional<DeliveryReport> reportData = deliveryReports.stream().filter(deliveryReport -> deliveryReport.getGroup().equals(repoData.getGroup())
-                                    && deliveryReport.getArtifact().equals(repoData.getArtifact()))
-                            .findFirst();
-                    reportData.ifPresent(deliveryReport -> locations.getLocation().add(createLocation(inpLocation, repoData, targetData)));
+                    DeliveryReport deliveryReport = deliveryReportMap.get(repoData.getGroup() + repoData.getArtifact());
+                    if (deliveryReport != null) {
+                        locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
+                    }
                 }
             }
         }
@@ -126,7 +152,7 @@ public class TargetBuilder {
     }
 
     private CharSequence filterUrl(String inpRepoLocation) {
-        if(inpRepoLocation.contains("content.jar")) {
+        if (inpRepoLocation.contains("content.jar")) {
             return inpRepoLocation.replace("content.jar", "");
         }
         return inpRepoLocation;
@@ -137,36 +163,24 @@ public class TargetBuilder {
      *
      * @return Location
      */
-    private Location createLocation(Location inpLocation, RepoData repoData, TargetData targetData) {
-        Location outLocation = new Location();
-        outLocation.setIncludeMode(inpLocation.getIncludeMode());
-        outLocation.setType(inpLocation.getType());
-        outLocation.setIncludeAllPlatforms(inpLocation.getIncludeAllPlatforms());
-        outLocation.setIncludeConfigurePhase(inpLocation.getIncludeConfigurePhase());
-        outLocation.setRepository(createTargetRepository(repoData));
+    private Location createLocation(Location inputLocation, RepoData repoData, TargetData targetData) {
+        Location outputLocation = new Location();
+        outputLocation.setIncludeMode(inputLocation.getIncludeMode());
+        outputLocation.setType(inputLocation.getType());
+        outputLocation.setIncludeAllPlatforms(inputLocation.getIncludeAllPlatforms());
+        outputLocation.setIncludeConfigurePhase(inputLocation.getIncludeConfigurePhase());
+        outputLocation.setRepository(createTargetRepository(repoData));
 
-        List<Unit> locationUnits = inpLocation.getUnit();
-
-        for (Unit unit: locationUnits) {
+        List<Unit> inputLocationUnits = inputLocation.getUnit();
+        for (Unit unit : inputLocationUnits) {
             Optional<RepoUnit> unitBo = getInputUnit(repoData, targetData, unit);
-            if(unitBo.isPresent()) {
+            if (unitBo.isPresent()) {
                 RepoUnit boRepoUnit = unitBo.get();
-                outLocation.getUnit().add(createUnit(boRepoUnit));
+                outputLocation.getUnit().add(createUnit(boRepoUnit));
             }
         }
 
-        return outLocation;
-    }
-
-    private static Optional<RepoUnit> getInputUnit(RepoData repoData, TargetData targetData, Unit unit) {
-        Map<RepoData, List<RepoUnit>> repoUnitsMap = targetData.getRepoUnitsMap();
-        List<RepoUnit> repoUnits = repoUnitsMap.get(repoData);
-        for (RepoUnit repoUnit : repoUnits) {
-            if (repoUnit.getId().equals(unit.getId())) {
-                return Optional.of(repoUnit);
-            }
-        }
-        return Optional.empty();
+        return outputLocation;
     }
 
     /**
@@ -191,7 +205,6 @@ public class TargetBuilder {
         return location.replace("content.jar", "");
     }
 
-
     /**
      * This method is used to create the unit
      *
@@ -212,7 +225,7 @@ public class TargetBuilder {
      */
     private Environment createEnvironment(Target inputTarget) {
         Environment environment = new Environment();
-        if(inputTarget.getEnvironment() !=null ) {
+        if (inputTarget.getEnvironment() != null) {
             Environment inputTargetEnvironment = inputTarget.getEnvironment();
             environment.setNl(inputTargetEnvironment.getNl());
             environment.setArch(inputTargetEnvironment.getArch());
@@ -237,14 +250,14 @@ public class TargetBuilder {
         Map<String, RepoUnit> unitMap = repoUnitsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toMap(RepoUnit::getId, repoUnit -> repoUnit, (repoUnit1, repoUnit2) -> repoUnit2));
 
         //Iterate through the input include bundles, check in the unitMap and create the output include bundles
-        if(inpIncludeBundles != null && CollectionUtils.isNotEmpty(inpIncludeBundles.getPlugin())) {
+        if (inpIncludeBundles != null && CollectionUtils.isNotEmpty(inpIncludeBundles.getPlugin())) {
             outIncludeBundles = new IncludeBundles();
             for (Plugin plugin : inpIncludeBundles.getPlugin()) {
-                if(unitMap.containsKey(plugin.getId())) {
+                if (unitMap.containsKey(plugin.getId())) {
                     RepoUnit unit = unitMap.get(plugin.getId());
                     Plugin outPlugin = new Plugin();
                     outPlugin.setId(unit.getId());
-                    if(plugin.getVersion() != null) {
+                    if (plugin.getVersion() != null) {
                         outPlugin.setVersion(unit.getVersion());
                     }
                     outIncludeBundles.getPlugin().add(outPlugin);
@@ -252,24 +265,5 @@ public class TargetBuilder {
             }
         }
         return outIncludeBundles;
-    }
-
-
-
-    /**
-     * This method is used to format the target name
-     *
-     * @param targetData   TargetData
-     * @param targetName String
-     * @return String
-     */
-    public static String getTargetNameFormatted(TargetData targetData, String targetName) {
-        if (targetName.contains("$COMPONENT$")) {
-            targetName = targetName.replace("$COMPONENT$", targetData.getCurrentComponentName());
-        }
-        if (targetName.contains("$VERSION$")) {
-            targetName = targetName.replace("$VERSION$", targetData.getVersion());
-        }
-        return targetName;
     }
 }

@@ -25,16 +25,16 @@ public class CompareHelper {
                     //location content will be different but want to compare the locations.getUnits same for both
                     for (Location inputLocation : inputTargetLocation) {
                         for (Location createdLocation : createdTargetLocations) {
-                           // loop repoMap
+                            // loop repoMap
                             for (Map.Entry<String, RepoData> repoEntry : repoMap.entrySet()) {
                                 if (repoEntry.getKey().contains(inputLocation.getRepository().getLocation())) {
                                     //compare the repoData
                                     RepoData inputRepoData = repoEntry.getValue();
-                                    if(createdLocation.getRepository().getLocation().contains(inputRepoData.getLocation())){
+                                    if (createdLocation.getRepository().getLocation().contains(inputRepoData.getLocation())) {
                                         //compare the unit size first then compare the unit ids
-                                        if(inputLocation.getUnit().size() == createdLocation.getUnit().size()){
+                                        if (inputLocation.getUnit().size() == createdLocation.getUnit().size()) {
                                             for (int i = 0; i < inputLocation.getUnit().size(); i++) {
-                                                if(createdLocation.getUnit().get(i).getId().contains(createdLocation.getUnit().get(i).getId())){
+                                                if (createdLocation.getUnit().get(i).getId().contains(createdLocation.getUnit().get(i).getId())) {
                                                     LOG.info("Unit id and size is same");
                                                 }
                                             }

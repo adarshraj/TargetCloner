@@ -29,7 +29,7 @@
                 <xs:element name="targetNameFormat" type="xs:string" minOccurs="0"/>
                 <xs:element name="targetSaveFormat" type="xs:string" minOccurs="0"/>
                 <xs:element name="sequenceNumber" type="xs:string" minOccurs="0"/>
-                <xs:element name="repoUrlPatterns" type="repoUrlPatterns" />
+                <xs:element name="repoUrlPatterns" type="repoUrlPatterns"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
@@ -42,7 +42,7 @@
 
     <xs:complexType name="plugin">
         <xs:attribute name="id" type="xs:string" use="required"/>
-        <xs:attribute name="version" type="xs:string" use="optional" />
+        <xs:attribute name="version" type="xs:string" use="optional"/>
     </xs:complexType>
 
     <xs:complexType name="repoUrlPatterns">
@@ -56,9 +56,14 @@
             <xs:element name="urlPattern" type="xs:string"/>
             <xs:element name="groupId" type="xs:string" minOccurs="0"/>
             <xs:element name="artifact" type="xs:string" minOccurs="0"/>
-            <xs:element name="groupUrlPatternSeparator" type="xs:string" minOccurs="0"/>
-            <xs:element name="artifactUrlPatternSeparator" type="xs:string" minOccurs="0"/>
-            <xs:element name="useReport" type="xs:boolean" minOccurs="0"/>
+            <xs:element name="version" type="xs:string" minOccurs="0"/>
+            <xs:element name="currentGroupUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="futureGroupUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="currentArtifactUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="futureArtifactUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="currentVersionUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="futureVersionUrlPattern" type="xs:string" minOccurs="0"/>
+            <xs:element name="useDeliveryReport" type="xs:boolean" minOccurs="0"/>
         </xs:all>
     </xs:complexType>
 
@@ -152,7 +157,7 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="" />
+                    <xs:enumeration value=""/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -169,7 +174,7 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="" />
+                    <xs:enumeration value=""/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>
@@ -186,7 +191,7 @@
             </xs:simpleType>
             <xs:simpleType>
                 <xs:restriction base="xs:string">
-                    <xs:enumeration value="" />
+                    <xs:enumeration value=""/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:union>

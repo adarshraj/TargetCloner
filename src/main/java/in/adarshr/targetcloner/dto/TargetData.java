@@ -1,7 +1,7 @@
 package in.adarshr.targetcloner.dto;
 
-import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.DeliveryReport;
+import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.data.TargetDetails;
@@ -21,9 +21,8 @@ public class TargetData {
     private String version;
     private String targetSaveFormat;
     private TargetDetails targetDetails;
-    private Set<DeliveryReport> deliveryReports;
-    private List<Target> targets;
-
+    private Map<String, DeliveryReport> deliveryReportMap;
+    private List<Target> inputTargets;
     private Map<RepoData, List<RepoUnit>> repoUnitsMap;
     private Set<RepoData> repoDataUrlSet;
     private Map<String, Map<String, RepoData>> componentRepoDataMap;

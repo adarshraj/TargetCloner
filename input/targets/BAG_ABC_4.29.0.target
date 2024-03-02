@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <?pde version="3.8"?>
-<tar:target includeMode="feature" name="ABC_4.29.0" sequenceNumber="221" xmlns:tar="https://in.adarshr.targetcloner.data/TargetCloner.xsd">
+<tar:target xmlns:tar="https://in.adarshr.targetcloner.data/TargetCloner.xsd" includeMode="feature" name="ABC_4.29.0"
+            sequenceNumber="221">
     <environment>
         <nl>fr</nl>
     </environment>
-    <targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_66"/>
+    <targetJRE
+            path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_66"/>
     <locations>
-        <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="test" type="InstallableUnit">
+        <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="test"
+                  type="InstallableUnit">
             <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/"/>
             <unit id="org.eclipse.orbit.maven.xalan.feature.jar" version="4.30.0.v20230928-1302"/>
-            <unit id="org.eclipse.orbit.maven.org.apache.xmlgraphics.source.feature.jar" version="4.30.0.v20230916-1600"/>
+            <unit id="org.eclipse.orbit.maven.org.apache.xmlgraphics.source.feature.jar"
+                  version="4.30.0.v20230916-1600"/>
             <unit id="org.eclipse.orbit.maven.jdom2.feature.group" version="4.30.0"/>
         </location>
     </locations>

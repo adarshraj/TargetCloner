@@ -19,5 +19,5 @@ class TargetBuilderTest {
     void testBuildTargets() {
         // Map<String, Target> targets = targetBuilder.buildTargets(targetData);
         // TODO: Add assertions to check the targets map
-      }
+    }
 }

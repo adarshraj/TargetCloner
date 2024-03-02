@@ -123,7 +123,7 @@ public class XMLHelper {
     public static void saveFilesToDisk(Map<String, Target> stringTargetMap) {
         Map<String, Boolean> fileSaveStatus = stringTargetMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> saveToFile(createXmlFile(entry.getValue()), entry.getKey())));
-        if(LOG.isInfoEnabled()) {
+        if (LOG.isInfoEnabled()) {
             fileSaveStatus.forEach((key, value) -> {
                 if (value) {
                     LOG.info("File created successfully: {}", key);

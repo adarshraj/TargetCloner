@@ -46,10 +46,10 @@ public class TargetCloner {
                 targetData.setTargetDetails(targetDetails);
 
                 //Set the target data
-                targetData.setTargets(targets);
+                targetData.setInputTargets(targets);
 
                 //Delivery report data
-                targetData.setDeliveryReports(ReportHelper.getReportData(targetData));
+                targetData.setDeliveryReportMap(ReportHelper.getReportData(targetData));
                 LOG.info("*** Step 3 *** Delivery report data obtained ***");
 
                 //Get repository jar urls
@@ -70,7 +70,7 @@ public class TargetCloner {
                 targetData.setRepoUnitsMap(XMLHelper.parseAllXml(repoStringMap));
                 LOG.info("*** Step 6 ***  Repo Jar Urls parsing completed. ***");
 
-                if(targetData.getRepoUnitsMap().isEmpty()) {
+                if (targetData.getRepoUnitsMap().isEmpty()) {
                     LOG.error("*** Error *** No XML files found in the jar. Exiting the application. ***");
                     return;
                 }
@@ -88,7 +88,7 @@ public class TargetCloner {
                 XMLHelper.saveFilesToDisk(stringTargetMap);
                 LOG.info("*** Step 8 ***  Target files are written to disk. ***");
 
-                if(argumentParser.isCompare()) {
+                if (argumentParser.isCompare()) {
                     //Compare the target files
                     CompareHelper.compareTargetFiles(stringTargetMap, targets, targetData);
                     LOG.info("*** Step 9 ***  Target files are compared. ***");

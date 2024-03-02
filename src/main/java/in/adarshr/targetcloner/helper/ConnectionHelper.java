@@ -67,17 +67,17 @@ public class ConnectionHelper {
     public static Map<RepoData, String> downloadAllJars(Set<RepoData> distinctRepoData) {
         return distinctRepoData.parallelStream()
                 .collect(Collectors.toMap(
-                    repo -> repo,
-                    repo -> {
-                        try {
-                            LOG.info("Downloading JAR from URL: {}", repo.getLocation());
-                            return downloadJar(repo.getLocation());
-                        } catch (IOException e) {
-                            LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
-                            return "";
-                        }
-                    },
-                    (value1, value2) -> value1 // Merge function for handling key collision
+                        repo -> repo,
+                        repo -> {
+                            try {
+                                LOG.info("Downloading JAR from URL: {}", repo.getLocation());
+                                return downloadJar(repo.getLocation());
+                            } catch (IOException e) {
+                                LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
+                                return "";
+                            }
+                        },
+                        (value1, value2) -> value1 // Merge function for handling key collision
                 ));
     }
 }

@@ -21,6 +21,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_PACKAGE;
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_SCHEMA;
+
 /**
  * This class provides utility methods for JAXB operations.
  */
@@ -28,8 +31,6 @@ public class JaxbHelper {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JaxbHelper.class);
 
-    public static final String JAXB_PACKAGE = "in.adarshr.targetcloner.data";
-    public static final String JAXB_SCHEMA = "https://in.adarshr.targetcloner.data/TargetCloner.xsd";
 
     /**
      * Marshals the given object to XML.
@@ -84,6 +85,7 @@ public class JaxbHelper {
             throw new RuntimeException(e);
         }
     }
+
     /**
      * Unmarshal and validates the given XML file against the given XSD file to an object.
      *

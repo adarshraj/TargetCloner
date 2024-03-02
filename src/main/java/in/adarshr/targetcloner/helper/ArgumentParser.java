@@ -10,15 +10,27 @@ import org.slf4j.LoggerFactory;
  */
 public class ArgumentParser {
     Logger logger = LoggerFactory.getLogger(ArgumentParser.class);
+    private boolean isCompare;
+
     public ArgumentParser(String[] arguments) {
         parseArguments(arguments);
     }
 
-    private boolean isCompare;
-
+    /**
+     * Get the options
+     *
+     * @return Options
+     */
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("c", "compare", false, "Compare the files");
+        options.addOption("h", "help", false, "Help");
+        return options;
+    }
 
     /**
      * Parse the input arguments
+     *
      * @param args arguments
      */
     public void parseArguments(String[] args) {
@@ -42,23 +54,12 @@ public class ArgumentParser {
         }
     }
 
-    private void setCompare(boolean compare) {
-        this.isCompare = compare;
-    }
-
     public boolean isCompare() {
         return isCompare;
     }
 
-    /**
-     * Get the options
-     * @return Options
-     */
-    private static Options getOptions() {
-        Options options = new Options();
-        options.addOption("c", "compare", false, "Compare the files");
-        options.addOption("h", "help", false, "Help");
-        return options;
+    private void setCompare(boolean compare) {
+        this.isCompare = compare;
     }
 
     public void createHelp(Options options) {
