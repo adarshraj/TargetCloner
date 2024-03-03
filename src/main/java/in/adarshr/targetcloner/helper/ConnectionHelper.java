@@ -39,24 +39,20 @@ public class ConnectionHelper {
         StringBuilder xmlContent = new StringBuilder();
         try (
                 InputStream in = url.openStream();
-                JarInputStream jarStream = new JarInputStream(in)
+                JarInputStream jarStream = new JarInputStream(in);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(jarStream))
         ) {
             JarEntry entry;
             while ((entry = jarStream.getNextJarEntry()) != null) {
                 if (entry.getName().endsWith(SeparatorConstants.XML_FILE_EXTENSION)) {
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarStream))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            xmlContent.append(line).append(LINE_BREAK
-                            );
-                        }
-                    } catch (IOException e) {
-                        LOG.error(">>> Failed to read XML from JAR entry: {}", entry.getName());
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        xmlContent.append(line).append(LINE_BREAK);
                     }
                 }
             }
         } catch (IOException e) {
-            LOG.error(">>> Failed to open or read JAR from URL: {}", jarUrl);
+            LOG.error(">>> Failed to open or read JAR from URL: {}, {}", jarUrl, e.getMessage());
         }
         return xmlContent.toString();
     }

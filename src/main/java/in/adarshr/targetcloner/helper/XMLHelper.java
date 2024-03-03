@@ -124,9 +124,9 @@ public class XMLHelper {
         if (LOG.isInfoEnabled()) {
             fileSaveStatus.forEach((key, value) -> {
                 if (value) {
-                    LOG.info(">>> File created successfully: {}", key);
+                    LOG.info(">>> Target created successfully: {}", key);
                 } else {
-                    LOG.error(">>> Failed to create file: {}", key);
+                    LOG.error(">>> Failed to create target: {}", key);
                 }
             });
         }
@@ -152,7 +152,7 @@ public class XMLHelper {
                 Files.createDirectories(currentOutputPath);
             } else {
                 Files.write(Paths.get(fileLocation), content.getBytes());
-                LOG.info(">>> File created successfully: {}", fileLocation);
+                LOG.info(">>> File created successfully in: {}", fileLocation);
             }
         } catch (IOException e) {
             LOG.error(">>> Failed to create directory: {}", e.getMessage());

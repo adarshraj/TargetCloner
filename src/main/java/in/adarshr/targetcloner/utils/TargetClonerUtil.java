@@ -7,14 +7,13 @@ import in.adarshr.targetcloner.helper.JaxbHelper;
 import jakarta.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -86,13 +85,13 @@ public class TargetClonerUtil {
     /**
      * Delivery report key
      *
-     * @param group       Group
-     * @param artifact    Artifact
-     * @param version     Version
+     * @param group    Group
+     * @param artifact Artifact
+     * @param version  Version
      * @return String
      */
     public static String deliveryReportKey(String group, String artifact, String version) {
-        return group+ artifact + version;
+        return group + artifact + version;
     }
 
     /**
@@ -100,10 +99,11 @@ public class TargetClonerUtil {
      */
     public static void printBanner() {
         String fileName = "banner.txt";
-        try {
-            Path path = Paths.get(Objects.requireNonNull(TargetClonerUtil.class.getClassLoader().getResource(fileName)).toURI());
-            try (Stream<String> lines = Files.lines(path)) {
-                lines.forEach(System.out::println);
+        try (InputStream inputStream = TargetClonerUtil.class.getClassLoader().getResourceAsStream(fileName)) {
+            assert inputStream != null;
+            try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                reader.lines().forEach(System.out::println);
             }
         } catch (Exception e) {
             LOG.error(">>> Failed to print banner: {}", e.getMessage());
