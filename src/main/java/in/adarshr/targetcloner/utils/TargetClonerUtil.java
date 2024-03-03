@@ -1,6 +1,5 @@
 package in.adarshr.targetcloner.utils;
 
-
 import in.adarshr.targetcloner.constants.TargetClonerConstants;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.data.TargetDetails;
@@ -24,7 +23,6 @@ import java.util.stream.Stream;
 public class TargetClonerUtil {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetClonerUtil.class);
 
-
     /**
      * Unmarshal the given XML file to an object.
      *
@@ -39,7 +37,7 @@ public class TargetClonerUtil {
             File inputSchemaFile = new File(schemaLocation);
             targetDetails = JaxbHelper.unmarshallAndValidate(xmlFile, inputSchemaFile, TargetDetails.class);
         } catch (JAXBException | SAXException e) {
-            LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
+            LOG.error(">>> Failed to unmarshal input XML file: {}", e.getMessage());
         }
         return targetDetails;
     }
@@ -57,7 +55,7 @@ public class TargetClonerUtil {
                     .filter(p -> p.toString().endsWith(TargetClonerConstants.TARGET_FILE_SUFFIX))
                     .map(Path::toFile).toList();
         } catch (IOException e) {
-            LOG.error("Failed to get target files to copy: {}", e.getMessage());
+            LOG.error(">>> Failed to get target files to copy: {}", e.getMessage());
             return Collections.emptyList();
         }
         return targetFiles;
@@ -97,6 +95,9 @@ public class TargetClonerUtil {
         return group+ artifact + version;
     }
 
+    /**
+     * Print the banner. won't be logged
+     */
     public static void printBanner() {
         String fileName = "banner.txt";
         try {
@@ -105,7 +106,7 @@ public class TargetClonerUtil {
                 lines.forEach(System.out::println);
             }
         } catch (Exception e) {
-            LOG.error("Failed to print banner: {}", e.getMessage());
+            LOG.error(">>> Failed to print banner: {}", e.getMessage());
         }
     }
 }

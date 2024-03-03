@@ -51,6 +51,7 @@
         </xs:sequence>
     </xs:complexType>
 
+    <!-- The url patterns that can be used for the repository -->
     <xs:complexType name="pattern">
         <xs:all>
             <xs:element name="urlPattern" type="xs:string"/>
