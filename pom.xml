@@ -63,7 +63,6 @@
             <artifactId>commons-cli</artifactId>
             <version>1.6.0</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -96,6 +95,13 @@
             <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.11.0</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.codehaus.mojo/build-helper-maven-plugin -->
         <dependency>
@@ -103,7 +109,6 @@
             <artifactId>build-helper-maven-plugin</artifactId>
             <version>3.5.0</version>
         </dependency>
-
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName> <!--Jar name. Optional field -->
@@ -149,6 +154,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- To use jaxb generated source files -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>

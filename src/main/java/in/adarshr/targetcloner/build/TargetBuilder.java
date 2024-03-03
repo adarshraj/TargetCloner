@@ -10,6 +10,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static in.adarshr.targetcloner.constants.SeperatorConstants.EMPTY_STRING;
+import static in.adarshr.targetcloner.constants.SeperatorConstants.FIELD_DELIMITER_UNDERSCORE;
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
+
 /**
  * This class is used to build the target
  */
@@ -23,7 +27,7 @@ public class TargetBuilder {
      * @return String
      */
     public static String getTargetName(String componentName, String version) {
-        return componentName + "_" + version;
+        return componentName + FIELD_DELIMITER_UNDERSCORE+ version;
     }
 
     private static Optional<RepoUnit> getInputUnit(RepoData repoData, TargetData targetData, Unit unit) {
@@ -45,11 +49,11 @@ public class TargetBuilder {
      * @return String
      */
     public static String getTargetNameFormatted(TargetData targetData, String targetName) {
-        if (targetName.contains("$COMPONENT$")) {
-            targetName = targetName.replace("$COMPONENT$", targetData.getCurrentComponentName());
+        if (targetName.contains(PLACEHOLDER_COMPONENT)) {
+            targetName = targetName.replace(PLACEHOLDER_COMPONENT, targetData.getCurrentComponentName());
         }
-        if (targetName.contains("$VERSION$")) {
-            targetName = targetName.replace("$VERSION$", targetData.getVersion());
+        if (targetName.contains(PLACEHOLDER_VERSION)) {
+            targetName = targetName.replace(PLACEHOLDER_VERSION, targetData.getVersion());
         }
         return targetName;
     }
@@ -73,7 +77,7 @@ public class TargetBuilder {
     }
 
     private void setTargetVOData(Target inpTarget, TargetData targetData) {
-        String[] componentVersion = inpTarget.getName().split("_");
+        String[] componentVersion = inpTarget.getName().split(FIELD_DELIMITER_UNDERSCORE);
         targetData.setCurrentComponentName(componentVersion[0]);
         targetData.setVersion(targetData.getTargetDetails().getVersion());
     }
@@ -86,7 +90,7 @@ public class TargetBuilder {
      */
     private String createTargetFileName(TargetData targetData) {
         String targetNameFormatted = getTargetNameFormatted(targetData, targetData.getTargetSaveFormat());
-        return targetNameFormatted + ".target";
+        return targetNameFormatted + TARGET_FILE_SUFFIX;
     }
 
     /**
@@ -138,7 +142,9 @@ public class TargetBuilder {
             Map<String, Map<String, RepoData>> componentRepoDataMap = targetData.getComponentRepoDataMap();
             for (Location inpLocation : inputLocations) {
                 String inpRepoLocation = inpLocation.getRepository().getLocation();
-                Optional<String> repoLocation = componentRepoDataMap.get(inpTarget.getName()).keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
+                Optional<String> repoLocation =
+                        componentRepoDataMap.get(inpTarget.getName())
+                                .keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
                 if (repoLocation.isPresent()) {
                     RepoData repoData = componentRepoDataMap.get(inpTarget.getName()).get(repoLocation.get());
                     DeliveryReport deliveryReport = deliveryReportMap.get(repoData.getGroup() + repoData.getArtifact());
@@ -152,8 +158,8 @@ public class TargetBuilder {
     }
 
     private CharSequence filterUrl(String inpRepoLocation) {
-        if (inpRepoLocation.contains("content.jar")) {
-            return inpRepoLocation.replace("content.jar", "");
+        if (inpRepoLocation.contains(CONTENT_JAR)) {
+            return inpRepoLocation.replace(CONTENT_JAR, EMPTY_STRING);
         }
         return inpRepoLocation;
     }
@@ -202,7 +208,7 @@ public class TargetBuilder {
      * @return String
      */
     private String setLocationUrl(String location) {
-        return location.replace("content.jar", "");
+        return location.replace(CONTENT_JAR, EMPTY_STRING);
     }
 
     /**

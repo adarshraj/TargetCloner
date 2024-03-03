@@ -1,5 +1,7 @@
 package in.adarshr.targetcloner.helper;
 
+import in.adarshr.targetcloner.constants.SeperatorConstants;
+import in.adarshr.targetcloner.constants.XmlConstants;
 import in.adarshr.targetcloner.filter.NameSpaceFilter;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -21,8 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_PACKAGE;
-import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_SCHEMA;
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
 
 /**
  * This class provides utility methods for JAXB operations.
@@ -61,10 +62,10 @@ public class JaxbHelper {
      */
     public static <T> String marshalWithInstruction(T object, Class<T> clazz) throws JAXBException {
         String xml = marshal(object, clazz);
-        int insertIndex = xml.indexOf("?>") + 2;
-        String xmlString = xml.substring(0, insertIndex) + "\n" + "<?pde version=\"3.8\"?>" + xml.substring(insertIndex);
-        xmlString = xmlString.replaceAll("ns2:", "");
-        xmlString = xmlString.replaceAll("xmlns:ns2=\"https://in.adarshr.targetcloner.data/TargetCloner.xsd\"", "");
+        int insertIndex = xml.indexOf(XmlConstants.XML_INSTRUCTION_MARKER) + 2;
+        String xmlString = xml.substring(0, insertIndex) + SeperatorConstants.LINE_BREAK + XmlConstants.PDE_VERSION_INSTRUCTION + xml.substring(insertIndex);
+        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_PREFIX, SeperatorConstants.EMPTY_STRING);
+        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_TARGET_CLONER, SeperatorConstants.EMPTY_STRING);
         return xmlString;
     }
 

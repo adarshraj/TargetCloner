@@ -4,6 +4,7 @@ import in.adarshr.targetcloner.bo.DeliveryReport;
 import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
 import in.adarshr.targetcloner.constants.ReportSource;
+import in.adarshr.targetcloner.constants.SeperatorConstants;
 import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,9 +38,9 @@ public class ReportHelper {
         componentRepoMap.forEach((key, value) -> {
             if (value != null && !value.isEmpty()) {
                 value.forEach((k, v) -> {
-                    if (v != null && v.getLocation() != null && v.getLocation().endsWith("/")) {
+                    if (v != null && v.getLocation() != null && v.getLocation().endsWith(SeperatorConstants.LOCATION_SEPARATOR)) {
                         v.setLocation(v.getLocation() + CONTENT_JAR);
-                    } else if (v != null && v.getLocation() != null && !v.getLocation().endsWith("/")) {
+                    } else if (v != null && v.getLocation() != null && !v.getLocation().endsWith(SeperatorConstants.LOCATION_SEPARATOR)) {
                         v.setLocation(v.getLocation() + CONTENT_JAR_WITH_SEPARATOR);
                     }
                     jarUrls.add(v);
@@ -247,8 +248,8 @@ public class ReportHelper {
                 LOG.error("Report file is null/empty or cannot be read");
                 throw new RuntimeException("Report file is null/empty or cannot be read");
             } else {
-                for (String line : reportFile.split("\n")) {
-                    DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, ":");
+                for (String line : reportFile.split(SeperatorConstants.LINE_BREAK)) {
+                    DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeperatorConstants.FIELD_DELIMITER_SEMICOLON);
                     deliveryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact(), deliveryReport);
                 }
             }
@@ -287,7 +288,7 @@ public class ReportHelper {
         URI uri = URI.create(fileUrl);
         URL url = uri.toURL();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return reader.lines().skip(linesToSkip).collect(Collectors.joining("\n"));
+            return reader.lines().skip(linesToSkip).collect(Collectors.joining(SeperatorConstants.LINE_BREAK));
         }
     }
 

@@ -2,6 +2,8 @@ package in.adarshr.targetcloner.helper;
 
 import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
+import in.adarshr.targetcloner.constants.TargetClonerConstants;
+import in.adarshr.targetcloner.constants.XmlConstants;
 import in.adarshr.targetcloner.data.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +56,7 @@ public class XMLHelper {
             doc.getDocumentElement().normalize();
 
             // Here we choose to get NodeList of all "unit" elements directly
-            NodeList nodeList = doc.getElementsByTagName("unit");
+            NodeList nodeList = doc.getElementsByTagName(XmlConstants.XML_ELEMENT_UNIT);
 
             //Iterate through all "unit" elements
             int nodeListLength = nodeList.getLength();
@@ -78,10 +80,10 @@ public class XMLHelper {
      * @return RepoUnit
      */
     private static RepoUnit getUnit(Element element) {
-        String id = element.getAttribute("id");
-        String version = element.getAttribute("version");
-        String singleton = element.getAttribute("singleton");
-        String generation = element.getAttribute("generation");
+        String id = element.getAttribute(XmlConstants.XML_ATTRIBUTE_ID);
+        String version = element.getAttribute(XmlConstants.XML_ATTRIBUTE_VERSION);
+        String singleton = element.getAttribute(XmlConstants.XML_ATTRIBUTE_SINGLETON);
+        String generation = element.getAttribute(XmlConstants.XML_ATTRIBUTE_GENERATION);
 
         RepoUnit repoUnit = new RepoUnit();
         repoUnit.setId(id);
@@ -143,14 +145,14 @@ public class XMLHelper {
      */
     private static boolean saveToFile(String content, String fileName) {
         // Get the current working directory
-        String currentWorkingDir = System.getProperty("user.dir");
+        String currentWorkingDir = System.getProperty(TargetClonerConstants.USER_DIRECTORY);
         String fileSep = FileSystems.getDefault().getSeparator();
 
         // Define the path to the file
-        String fileLocation = currentWorkingDir + fileSep + "output" + fileSep + fileName;
+        String fileLocation = currentWorkingDir + fileSep + TargetClonerConstants.OUTPUT_DIRECTORY + fileSep + fileName;
 
         // Make sure to create the directory if it doesn't exit
-        Path currentOutputPath = Paths.get(currentWorkingDir + fileSep + "output" + fileSep);
+        Path currentOutputPath = Paths.get(currentWorkingDir + fileSep + TargetClonerConstants.OUTPUT_DIRECTORY + fileSep);
         try {
             if (!Files.exists(currentOutputPath)) {
                 Files.createDirectories(currentOutputPath);

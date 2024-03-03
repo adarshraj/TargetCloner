@@ -9,4 +9,8 @@ public interface TargetClonerConstants {
     String PLACEHOLDER_GROUP = "$GROUP$";
     String PLACEHOLDER_ARTIFACT = "$ARTIFACT$";
     String PLACEHOLDER_VERSION = "$VERSION$";
+    String PLACEHOLDER_COMPONENT = "$COMPONENT$";
+    String TARGET_FILE_SUFFIX = ".target";
+    String OUTPUT_DIRECTORY = "output";
+    String USER_DIRECTORY = "user.dir";
 }

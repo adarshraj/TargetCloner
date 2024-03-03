@@ -1,6 +1,7 @@
 package in.adarshr.targetcloner.utils;
 
 
+import in.adarshr.targetcloner.constants.TargetClonerConstants;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.data.TargetDetails;
 import in.adarshr.targetcloner.helper.JaxbHelper;
@@ -36,7 +37,6 @@ public class TargetClonerUtil {
             File xmlFile = new File(input);
             File inputSchemaFile = new File(schemaLocation);
             targetDetails = JaxbHelper.unmarshallAndValidate(xmlFile, inputSchemaFile, TargetDetails.class);
-            LOG.info("JAXBUtils: {}", targetDetails);
         } catch (JAXBException | SAXException e) {
             LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
         }
@@ -53,7 +53,7 @@ public class TargetClonerUtil {
         List<File> targetFiles;
         try (Stream<Path> paths = Files.walk(Paths.get(location))) {
             targetFiles = paths.filter(Files::isRegularFile)
-                    .filter(p -> p.toString().endsWith(".target"))
+                    .filter(p -> p.toString().endsWith(TargetClonerConstants.TARGET_FILE_SUFFIX))
                     .map(Path::toFile).toList();
         } catch (IOException e) {
             LOG.error("Failed to get target files to copy: {}", e.getMessage());

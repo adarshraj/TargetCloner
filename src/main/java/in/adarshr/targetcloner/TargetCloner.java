@@ -22,6 +22,8 @@ import java.util.Set;
 public class TargetCloner {
     private static final Logger LOG = LoggerFactory.getLogger(TargetCloner.class);
 
+    private static int step = 1;
+
     public static void main(String[] args) {
         LOG.info("*** Starting TargetCloner application. ***");
         ArgumentParser argumentParser = new ArgumentParser(args);
@@ -35,13 +37,13 @@ public class TargetCloner {
 
         //Proceed only when we have the Input XML data
         if (targetDetails != null) {
-            LOG.info("*** Step 1 *** TargetDetails input successfully parsed ***");
+            LOG.info("*** Step {} *** TargetDetails input successfully parsed ***", stepCount());
             //Read the input target files
             TargetData targetData = new TargetData();
             List<File> targetFilesToCopy = TargetClonerUtil.getTargetFilesToCopy("input/targets/");
             List<Target> targets = TargetClonerUtil.unmarshalTargetFiles(targetFilesToCopy);
             if (CollectionUtils.isNotEmpty(targets)) {
-                LOG.info("*** Step 2 *** Input target files successfully parsed ***");
+                LOG.info("*** Step {} *** Input target files successfully parsed ***", stepCount());
                 //Set the data to TargetData for target file generation
                 targetData.setTargetDetails(targetDetails);
 
@@ -50,11 +52,11 @@ public class TargetCloner {
 
                 //Delivery report data
                 targetData.setDeliveryReportMap(ReportHelper.getReportData(targetData));
-                LOG.info("*** Step 3 *** Delivery report data obtained ***");
+                LOG.info("*** Step {} *** Delivery report data obtained ***", stepCount());
 
                 //Get repository jar urls
                 Set<RepoData> repoDataJarUrls = ReportHelper.getJarUrls(targetData);
-                LOG.info("*** Step 4 *** Repo Jar Urls creation completed. ***");
+                LOG.info("*** Step {} *** Repo Jar Urls creation completed. ***", stepCount());
                 targetData.setRepoDataUrlSet(repoDataJarUrls);
 
                 if (repoDataJarUrls.isEmpty()) {
@@ -64,11 +66,11 @@ public class TargetCloner {
 
                 //Download jar and get input stream
                 Map<RepoData, String> repoStringMap = ConnectionHelper.downloadAllJars(repoDataJarUrls);
-                LOG.info("*** Step 5 ***  Repo Jar download completed. ***");
+                LOG.info("*** Step {} ***  Repo Jar download completed. ***", stepCount());
 
                 // Parse the XML from the jar file
                 targetData.setRepoUnitsMap(XMLHelper.parseAllXml(repoStringMap));
-                LOG.info("*** Step 6 ***  Repo Jar Urls parsing completed. ***");
+                LOG.info("*** Step {} ***  Repo Jar Urls parsing completed. ***", stepCount());
 
                 if (targetData.getRepoUnitsMap().isEmpty()) {
                     LOG.error("*** Error *** No XML files found in the jar. Exiting the application. ***");
@@ -82,16 +84,16 @@ public class TargetCloner {
                 // Create target files
                 TargetBuilder targetBuilder = new TargetBuilder();
                 Map<String, Target> stringTargetMap = targetBuilder.buildTargets(targetData);
-                LOG.info("*** Step 7 *** Target file creation completed. ***");
+                LOG.info("*** Step {} *** Target file creation completed. ***", stepCount());
 
                 //Write the target files to disk
                 XMLHelper.saveFilesToDisk(stringTargetMap);
-                LOG.info("*** Step 8 ***  Target files are written to disk. ***");
+                LOG.info("*** Step {} ***  Target files are written to disk. ***", stepCount());
 
                 if (argumentParser.isCompare()) {
                     //Compare the target files
                     CompareHelper.compareTargetFiles(stringTargetMap, targets, targetData);
-                    LOG.info("*** Step 9 ***  Target files are compared. ***");
+                    LOG.info("*** Step {} ***  Target files are compared. ***", stepCount());
                 }
                 LOG.info("*** All tasks completed. ***");
             } else {
@@ -100,5 +102,9 @@ public class TargetCloner {
         } else {
             LOG.error("*** Unable to parse input XML file. Exiting the application. ***");
         }
+    }
+
+    private static int stepCount() {
+        return step++;
     }
 }

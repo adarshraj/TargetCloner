@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ArgumentParser {
     Logger logger = LoggerFactory.getLogger(ArgumentParser.class);
-    private boolean isCompare;
+    private boolean isCompare = false;
 
     public ArgumentParser(String[] arguments) {
         parseArguments(arguments);
@@ -41,7 +41,7 @@ public class ArgumentParser {
         try {
             cmd = commandLineParser.parse(options, args);
             if (cmd.hasOption("c")) {
-                setCompare(true);
+                setCompare();
             }
             if (cmd.hasOption("h")) {
                 createHelp(options);
@@ -58,8 +58,8 @@ public class ArgumentParser {
         return isCompare;
     }
 
-    private void setCompare(boolean compare) {
-        this.isCompare = compare;
+    private void setCompare() {
+        this.isCompare = true;
     }
 
     public void createHelp(Options options) {
