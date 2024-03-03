@@ -78,7 +78,7 @@ public class ReportHelper {
                             DeliveryReport deliveryReport = entry.getValue();
                             if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
                                 repoData = createRepoData(deliveryReport, inputLocation, entry.getKey());
-                                repoDataMap.put(repoData.getLocation(), repoData);
+                                repoDataMap.put(inputLocation.getRepository().getLocation(), repoData);
                             }
                         }
                     }
