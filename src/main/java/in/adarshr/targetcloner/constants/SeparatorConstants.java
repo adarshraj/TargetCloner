@@ -1,6 +1,6 @@
 package in.adarshr.targetcloner.constants;
 
-public interface SeperatorConstants {
+public interface SeparatorConstants {
     String LOCATION_SEPARATOR = "/";
     String FIELD_DELIMITER_SEMICOLON = ":";
     String LINE_BREAK = "\n";

@@ -4,9 +4,10 @@ import in.adarshr.targetcloner.bo.DeliveryReport;
 import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
 import in.adarshr.targetcloner.constants.ReportSource;
-import in.adarshr.targetcloner.constants.SeperatorConstants;
+import in.adarshr.targetcloner.constants.SeparatorConstants;
 import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
+import in.adarshr.targetcloner.utils.TargetClonerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,9 +39,9 @@ public class ReportHelper {
         componentRepoMap.forEach((key, value) -> {
             if (value != null && !value.isEmpty()) {
                 value.forEach((k, v) -> {
-                    if (v != null && v.getLocation() != null && v.getLocation().endsWith(SeperatorConstants.LOCATION_SEPARATOR)) {
+                    if (v != null && v.getLocation() != null && v.getLocation().endsWith(SeparatorConstants.LOCATION_SEPARATOR)) {
                         v.setLocation(v.getLocation() + CONTENT_JAR);
-                    } else if (v != null && v.getLocation() != null && !v.getLocation().endsWith(SeperatorConstants.LOCATION_SEPARATOR)) {
+                    } else if (v != null && v.getLocation() != null && !v.getLocation().endsWith(SeparatorConstants.LOCATION_SEPARATOR)) {
                         v.setLocation(v.getLocation() + CONTENT_JAR_WITH_SEPARATOR);
                     }
                     jarUrls.add(v);
@@ -51,6 +52,12 @@ public class ReportHelper {
         return jarUrls;
     }
 
+    /**
+     * Create repo data map
+     *
+     * @param targetData TargetData
+     * @return Map
+     */
     private static Map<String, Map<String, RepoData>> createRepoDataMap(TargetData targetData) {
         Map<String, Map<String, DeliveryReport>> mapOfDeliveryReportForInputTargets = createDeliveryReportForInputTargets(targetData);
         Map<String, Map<String, RepoData>> compoenentRepoDataMap = new HashMap<>();
@@ -105,7 +112,6 @@ public class ReportHelper {
                                         Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
                                         targetDeliveryReport.put(newUrl, deliveryReport);
                                         targetDeliveryReportMap.put(currentUrl, targetDeliveryReport);
-
                                     }
                                 }
                             }
@@ -132,7 +138,11 @@ public class ReportHelper {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
                 if (repoUrl.contains(group) && repoUrl.contains(artifact)) {
-                    return deliveryReport;
+                    if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
+                        return deliveryReport;
+                    }else if(!deliveryReport.isExternalEntry() &&  StringUtils.isEmpty(pattern.getVersion())){
+                        return deliveryReport;
+                    }
                 }
             }
         }
@@ -164,7 +174,14 @@ public class ReportHelper {
         return StringUtils.EMPTY;
     }
 
-
+    /**
+     * Format delivery data
+     *
+     * @param deliveryData   Delivery data
+     * @param currentFormat  Current format
+     * @param futureFormat   Future format
+     * @return String
+     */
     private static String formatDeliveryData(String deliveryData, String currentFormat, String futureFormat) {
         if (deliveryData != null) {
             return deliveryData.replace(currentFormat, futureFormat);
@@ -183,12 +200,13 @@ public class ReportHelper {
         for (Pattern pattern : patterns) {
             if (!pattern.isUseDeliveryReport()) {
                 DeliveryReport deliveryReport =
-                        new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null);
-                deliveryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact(), deliveryReport);
+                        new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null, true, pattern.getComponent());
+                    deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
             }
         }
         return deliveryReportMap;
     }
+
 
     /**
      * Create repo data
@@ -248,8 +266,8 @@ public class ReportHelper {
                 LOG.error("Report file is null/empty or cannot be read");
                 throw new RuntimeException("Report file is null/empty or cannot be read");
             } else {
-                for (String line : reportFile.split(SeperatorConstants.LINE_BREAK)) {
-                    DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeperatorConstants.FIELD_DELIMITER_SEMICOLON);
+                for (String line : reportFile.split(SeparatorConstants.LINE_BREAK)) {
+                    DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
                     deliveryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact(), deliveryReport);
                 }
             }
@@ -288,7 +306,7 @@ public class ReportHelper {
         URI uri = URI.create(fileUrl);
         URL url = uri.toURL();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
-            return reader.lines().skip(linesToSkip).collect(Collectors.joining(SeperatorConstants.LINE_BREAK));
+            return reader.lines().skip(linesToSkip).collect(Collectors.joining(SeparatorConstants.LINE_BREAK));
         }
     }
 

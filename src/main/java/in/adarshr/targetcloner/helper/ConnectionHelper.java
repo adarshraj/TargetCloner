@@ -1,7 +1,7 @@
 package in.adarshr.targetcloner.helper;
 
 import in.adarshr.targetcloner.bo.RepoData;
-import in.adarshr.targetcloner.constants.SeperatorConstants;
+import in.adarshr.targetcloner.constants.SeparatorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +17,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 
-import static in.adarshr.targetcloner.constants.SeperatorConstants.LINE_BREAK;
+import static in.adarshr.targetcloner.constants.SeparatorConstants.LINE_BREAK;
 
 /**
  * This class provides utility methods for downloading JARs and extracting XMLs from them.
  */
 public class ConnectionHelper {
-
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelper.class);
 
     /**
@@ -43,7 +42,7 @@ public class ConnectionHelper {
         ) {
             JarEntry entry;
             while ((entry = jarStream.getNextJarEntry()) != null) {
-                if (entry.getName().endsWith(SeperatorConstants.XML_FILE_EXTENSION)) {
+                if (entry.getName().endsWith(SeparatorConstants.XML_FILE_EXTENSION)) {
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(jarStream))) {
                         String line;
                         while ((line = reader.readLine()) != null) {

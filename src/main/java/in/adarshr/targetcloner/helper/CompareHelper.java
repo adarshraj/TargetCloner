@@ -1,7 +1,7 @@
 package in.adarshr.targetcloner.helper;
 
 import in.adarshr.targetcloner.bo.RepoData;
-import in.adarshr.targetcloner.constants.SeperatorConstants;
+import in.adarshr.targetcloner.constants.SeparatorConstants;
 import in.adarshr.targetcloner.data.Location;
 import in.adarshr.targetcloner.data.Target;
 import in.adarshr.targetcloner.dto.TargetData;
@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * This class provides utility methods for comparing target files. TODO: Add more details about the class.
+ */
 public class CompareHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CompareHelper.class);
@@ -27,10 +30,10 @@ public class CompareHelper {
         }
     }
 
-        public static void compareTargetFiles(Map<String, Target> stringTargetMap, List<Target> targets, TargetData targetData) {
+    public static void compareTargetFiles(Map<String, Target> stringTargetMap, List<Target> targets, TargetData targetData) {
         for (Target target : targets) {
             Map<String, RepoData> repoMap = targetData.getComponentRepoDataMap().get(target.getName());
-            String[] tarName = target.getName().split(SeperatorConstants.FIELD_DELIMITER_UNDERSCORE);
+            String[] tarName = target.getName().split(SeparatorConstants.FIELD_DELIMITER_UNDERSCORE);
             for (Map.Entry<String, Target> entry : stringTargetMap.entrySet()) {
                 if (tarName[0].contains(entry.getKey())) {
                     List<Location> inputTargetLocation = target.getLocations().getLocation();

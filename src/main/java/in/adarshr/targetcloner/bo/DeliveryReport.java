@@ -23,7 +23,16 @@ public class DeliveryReport {
     private String version;
     private String classifier;
     private String extension;
+    private boolean externalEntry;
+    private String component;
 
+    /**
+     * Create a report object from a delimited string
+     *
+     * @param currentLine the current line
+     * @param delimiter   the delimiter
+     * @return the report object
+     */
     public static DeliveryReport fromDelimitedString(String currentLine, String delimiter) {
         String[] parts = currentLine.split(delimiter);
         parts = Arrays.stream(parts).map(String::trim).toArray(String[]::new);
@@ -31,7 +40,7 @@ public class DeliveryReport {
             LOG.error("Insufficient fields to create a Report object");
             throw new IllegalArgumentException("Insufficient fields to create a Report object");
         }
-        return new DeliveryReport(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
+        return new DeliveryReport(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], false, null);
     }
 
     @Override

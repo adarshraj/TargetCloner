@@ -1,6 +1,6 @@
 package in.adarshr.targetcloner.helper;
 
-import in.adarshr.targetcloner.constants.SeperatorConstants;
+import in.adarshr.targetcloner.constants.SeparatorConstants;
 import in.adarshr.targetcloner.constants.XmlConstants;
 import in.adarshr.targetcloner.filter.NameSpaceFilter;
 import jakarta.xml.bind.JAXBContext;
@@ -29,9 +29,7 @@ import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
  * This class provides utility methods for JAXB operations.
  */
 public class JaxbHelper {
-
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JaxbHelper.class);
-
 
     /**
      * Marshals the given object to XML.
@@ -63,9 +61,9 @@ public class JaxbHelper {
     public static <T> String marshalWithInstruction(T object, Class<T> clazz) throws JAXBException {
         String xml = marshal(object, clazz);
         int insertIndex = xml.indexOf(XmlConstants.XML_INSTRUCTION_MARKER) + 2;
-        String xmlString = xml.substring(0, insertIndex) + SeperatorConstants.LINE_BREAK + XmlConstants.PDE_VERSION_INSTRUCTION + xml.substring(insertIndex);
-        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_PREFIX, SeperatorConstants.EMPTY_STRING);
-        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_TARGET_CLONER, SeperatorConstants.EMPTY_STRING);
+        String xmlString = xml.substring(0, insertIndex) + SeparatorConstants.LINE_BREAK + XmlConstants.PDE_VERSION_INSTRUCTION + xml.substring(insertIndex);
+        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_PREFIX, SeparatorConstants.EMPTY_STRING);
+        xmlString = xmlString.replaceAll(XmlConstants.XML_NAMESPACE_TARGET_CLONER, SeparatorConstants.EMPTY_STRING);
         return xmlString;
     }
 

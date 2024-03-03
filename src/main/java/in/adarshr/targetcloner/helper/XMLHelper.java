@@ -49,15 +49,11 @@ public class XMLHelper {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xml)));
-
             doc.getDocumentElement().normalize();
-
             // Normalize the XML structure
             doc.getDocumentElement().normalize();
-
             // Here we choose to get NodeList of all "unit" elements directly
             NodeList nodeList = doc.getElementsByTagName(XmlConstants.XML_ELEMENT_UNIT);
-
             //Iterate through all "unit" elements
             int nodeListLength = nodeList.getLength();
             while (nodeListLength-- > 0) {
@@ -147,10 +143,8 @@ public class XMLHelper {
         // Get the current working directory
         String currentWorkingDir = System.getProperty(TargetClonerConstants.USER_DIRECTORY);
         String fileSep = FileSystems.getDefault().getSeparator();
-
         // Define the path to the file
         String fileLocation = currentWorkingDir + fileSep + TargetClonerConstants.OUTPUT_DIRECTORY + fileSep + fileName;
-
         // Make sure to create the directory if it doesn't exit
         Path currentOutputPath = Paths.get(currentWorkingDir + fileSep + TargetClonerConstants.OUTPUT_DIRECTORY + fileSep);
         try {

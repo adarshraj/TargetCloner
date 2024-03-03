@@ -83,4 +83,16 @@ public class TargetClonerUtil {
     private static Target apply(File file) {
         return JaxbHelper.unmarshall(file, Target.class);
     }
+
+    /**
+     * Delivery report key
+     *
+     * @param group       Group
+     * @param artifact    Artifact
+     * @param version     Version
+     * @return String
+     */
+    public static String deliveryReportKey(String group, String artifact, String version) {
+        return group+ artifact + version;
+    }
 }

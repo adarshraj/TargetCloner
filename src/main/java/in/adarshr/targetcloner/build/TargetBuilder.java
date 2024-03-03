@@ -5,13 +5,14 @@ import in.adarshr.targetcloner.bo.RepoData;
 import in.adarshr.targetcloner.bo.RepoUnit;
 import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
+import in.adarshr.targetcloner.utils.TargetClonerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static in.adarshr.targetcloner.constants.SeperatorConstants.EMPTY_STRING;
-import static in.adarshr.targetcloner.constants.SeperatorConstants.FIELD_DELIMITER_UNDERSCORE;
+import static in.adarshr.targetcloner.constants.SeparatorConstants.EMPTY_STRING;
+import static in.adarshr.targetcloner.constants.SeparatorConstants.FIELD_DELIMITER_UNDERSCORE;
 import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
 
 /**
@@ -147,7 +148,7 @@ public class TargetBuilder {
                                 .keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
                 if (repoLocation.isPresent()) {
                     RepoData repoData = componentRepoDataMap.get(inpTarget.getName()).get(repoLocation.get());
-                    DeliveryReport deliveryReport = deliveryReportMap.get(repoData.getGroup() + repoData.getArtifact());
+                    DeliveryReport deliveryReport = deliveryReportMap.get(TargetClonerUtil.deliveryReportKey(repoData.getGroup(),repoData.getArtifact(),repoData.getVersion()));
                     if (deliveryReport != null) {
                         locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
                     }
@@ -157,6 +158,12 @@ public class TargetBuilder {
         return locations;
     }
 
+    /**
+     * This method is used to filter the URL
+     *
+     * @param inpRepoLocation String
+     * @return CharSequence
+     */
     private CharSequence filterUrl(String inpRepoLocation) {
         if (inpRepoLocation.contains(CONTENT_JAR)) {
             return inpRepoLocation.replace(CONTENT_JAR, EMPTY_STRING);

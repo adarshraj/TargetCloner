@@ -54,14 +54,27 @@ public class ArgumentParser {
         }
     }
 
+    /**
+     * Get compare
+     *
+     * @return boolean
+     */
     public boolean isCompare() {
         return isCompare;
     }
 
+    /**
+     * Set compare
+     */
     private void setCompare() {
         this.isCompare = true;
     }
 
+    /**
+     * Create help
+     *
+     * @param options Options
+     */
     public void createHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("TargetCloner", options);
