@@ -131,8 +131,8 @@ public class JaxbHelper {
             //Do unmarshalling
             return (T) u.unmarshal(source);
         } catch (JAXBException | IOException | SAXException | ParserConfigurationException e) {
-            LOG.error("Failed to unmarshal input XML file: {}", e.getMessage());
-            throw new RuntimeException(e);
+            LOG.error(">>> Using alternate method since in.adarshr.targetcloner.helper.JaxbHelper.unmarshallWithoutNamespace failed to unmarshal input XML file: {}", e.getMessage());
+            return unmarshall(xmlFile, clazz);
         }
     }
 }

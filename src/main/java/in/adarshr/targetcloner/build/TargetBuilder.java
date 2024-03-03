@@ -7,6 +7,8 @@ import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
 import in.adarshr.targetcloner.utils.TargetClonerUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,6 +21,8 @@ import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
  * This class is used to build the target
  */
 public class TargetBuilder {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TargetBuilder.class);
 
     /**
      * Get target name
@@ -148,10 +152,18 @@ public class TargetBuilder {
                                 .keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
                 if (repoLocation.isPresent()) {
                     RepoData repoData = componentRepoDataMap.get(inpTarget.getName()).get(repoLocation.get());
+                    if (repoData == null) {
+                        LOG.error(">>> Repo data not found for target: {}", inpTarget.getName());
+                        continue;
+                    }
                     DeliveryReport deliveryReport = deliveryReportMap.get(TargetClonerUtil.deliveryReportKey(repoData.getGroup(),repoData.getArtifact(),repoData.getVersion()));
                     if (deliveryReport != null) {
                         locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
+                    }else{
+                        LOG.error(">>> Delivery report not found for repoData: {}", repoData);
                     }
+                }else{
+                    LOG.error(">>> Repo location not found for target: {}", inpTarget.getName());
                 }
             }
         }

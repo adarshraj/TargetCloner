@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Process the input arguments
  */
 public class ArgumentParser {
-    Logger logger = LoggerFactory.getLogger(ArgumentParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentParser.class);
     private boolean isCompare = false;
 
     public ArgumentParser(String[] arguments) {
@@ -48,7 +48,7 @@ public class ArgumentParser {
                 System.exit(0);
             }
         } catch (ParseException e) {
-            logger.error("Invalid option");
+            LOGGER.error("!!! Invalid option !!!");
             createHelp(options);
             System.exit(0);
         }

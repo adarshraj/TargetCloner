@@ -48,12 +48,15 @@ public class ReportHelper {
                 });
             }
         });
-        LOG.info("Jar urls from report: {}", jarUrls);
+        LOG.info(">>> Jar urls from report: {}", jarUrls);
         return jarUrls;
     }
 
     /**
-     * Create repo data map
+     * Create repo data map. Get delivery report for location. This method just creates a map with URL both old and new as key and
+     * RepoData as value. This is used to get the RepoData for the old url when creating the
+     * output targets. Just to make life easier. Old/Existing url is the key for the outer map and new url is
+     * the key for the inner map
      *
      * @param targetData TargetData
      * @return Map
@@ -87,7 +90,10 @@ public class ReportHelper {
     }
 
     /**
-     * Get delivery report for location
+     * Get delivery report for location. This method just creates a map with URL both old and new as key and
+     * delivery report as value. This is used to get the delivery report for the old url when creating the
+     * output targets. Just to make life easier. Old/Existing url is the key for the outer map and new url is
+     * the key for the inner map.
      *
      * @param targetData TargetData
      * @return DeliveryReport
@@ -124,7 +130,7 @@ public class ReportHelper {
     }
 
     /**
-     * Get delivery report for location
+     * Retrieves the delivery report for the location based on pattern matching
      *
      * @param inputLocation Location
      * @param targetData    TargetData
@@ -151,7 +157,7 @@ public class ReportHelper {
     }
 
     /**
-     * Get new URL for location
+     * Create the new url for the location from the pattern
      *
      * @param inputLocation  Location
      * @param deliveryReport DeliveryReport
@@ -190,7 +196,8 @@ public class ReportHelper {
     }
 
     /**
-     * Update delivery report for non report case
+     * Updates the delivery report for urls that having no corresponding entries in the report file
+     * The data from the pattern is used to create the delivery report
      *
      * @param targetData        TargetData
      * @param deliveryReportMap DeliveryReport map
@@ -263,8 +270,8 @@ public class ReportHelper {
             }
 
             if (reportFile == null) {
-                LOG.error("Report file is null/empty or cannot be read");
-                throw new RuntimeException("Report file is null/empty or cannot be read");
+                LOG.error("!!! Report file is null/empty or cannot be read. !!!" );
+                throw new RuntimeException("!!! Report file is null/empty or cannot be read !!!");
             } else {
                 for (String line : reportFile.split(SeparatorConstants.LINE_BREAK)) {
                     DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
@@ -273,7 +280,7 @@ public class ReportHelper {
             }
             return deliveryReportMap;
         } catch (IOException e) {
-            LOG.error("Failed to read file from directory: {}", e.getMessage());
+            LOG.error(">>> Failed to read file from directory: {}", e.getMessage());
             return Collections.emptyMap();
         }
     }
@@ -321,7 +328,7 @@ public class ReportHelper {
         TargetDetails targetDetails = targetData.getTargetDetails();
         if (isUrl(targetDetails.getReportLocation())) {
             if (LOG.isInfoEnabled()) {
-                LOG.info("*** Delivery Report Data from URL. ***");
+                LOG.info("!!! Delivery Report Data from URL. !!!");
             }
             String reportLocation = targetDetails.getReportLocation();
             String deliveryReportUrl = createDeliveryReportUrl(
@@ -329,7 +336,7 @@ public class ReportHelper {
             deliveryReportMap = getReportData(deliveryReportUrl, 2, ReportSource.URL.getValue());
         } else {
             if (LOG.isInfoEnabled()) {
-                LOG.info("*** Delivery Report Data from File. ***");
+                LOG.info("!!! Delivery Report Data from File. !!!");
             }
             deliveryReportMap = getReportData(targetDetails.getReportLocation(), 2, ReportSource.FILE.getValue());
         }
@@ -347,7 +354,7 @@ public class ReportHelper {
             new URL(location);
             return true;
         } catch (MalformedURLException e) {
-            LOG.error("Invalid delivery report url: {}", e.getMessage());
+            LOG.error(">>> Invalid delivery report url: {}", e.getMessage());
             return false;
         }
     }

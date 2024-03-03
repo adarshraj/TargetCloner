@@ -64,7 +64,7 @@ public class XMLHelper {
                 repoUnitList.add(repoUnit);
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOG.error("Failed to parse XML: {}. XML Content: {}", e.getMessage(), xml);
+            LOG.error(">>> Failed to parse XML: {}. XML Content: {}", e.getMessage(), xml);
         }
         return repoUnitList;
     }
@@ -108,7 +108,7 @@ public class XMLHelper {
         try {
             xml = JaxbHelper.marshalWithInstruction(target, Target.class);
         } catch (Exception e) {
-            LOG.error("Failed to create XML file: {}", e.getMessage());
+            LOG.error(">>> Failed to create XML file: {}", e.getMessage());
         }
         return xml;
     }
@@ -124,9 +124,9 @@ public class XMLHelper {
         if (LOG.isInfoEnabled()) {
             fileSaveStatus.forEach((key, value) -> {
                 if (value) {
-                    LOG.info("File created successfully: {}", key);
+                    LOG.info(">>> File created successfully: {}", key);
                 } else {
-                    LOG.error("Failed to create file: {}", key);
+                    LOG.error(">>> Failed to create file: {}", key);
                 }
             });
         }
@@ -152,10 +152,10 @@ public class XMLHelper {
                 Files.createDirectories(currentOutputPath);
             } else {
                 Files.write(Paths.get(fileLocation), content.getBytes());
-                LOG.info("File created successfully: {}", fileLocation);
+                LOG.info(">>> File created successfully: {}", fileLocation);
             }
         } catch (IOException e) {
-            LOG.error("Failed to create directory: {}", e.getMessage());
+            LOG.error(">>> Failed to create directory: {}", e.getMessage());
             return false;
         }
         return true;

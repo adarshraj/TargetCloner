@@ -17,6 +17,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
 
+import static in.adarshr.targetcloner.constants.SeparatorConstants.EMPTY_STRING;
 import static in.adarshr.targetcloner.constants.SeparatorConstants.LINE_BREAK;
 
 /**
@@ -50,12 +51,12 @@ public class ConnectionHelper {
                             );
                         }
                     } catch (IOException e) {
-                        LOG.error("Failed to read XML from JAR entry: {}", entry.getName());
+                        LOG.error(">>> Failed to read XML from JAR entry: {}", entry.getName());
                     }
                 }
             }
         } catch (IOException e) {
-            LOG.error("Failed to open or read JAR from URL: {}", jarUrl);
+            LOG.error(">>> Failed to open or read JAR from URL: {}", jarUrl);
         }
         return xmlContent.toString();
     }
@@ -73,11 +74,11 @@ public class ConnectionHelper {
                         repo -> repo,
                         repo -> {
                             try {
-                                LOG.info("Downloading JAR from URL: {}", repo.getLocation());
+                                LOG.info(">>> Downloading JAR from URL: {}", repo.getLocation());
                                 return downloadJar(repo.getLocation());
                             } catch (IOException e) {
-                                LOG.error("Failed to download JAR from URL: {}", repo.getLocation());
-                                return "";
+                                LOG.error(">>> Failed to download JAR from URL: {}", repo.getLocation());
+                                return EMPTY_STRING;
                             }
                         },
                         (value1, value2) -> value1 // Merge function for handling key collision

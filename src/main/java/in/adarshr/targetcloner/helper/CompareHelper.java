@@ -51,7 +51,7 @@ public class CompareHelper {
                                         if (inputLocation.getUnit().size() == createdLocation.getUnit().size()) {
                                             for (int i = 0; i < inputLocation.getUnit().size(); i++) {
                                                 if (createdLocation.getUnit().get(i).getId().contains(createdLocation.getUnit().get(i).getId())) {
-                                                    LOG.info("Unit id and size is same");
+                                                    LOG.info("!!! Unit id and size is same !!!");
                                                 }
                                             }
                                         }

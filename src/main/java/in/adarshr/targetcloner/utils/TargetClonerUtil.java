@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -81,7 +82,7 @@ public class TargetClonerUtil {
      * @return the unmarshalled object
      */
     private static Target apply(File file) {
-        return JaxbHelper.unmarshall(file, Target.class);
+        return JaxbHelper.unmarshallWithoutNamespace(file, Target.class);
     }
 
     /**
@@ -94,5 +95,17 @@ public class TargetClonerUtil {
      */
     public static String deliveryReportKey(String group, String artifact, String version) {
         return group+ artifact + version;
+    }
+
+    public static void printBanner() {
+        String fileName = "banner.txt";
+        try {
+            Path path = Paths.get(Objects.requireNonNull(TargetClonerUtil.class.getClassLoader().getResource(fileName)).toURI());
+            try (Stream<String> lines = Files.lines(path)) {
+                lines.forEach(System.out::println);
+            }
+        } catch (Exception e) {
+            LOG.error("Failed to print banner: {}", e.getMessage());
+        }
     }
 }

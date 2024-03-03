@@ -25,7 +25,8 @@ public class TargetCloner {
     private static int step = 1;
 
     public static void main(String[] args) {
-        LOG.info("*** Starting TargetCloner application. ***");
+        TargetClonerUtil.printBanner();
+        LOG.info("!!! Starting TargetCloner application. !!!");
         ArgumentParser argumentParser = new ArgumentParser(args);
         // Set global exception handler
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> LOG.error("Global exception handler caught: ", exception));
@@ -73,7 +74,7 @@ public class TargetCloner {
                 LOG.info("*** Step {} ***  Repo Jar Urls parsing completed. ***", stepCount());
 
                 if (targetData.getRepoUnitsMap().isEmpty()) {
-                    LOG.error("*** Error *** No XML files found in the jar. Exiting the application. ***");
+                    LOG.error("!!! Error. No XML files found in the jar. Exiting the application. !!!");
                     return;
                 }
 
@@ -95,15 +96,20 @@ public class TargetCloner {
                     CompareHelper.compareTargetFiles(stringTargetMap, targets, targetData);
                     LOG.info("*** Step {} ***  Target files are compared. ***", stepCount());
                 }
-                LOG.info("*** All tasks completed. ***");
+                LOG.info("!!! All tasks completed. !!!");
             } else {
-                LOG.error("*** No target files found to copy. Exiting the application. ***");
+                LOG.error("!!! No target files found to copy. Exiting the application. !!!");
             }
         } else {
-            LOG.error("*** Unable to parse input XML file. Exiting the application. ***");
+            LOG.error("!!! Unable to parse input XML file. Exiting the application. !!!");
         }
     }
 
+    /**
+     * Method to count the steps
+     *
+     * @return int
+     */
     private static int stepCount() {
         return step++;
     }
