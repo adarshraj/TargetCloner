@@ -79,8 +79,12 @@ public class ReportHelper {
                             if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
                                 repoData = createRepoData(deliveryReport, inputLocation, entry.getKey());
                                 repoDataMap.put(inputLocation.getRepository().getLocation(), repoData);
+                                LOG.info(">>> RepoData created for location: {}", inputLocation.getRepository().getLocation());
+                                LOG.info(">>> RepoData: {}", repoData);
                             }
                         }
+                    }else{
+                        LOG.error(">>> No delivery report found for location: {}", inputLocation.getRepository().getLocation());
                     }
                 }
             }
