@@ -146,10 +146,10 @@ public class TargetBuilder {
             List<Location> inputLocations = inpTarget.getLocations().getLocation();
             Map<String, Map<String, RepoData>> componentRepoDataMap = targetData.getComponentRepoDataMap();
             for (Location inpLocation : inputLocations) {
-                String inpRepoLocation = inpLocation.getRepository().getLocation();
+                String inputLocationUrl = inpLocation.getRepository().getLocation();
                 Optional<String> repoLocation =
                         componentRepoDataMap.get(inpTarget.getName())
-                                .keySet().stream().filter(repoUrl -> filterUrl(inpRepoLocation).equals(repoUrl)).findFirst();
+                                .keySet().stream().filter(oldLocationUrl -> filterUrl(inputLocationUrl).equals(oldLocationUrl)).findFirst();
                 if (repoLocation.isPresent()) {
                     RepoData repoData = componentRepoDataMap.get(inpTarget.getName()).get(repoLocation.get());
                     if (repoData == null) {

@@ -55,7 +55,7 @@ public class ReportHelper {
     /**
      * Create repo data map. Get delivery report for location. This method just creates a map with URL both old and new as key and
      * RepoData as value. This is used to get the RepoData for the old url when creating the
-     * output targets. Just to make life easier. Old/Existing url is the key for the outer map and new url is
+     * output targets. Just to make life easier. Target name is the key for the outer map and new url is
      * the key for the inner map
      *
      * @param targetData TargetData
@@ -72,7 +72,8 @@ public class ReportHelper {
                 List<Location> inputLocations = inputTarget.getLocations().getLocation();
                 RepoData repoData;
                 for (Location inputLocation : inputLocations) {
-                    Map<String, DeliveryReport> newUrlDeliveryReportMap = mapOfDeliveryReportForInputTargets.get(inputLocation.getRepository().getLocation());
+                    Map<String, DeliveryReport> newUrlDeliveryReportMap =
+                            mapOfDeliveryReportForInputTargets.get(inputLocation.getRepository().getLocation());
                     if (newUrlDeliveryReportMap != null && !newUrlDeliveryReportMap.isEmpty()) {
                         for (Map.Entry<String, DeliveryReport> entry : newUrlDeliveryReportMap.entrySet()) {
                             DeliveryReport deliveryReport = entry.getValue();
@@ -84,7 +85,7 @@ public class ReportHelper {
                             }
                         }
                     }else{
-                        LOG.error(">>> No location delivery : {}", inputLocation.getRepository().getLocation());
+                        LOG.error(">>> No delivery report found for input location : {}", inputLocation.getRepository().getLocation());
                     }
                 }
             }
@@ -113,18 +114,17 @@ public class ReportHelper {
                     if (inputTarget.getLocations() != null
                             && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
                         for (Location inputLocation : inputTarget.getLocations().getLocation()) {
-                            String currentUrl = inputLocation.getRepository().getLocation();
-                            if (!targetDeliveryReportMap.containsKey(currentUrl)) {
+                            String inputLocationUrl = inputLocation.getRepository().getLocation();
+                            if (!targetDeliveryReportMap.containsKey(inputLocationUrl)) {
                                 deliveryReport = getDeliveryReportForLocation(inputLocation, deliveryReport, targetData);
                                 if (deliveryReport != null) {
-                                    String newUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
-                                    if (StringUtils.isNotEmpty(currentUrl) && StringUtils.isNotEmpty(newUrl)) {
+                                    String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
+                                    if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
                                         Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
-                                        targetDeliveryReport.put(newUrl, deliveryReport);
-                                        targetDeliveryReportMap.put(currentUrl, targetDeliveryReport);
+                                        targetDeliveryReport.put(newLocationUrl, deliveryReport);
+                                        LOG.info(">>> Delivery report created for location: {}:{}", inputLocationUrl, deliveryReport);
+                                        targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
                                     }
-                                }else{
-                                    //LOG.error(">>> No delivery report found for location: ReportHelper.createDeliveryReportForInputTargets {}", currentUrl);
                                 }
                             }
                         }
@@ -153,10 +153,13 @@ public class ReportHelper {
                 LOG.info(">>> Artifact: {}", artifact);
                 if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
-                        LOG.info(">>> Delivery report found for pattern: {}", inputLocationUrl);
+                        LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
-                    }else if(!deliveryReport.isExternalEntry() &&  StringUtils.isEmpty(pattern.getVersion())){
-                        LOG.info(">>> Delivery report found for location: {}", inputLocationUrl);
+                    }else if(!deliveryReport.isExternalEntry() &&  (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))){
+                        LOG.info(">>> Condition 2 for delivery report {}", inputLocationUrl);
+                        return deliveryReport;
+                    }else if(!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(pattern.getVersion()))){
+                        LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
                     }
                 }
@@ -176,17 +179,18 @@ public class ReportHelper {
      */
     private static String getNewUrlForLocation(Location inputLocation, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
-        String repoUrl = inputLocation.getRepository().getLocation();
+        String inputLocationUrl = inputLocation.getRepository().getLocation();
         for (Pattern pattern : patterns) {
             String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
             String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
             String version = formatDeliveryData(deliveryReport.getVersion(), pattern.getCurrentVersionUrlPattern(), pattern.getFutureVersionUrlPattern());
-            if (repoUrl.contains(group) && repoUrl.contains(artifact)) {
+            if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                 return pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group)
                         .replace(PLACEHOLDER_ARTIFACT, artifact)
                         .replace(PLACEHOLDER_VERSION, version);
             }
         }
+        LOG.error(">> No new url created for location: {}", inputLocationUrl);
         return StringUtils.EMPTY;
     }
 
@@ -218,7 +222,8 @@ public class ReportHelper {
             if (!pattern.isUseDeliveryReport()) {
                 DeliveryReport deliveryReport =
                         new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null, true, pattern.getComponent());
-                    deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
+                    deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(
+                            deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
             }
         }
         return deliveryReportMap;
