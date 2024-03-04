@@ -124,7 +124,7 @@ public class ReportHelper {
                                         targetDeliveryReportMap.put(currentUrl, targetDeliveryReport);
                                     }
                                 }else{
-                                    LOG.error(">>> No delivery report found for location: ReportHelper.createDeliveryReportForInputTargets {}", currentUrl);
+                                    //LOG.error(">>> No delivery report found for location: ReportHelper.createDeliveryReportForInputTargets {}", currentUrl);
                                 }
                             }
                         }
@@ -148,7 +148,9 @@ public class ReportHelper {
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
+                LOG.info(">>> Group: {}", group);
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
+                LOG.info(">>> Artifact: {}", artifact);
                 if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
                         LOG.info(">>> Delivery report found for pattern: {}", inputLocationUrl);
