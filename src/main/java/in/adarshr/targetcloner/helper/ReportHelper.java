@@ -275,7 +275,8 @@ public class ReportHelper {
             } else {
                 for (String line : reportFile.split(SeparatorConstants.LINE_BREAK)) {
                     DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
-                    deliveryReportMap.put(deliveryReport.getGroup() + deliveryReport.getArtifact(), deliveryReport);
+                    deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(),
+                            deliveryReport.getArtifact(),deliveryReport.getVersion()), deliveryReport);
                 }
             }
             return deliveryReportMap;
