@@ -78,13 +78,13 @@ public class ReportHelper {
                             DeliveryReport deliveryReport = entry.getValue();
                             if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
                                 repoData = createRepoData(deliveryReport, inputLocation, entry.getKey());
-                                repoDataMap.put(inputLocation.getRepository().getLocation(), repoData);
+                                repoDataMap.put(inputLocation.getRepository().getLocation(), repoData); //input url as key
                                 LOG.info(">>> RepoData created for location: {}", inputLocation.getRepository().getLocation());
                                 LOG.info(">>> RepoData: {}", repoData);
                             }
                         }
                     }else{
-                        LOG.error(">>> No delivery report found for location: {}", inputLocation.getRepository().getLocation());
+                        LOG.error(">>> No location delivery : {}", inputLocation.getRepository().getLocation());
                     }
                 }
             }
@@ -123,6 +123,8 @@ public class ReportHelper {
                                         targetDeliveryReport.put(newUrl, deliveryReport);
                                         targetDeliveryReportMap.put(currentUrl, targetDeliveryReport);
                                     }
+                                }else{
+                                    LOG.error(">>> No delivery report found for location: ReportHelper.createDeliveryReportForInputTargets {}", currentUrl);
                                 }
                             }
                         }
@@ -142,15 +144,17 @@ public class ReportHelper {
      */
     private static DeliveryReport getDeliveryReportForLocation(Location inputLocation, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
-        String repoUrl = inputLocation.getRepository().getLocation();
+        String inputLocationUrl = inputLocation.getRepository().getLocation();
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                if (repoUrl.contains(group) && repoUrl.contains(artifact)) {
+                if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
+                        LOG.info(">>> Delivery report found for pattern: {}", inputLocationUrl);
                         return deliveryReport;
                     }else if(!deliveryReport.isExternalEntry() &&  StringUtils.isEmpty(pattern.getVersion())){
+                        LOG.info(">>> Delivery report found for location: {}", inputLocationUrl);
                         return deliveryReport;
                     }
                 }
@@ -281,6 +285,7 @@ public class ReportHelper {
                     DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
                     deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(),
                             deliveryReport.getArtifact(),deliveryReport.getVersion()), deliveryReport);
+                    LOG.info(">>> Delivery report: {}", deliveryReport);
                 }
             }
             return deliveryReportMap;
