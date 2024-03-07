@@ -146,9 +146,9 @@ public class ReportHelper {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                if (inputLocationUrl.contains(group)) {
+                if (StringUtils.contains(inputLocationUrl, group)) {
                     LOG.info(">>> INSIDE GROUP: {} {} {} {}", group, artifact, inputLocationUrl);
-                    if (inputLocationUrl.contains(artifact)) {
+                    if (StringUtils.contains(inputLocationUrl, artifact)) {
                         LOG.info(">>> INSIDE ARTIFACT: {} {} {} {}", group, artifact, inputLocationUrl);
                         if (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())) {
                             LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
