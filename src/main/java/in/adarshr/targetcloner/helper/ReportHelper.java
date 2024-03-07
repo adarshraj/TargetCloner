@@ -158,6 +158,10 @@ public class ReportHelper {
                         LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
                     }
+                }else{
+                    boolean value = inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact);
+                    LOG.error(">>> No delivery report found for location: {} {} {} {}", value,group, artifact, inputLocationUrl);
+
                 }
             }
         }
