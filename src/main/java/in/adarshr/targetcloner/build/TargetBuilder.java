@@ -160,10 +160,10 @@ public class TargetBuilder {
                     if (deliveryReport != null) {
                         locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
                     }else{
-                        LOG.error(">>> Delivery report not found for repoData: {}", repoData);
+                       // LOG.error(">>> Delivery report not found for repoData: {}", repoData);
                     }
                 }else{
-                    LOG.error(">>> Repo location not found for target: {}", inpTarget.getName());
+                    //LOG.error(">>> Repo location not found for target: {}", inpTarget.getName());
                 }
             }
         }

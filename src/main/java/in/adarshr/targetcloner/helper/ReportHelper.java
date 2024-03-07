@@ -115,7 +115,7 @@ public class ReportHelper {
                             && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
                         for (Location inputLocation : inputTarget.getLocations().getLocation()) {
                             String inputLocationUrl = inputLocation.getRepository().getLocation();
-                                deliveryReport = getDeliveryReportForLocation(inputLocation, deliveryReport, targetData);
+                                deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
                                 if (deliveryReport != null) {
                                     String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
                                     if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
@@ -136,18 +136,18 @@ public class ReportHelper {
     /**
      * Retrieves the delivery report for the location based on pattern matching
      *
-     * @param inputLocation Location
+     * @param inputLocationUrl String
      * @param targetData    TargetData
      * @return DeliveryReport
      */
-    private static DeliveryReport getDeliveryReportForLocation(Location inputLocation, DeliveryReport deliveryReport, TargetData targetData) {
+    private static DeliveryReport getDeliveryReportForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
-        String inputLocationUrl = inputLocation.getRepository().getLocation();
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
                 if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
+                    LOG.info(">>> INSIDE: {} {} {} {}", group, artifact, inputLocationUrl);
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
                         LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
