@@ -146,23 +146,26 @@ public class ReportHelper {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
-                    LOG.info(">>> INSIDE: {} {} {} {}", group, artifact, inputLocationUrl);
-                    if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
-                        LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
-                        return deliveryReport;
-                    }else if(!deliveryReport.isExternalEntry() &&  (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))){
-                        LOG.info(">>> Condition 2 for delivery report {}", inputLocationUrl);
-                        return deliveryReport;
-                    }else if(!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))){
-                        LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
-                        return deliveryReport;
-                    }else{
-                        LOG.error(">>> NO CONDITION SATISIFIED", inputLocationUrl);
+                if (inputLocationUrl.contains(group)) {
+                    LOG.info(">>> INSIDE GROUP: {} {} {} {}", group, artifact, inputLocationUrl);
+                    if (inputLocationUrl.contains(artifact)) {
+                        LOG.info(">>> INSIDE ARTIFACT: {} {} {} {}", group, artifact, inputLocationUrl);
+                        if (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())) {
+                            LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
+                            return deliveryReport;
+                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))) {
+                            LOG.info(">>> Condition 2 for delivery report {}", inputLocationUrl);
+                            return deliveryReport;
+                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))) {
+                            LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
+                            return deliveryReport;
+                        } else {
+                            LOG.error(">>> NO CONDITION SATISIFIED", inputLocationUrl);
+                        }
                     }
                 }else{
                     boolean value = inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact);
-                    LOG.error(">>> FALSIFIED: {} {} {} {}", value,group, artifact, inputLocationUrl);
+                    //LOG.error(">>> FALSIFIED: {} {} {} {}", value,group, artifact, inputLocationUrl);
 
                 }
             }
@@ -297,6 +300,7 @@ public class ReportHelper {
                     LOG.info(">>> Delivery report: {}", deliveryReport);
                 }
             }
+            LOG.info(">>> Count of Delivery report map: {}", deliveryReportMap.size());
             return deliveryReportMap;
         } catch (IOException e) {
             LOG.error(">>> Failed to read file from directory: {}", e.getMessage());
