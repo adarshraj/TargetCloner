@@ -107,14 +107,14 @@ public class ReportHelper {
         List<Target> inputTargets = targetData.getInputTargets();
         Map<String, DeliveryReport> deliveryReportMap = targetData.getDeliveryReportMap();
         Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap = new HashMap<>();
-        for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
-            DeliveryReport deliveryReport = entry.getValue();
-            for (Target inputTarget : inputTargets) {
-                List<Location> inputLocations = inputTarget.getLocations().getLocation();
-                LOG.info(">>> For DeliveryReport: {}", deliveryReport);
-                for (Location inputLocation : inputLocations) {
-                    String inputLocationUrl = inputLocation.getRepository().getLocation();
-                    LOG.info(">>> Input location url: {} ", inputLocationUrl);
+
+        for (Target inputTarget : inputTargets) {
+            List<Location> inputLocations = inputTarget.getLocations().getLocation();
+            for (Location inputLocation : inputLocations) {
+                String inputLocationUrl = inputLocation.getRepository().getLocation();
+                LOG.info(">>> Input location url: {} ", inputLocationUrl);
+                for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
+                    DeliveryReport deliveryReport = entry.getValue();
                     deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
                     if (deliveryReport != null) {
                         String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
@@ -127,6 +127,7 @@ public class ReportHelper {
                         }
                     }
                 }
+
             }
         }
         return targetDeliveryReportMap;
