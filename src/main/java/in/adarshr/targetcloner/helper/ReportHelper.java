@@ -157,10 +157,12 @@ public class ReportHelper {
                     }else if(!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))){
                         LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
+                    }else{
+                        LOG.error(">>> NO CONDITION SATISIFIED", inputLocationUrl);
                     }
                 }else{
                     boolean value = inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact);
-                    LOG.error(">>> No delivery report found for location: {} {} {} {}", value,group, artifact, inputLocationUrl);
+                    LOG.error(">>> FALSIFIED: {} {} {} {}", value,group, artifact, inputLocationUrl);
 
                 }
             }
