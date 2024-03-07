@@ -8,6 +8,8 @@ import jakarta.xml.bind.JAXBException;
 import org.xml.sax.SAXException;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,6 +109,22 @@ public class TargetClonerUtil {
             }
         } catch (Exception e) {
             LOG.error(">>> Failed to print banner: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Check if the location is URL
+     *
+     * @param location Location
+     * @return boolean
+     */
+    public static boolean isUrl(String location) {
+        try {
+            new URL(location);
+            return true;
+        } catch (MalformedURLException e) {
+            LOG.error(">>> Invalid delivery report url: {}", e.getMessage());
+            return false;
         }
     }
 }

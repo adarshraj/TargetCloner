@@ -52,7 +52,7 @@ public class TargetCloner {
                 targetData.setInputTargets(targets);
 
                 //Delivery report data
-                targetData.setDeliveryReportMap(ReportHelper.getReportData(targetData));
+                targetData.setDeliveryReportMap(ReportHelper.getDeliveryReport(targetData));
                 LOG.info("*** Step {} *** Delivery report data obtained ***", stepCount());
 
                 //Get repository jar urls

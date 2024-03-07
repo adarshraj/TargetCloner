@@ -24,7 +24,6 @@ public class DeliveryReport {
     private String classifier;
     private String extension;
     private boolean externalEntry;
-    private String component;
 
     /**
      * Create a report object from a delimited string
@@ -37,10 +36,10 @@ public class DeliveryReport {
         String[] parts = currentLine.split(delimiter);
         parts = Arrays.stream(parts).map(String::trim).toArray(String[]::new);
         if (parts.length < 4) {
-            LOG.error("Insufficient fields to create a Report object");
-            throw new IllegalArgumentException("Insufficient fields to create a Report object");
+            LOG.error("!!! Insufficient fields to create a Report object !!!");
+            throw new IllegalArgumentException("!!! Insufficient fields to create a Report object !!!");
         }
-        return new DeliveryReport(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], false, null);
+        return new DeliveryReport(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], false);
     }
 
     @Override
@@ -49,16 +48,17 @@ public class DeliveryReport {
         if (o == null || getClass() != o.getClass()) return false;
         DeliveryReport deliveryReport = (DeliveryReport) o;
         return group.equals(deliveryReport.group) &&
-                artifact.equals(deliveryReport.artifact);
+                artifact.equals(deliveryReport.artifact) &&
+                version.equals(deliveryReport.version);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(group, artifact);
+        return Objects.hash(group, artifact, version);
     }
 
     @Override
     public String toString() {
-        return "Report: " + group + ":" + artifact;
+        return "Report: " + group + ":" + artifact + ":" + version;
     }
 }

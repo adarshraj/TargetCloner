@@ -115,7 +115,7 @@ public class ReportHelper {
                             && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
                         for (Location inputLocation : inputTarget.getLocations().getLocation()) {
                             String inputLocationUrl = inputLocation.getRepository().getLocation();
-                            if (!targetDeliveryReportMap.containsKey(inputLocationUrl)) {
+                            //if (!targetDeliveryReportMap.containsKey(inputLocationUrl)) {
                                 deliveryReport = getDeliveryReportForLocation(inputLocation, deliveryReport, targetData);
                                 if (deliveryReport != null) {
                                     String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
@@ -126,7 +126,7 @@ public class ReportHelper {
                                         targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
                                     }
                                 }
-                            }
+                           // }
                         }
                     }
                 }
@@ -148,9 +148,9 @@ public class ReportHelper {
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
-                LOG.info(">>> Group: {}", group);
+                //LOG.info(">>> Group: {}", group);
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                LOG.info(">>> Artifact: {}", artifact);
+                //LOG.info(">>> Artifact: {}", artifact);
                 if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
                         LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
@@ -221,7 +221,7 @@ public class ReportHelper {
         for (Pattern pattern : patterns) {
             if (!pattern.isUseDeliveryReport()) {
                 DeliveryReport deliveryReport =
-                        new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null, true, pattern.getComponent());
+                        new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null, true);
                     deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(
                             deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
             }
@@ -274,7 +274,7 @@ public class ReportHelper {
      * @param linesToSkip        Lines to skip
      * @return Map of DeliveryReport
      */
-    public static Map<String, DeliveryReport> getReportData(String reportFileLocation, int linesToSkip, int sourceType) {
+    public static Map<String, DeliveryReport> getDeliveryReport(String reportFileLocation, int linesToSkip, int sourceType) {
         Map<String, DeliveryReport> deliveryReportMap = new HashMap<>();
         try {
             String reportFile;
@@ -338,43 +338,28 @@ public class ReportHelper {
      * Get report data
      *
      * @param targetData TargetData
-     * @return Set
+     * @return Map of DeliveryReport with groupId+artifactId+version as key
      */
-    public static Map<String, DeliveryReport> getReportData(TargetData targetData) {
+    public static Map<String, DeliveryReport> getDeliveryReport(TargetData targetData) {
         Map<String, DeliveryReport> deliveryReportMap;
         TargetDetails targetDetails = targetData.getTargetDetails();
-        if (isUrl(targetDetails.getReportLocation())) {
+        if (TargetClonerUtil.isUrl(targetDetails.getReportLocation())) {
             if (LOG.isInfoEnabled()) {
                 LOG.info("!!! Delivery Report Data from URL. !!!");
             }
             String reportLocation = targetDetails.getReportLocation();
-            String deliveryReportUrl = createDeliveryReportUrl(
-                    reportLocation, targetDetails.getVersion());
-            deliveryReportMap = getReportData(deliveryReportUrl, 2, ReportSource.URL.getValue());
+            String deliveryReportUrl = createDeliveryReportUrl(reportLocation, targetDetails.getVersion());
+            deliveryReportMap = getDeliveryReport(deliveryReportUrl, 2, ReportSource.URL.getValue());
         } else {
             if (LOG.isInfoEnabled()) {
                 LOG.info("!!! Delivery Report Data from File. !!!");
             }
-            deliveryReportMap = getReportData(targetDetails.getReportLocation(), 2, ReportSource.FILE.getValue());
+            deliveryReportMap = getDeliveryReport(targetDetails.getReportLocation(), 2, ReportSource.FILE.getValue());
         }
         return updateDeliveryReportForNonReportCase(targetData, deliveryReportMap);
     }
 
-    /**
-     * Check if the location is URL
-     *
-     * @param location Location
-     * @return boolean
-     */
-    private static boolean isUrl(String location) {
-        try {
-            new URL(location);
-            return true;
-        } catch (MalformedURLException e) {
-            LOG.error(">>> Invalid delivery report url: {}", e.getMessage());
-            return false;
-        }
-    }
+
 
     /**
      * Create delivery report URL
