@@ -159,11 +159,7 @@ public class TargetBuilder {
                     DeliveryReport deliveryReport = deliveryReportMap.get(TargetClonerUtil.deliveryReportKey(repoData.getGroup(),repoData.getArtifact(),repoData.getVersion()));
                     if (deliveryReport != null) {
                         locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
-                    }else{
-                       // LOG.error(">>> Delivery report not found for repoData: {}", repoData);
                     }
-                }else{
-                    //LOG.error(">>> Repo location not found for target: {}", inpTarget.getName());
                 }
             }
         }
