@@ -115,7 +115,6 @@ public class ReportHelper {
                             && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
                         for (Location inputLocation : inputTarget.getLocations().getLocation()) {
                             String inputLocationUrl = inputLocation.getRepository().getLocation();
-                            //if (!targetDeliveryReportMap.containsKey(inputLocationUrl)) {
                                 deliveryReport = getDeliveryReportForLocation(inputLocation, deliveryReport, targetData);
                                 if (deliveryReport != null) {
                                     String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
@@ -126,7 +125,6 @@ public class ReportHelper {
                                         targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
                                     }
                                 }
-                           // }
                         }
                     }
                 }
@@ -148,9 +146,7 @@ public class ReportHelper {
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
-                //LOG.info(">>> Group: {}", group);
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                //LOG.info(">>> Artifact: {}", artifact);
                 if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                     if(deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())){
                         LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
@@ -158,7 +154,7 @@ public class ReportHelper {
                     }else if(!deliveryReport.isExternalEntry() &&  (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))){
                         LOG.info(">>> Condition 2 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
-                    }else if(!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(pattern.getVersion()))){
+                    }else if(!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))){
                         LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
                         return deliveryReport;
                     }
