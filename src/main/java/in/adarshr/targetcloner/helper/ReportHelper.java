@@ -111,12 +111,14 @@ public class ReportHelper {
             DeliveryReport deliveryReport = entry.getValue();
             for (Target inputTarget : inputTargets) {
                 List<Location> inputLocations = inputTarget.getLocations().getLocation();
-                LOG.info(">>> Input locations size for: {} {}", inputLocations.size(),inputTarget.getName());
+                LOG.info(">>> For DeliveryReport: {}", deliveryReport);
                 for (Location inputLocation : inputLocations) {
                     String inputLocationUrl = inputLocation.getRepository().getLocation();
+                    LOG.info(">>> Input location url: {} ", inputLocationUrl);
                     deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
                     if (deliveryReport != null) {
                         String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
+                        LOG.info(">>> New location url: {} ", newLocationUrl);
                         if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
                             Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
                             targetDeliveryReport.put(newLocationUrl, deliveryReport);
@@ -286,7 +288,7 @@ public class ReportHelper {
                     DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
                     deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(),
                             deliveryReport.getArtifact(),deliveryReport.getVersion()), deliveryReport);
-                    LOG.info(">>> Delivery report: {}", deliveryReport);
+                    //LOG.info(">>> Delivery report: {}", deliveryReport);
                 }
             }
             LOG.info(">>> Count of Delivery report map: {}", deliveryReportMap.size());
