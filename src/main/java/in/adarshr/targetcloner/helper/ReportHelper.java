@@ -109,22 +109,19 @@ public class ReportHelper {
         Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap = new HashMap<>();
         for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
             DeliveryReport deliveryReport = entry.getValue();
-            if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
-                for (Target inputTarget : inputTargets) {
-                    if (inputTarget.getLocations() != null
-                            && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
-                        for (Location inputLocation : inputTarget.getLocations().getLocation()) {
-                            String inputLocationUrl = inputLocation.getRepository().getLocation();
-                                deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
-                                if (deliveryReport != null) {
-                                    String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
-                                    if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
-                                        Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
-                                        targetDeliveryReport.put(newLocationUrl, deliveryReport);
-                                        LOG.info(">>> Delivery report created for location: {}:{}", inputLocationUrl, deliveryReport);
-                                        targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
-                                    }
-                                }
+            for (Target inputTarget : inputTargets) {
+                List<Location> inputLocations = inputTarget.getLocations().getLocation();
+                LOG.info(">>> Input locations size for: {} {}", inputLocations.size(),inputTarget.getName());
+                for (Location inputLocation : inputLocations) {
+                    String inputLocationUrl = inputLocation.getRepository().getLocation();
+                    deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
+                    if (deliveryReport != null) {
+                        String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
+                        if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
+                            Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
+                            targetDeliveryReport.put(newLocationUrl, deliveryReport);
+                            LOG.info(">>> Delivery report created for location: {}:{}", inputLocationUrl, deliveryReport);
+                            targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
                         }
                     }
                 }
@@ -146,28 +143,19 @@ public class ReportHelper {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                LOG.info("&&& Checking for group: {} artifact: {} in location: {}", group, artifact, inputLocationUrl);
+                LOG.info(">>> Checking for group: {} artifact: {} in location: {}", group, artifact, inputLocationUrl);
                 if (StringUtils.contains(inputLocationUrl, group)) {
-                    LOG.info(">>> INSIDE GROUP: {} {} {} {}", group, artifact, inputLocationUrl);
                     if (StringUtils.contains(inputLocationUrl, artifact)) {
-                        LOG.info(">>> INSIDE ARTIFACT: {} {} {} {}", group, artifact, inputLocationUrl);
                         if (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())) {
-                            LOG.info(">>> Condition 1 for delivery report {}", inputLocationUrl);
                             return deliveryReport;
                         } else if (!deliveryReport.isExternalEntry() && (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))) {
-                            LOG.info(">>> Condition 2 for delivery report {}", inputLocationUrl);
                             return deliveryReport;
                         } else if (!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))) {
-                            LOG.info(">>> Condition 3 for delivery report {}", inputLocationUrl);
                             return deliveryReport;
-                        } else {
-                            LOG.error(">>> NO CONDITION SATISIFIED", inputLocationUrl);
+                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))) {
+                            return deliveryReport;
                         }
                     }
-                }else{
-                    boolean value = inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact);
-                    //LOG.error(">>> FALSIFIED: {} {} {} {}", value,group, artifact, inputLocationUrl);
-
                 }
             }
         }
