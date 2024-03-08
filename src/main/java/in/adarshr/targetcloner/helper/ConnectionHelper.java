@@ -24,7 +24,11 @@ import static in.adarshr.targetcloner.constants.SeparatorConstants.LINE_BREAK;
  * This class provides utility methods for downloading JARs and extracting XMLs from them.
  */
 public class ConnectionHelper {
+
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelper.class);
+
+    private ConnectionHelper() {
+    }
 
     /**
      * Downloads the JAR from the given URL and returns the content of the XML file inside the JAR.

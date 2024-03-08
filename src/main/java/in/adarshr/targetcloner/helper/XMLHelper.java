@@ -31,7 +31,11 @@ import java.util.stream.Collectors;
  * This class contains the methods to parse the jar XML and other XML related operations
  */
 public class XMLHelper {
+
     private static final Logger LOG = LoggerFactory.getLogger(XMLHelper.class);
+
+    private XMLHelper() {
+    }
 
     /**
      * Parse content.xml to get the list of units
@@ -47,6 +51,11 @@ public class XMLHelper {
         List<RepoUnit> repoUnitList = new ArrayList<>();
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // These settings help protect against XXE attacks
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(xml)));
             doc.getDocumentElement().normalize();
@@ -60,7 +69,6 @@ public class XMLHelper {
                 Element element = (Element) nodeList.item(nodeListLength);
                 // Getting attributes of 'repoUnit' element
                 RepoUnit repoUnit = getUnit(element);
-                //LOG.info("RepoUnit: {}", repoUnit);
                 repoUnitList.add(repoUnit);
             }
         } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -123,7 +131,7 @@ public class XMLHelper {
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> saveToFile(createXmlFile(entry.getValue()), entry.getKey())));
         if (LOG.isInfoEnabled()) {
             fileSaveStatus.forEach((key, value) -> {
-                if (value) {
+                if (Boolean.TRUE.equals(value)) {
                     LOG.info(">>> Target created successfully: {}", key);
                 } else {
                     LOG.error(">>> Failed to create target: {}", key);

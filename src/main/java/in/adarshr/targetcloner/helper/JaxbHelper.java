@@ -23,13 +23,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_PACKAGE;
+import static in.adarshr.targetcloner.constants.TargetClonerConstants.JAXB_SCHEMA;
 
 /**
  * This class provides utility methods for JAXB operations.
  */
 public class JaxbHelper {
+
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JaxbHelper.class);
+
+    private JaxbHelper() {
+    }
 
     /**
      * Marshals the given object to XML.
@@ -81,7 +86,8 @@ public class JaxbHelper {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             return clazz.cast(jaxbUnmarshaller.unmarshal(xmlFile));
         } catch (JAXBException e) {
-            throw new RuntimeException(e);
+            LOG.error(">>> Failed to unmarshal input XML file: {}", e.getMessage());
+            return null;
         }
     }
 

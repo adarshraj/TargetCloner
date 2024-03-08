@@ -8,13 +8,11 @@ import in.adarshr.targetcloner.constants.SeparatorConstants;
 import in.adarshr.targetcloner.data.*;
 import in.adarshr.targetcloner.dto.TargetData;
 import in.adarshr.targetcloner.utils.TargetClonerUtil;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.*;
@@ -24,6 +22,9 @@ import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
 
 public class ReportHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ReportHelper.class);
+
+    private ReportHelper() {
+    }
 
     /**
      * Get jar urls
@@ -48,7 +49,7 @@ public class ReportHelper {
                 });
             }
         });
-        LOG.info(">>> Jar urls from report: {}", jarUrls);
+        LOG.info(">>> Repos to be used to create urls: {}", jarUrls);
         return jarUrls;
     }
 
@@ -67,23 +68,22 @@ public class ReportHelper {
         List<Target> inputTargets = targetData.getInputTargets();
         for (Target inputTarget : inputTargets) {
             Map<String, RepoData> repoDataMap = new HashMap<>();
-            if (inputTarget.getLocations() != null
-                    && CollectionUtils.isNotEmpty(inputTarget.getLocations().getLocation())) {
-                List<Location> inputLocations = inputTarget.getLocations().getLocation();
-                RepoData repoData;
-                for (Location inputLocation : inputLocations) {
-                    Map<String, DeliveryReport> newUrlDeliveryReportMap =
-                            mapOfDeliveryReportForInputTargets.get(inputLocation.getRepository().getLocation());
-                    if (newUrlDeliveryReportMap != null && !newUrlDeliveryReportMap.isEmpty()) {
-                        for (Map.Entry<String, DeliveryReport> entry : newUrlDeliveryReportMap.entrySet()) {
-                            DeliveryReport deliveryReport = entry.getValue();
-                            if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
-                                repoData = createRepoData(deliveryReport, inputLocation, entry.getKey());
-                                repoDataMap.put(inputLocation.getRepository().getLocation(), repoData); //input url as key
-                            }
+            List<Location> inputLocations = inputTarget.getLocations().getLocation();
+            RepoData repoData;
+            for (Location inputLocation : inputLocations) {
+                Map<String, DeliveryReport> newUrlDeliveryReportMap =
+                        mapOfDeliveryReportForInputTargets.get(inputLocation.getRepository().getLocation());
+                if (newUrlDeliveryReportMap != null) {
+                    for (Map.Entry<String, DeliveryReport> entry : newUrlDeliveryReportMap.entrySet()) {
+                        DeliveryReport deliveryReport = entry.getValue();
+                        if (deliveryReport != null) {
+                            repoData = createRepoData(deliveryReport, inputLocation, entry.getKey());
+                            repoDataMap.put(inputLocation.getRepository().getLocation(), repoData); //input url as key
                         }
-                    }                }
+                    }
+                }
             }
+
             compoenentRepoDataMap.put(inputTarget.getName(), repoDataMap);
         }
         return compoenentRepoDataMap;
@@ -108,15 +108,7 @@ public class ReportHelper {
                 String inputLocationUrl = inputLocation.getRepository().getLocation();
                 for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
                     DeliveryReport deliveryReport = entry.getValue();
-                    deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
-                    if (deliveryReport != null) {
-                        String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
-                        if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
-                            Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
-                            targetDeliveryReport.put(newLocationUrl, deliveryReport);
-                            targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
-                        }
-                    }
+                    setDeliveryReportOnLocation(targetData, inputLocation, deliveryReport, inputLocationUrl, targetDeliveryReportMap);
                 }
 
             }
@@ -125,10 +117,33 @@ public class ReportHelper {
     }
 
     /**
+     * Set delivery report on location
+     *
+     * @param targetData              TargetData
+     * @param inputLocation           Location
+     * @param deliveryReport          DeliveryReport
+     * @param inputLocationUrl        String
+     * @param targetDeliveryReportMap Map
+     */
+    private static void setDeliveryReportOnLocation(TargetData targetData, Location inputLocation,
+                                                    DeliveryReport deliveryReport, String inputLocationUrl,
+                                                    Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap) {
+        deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
+        if (deliveryReport != null) {
+            String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
+            if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
+                Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
+                targetDeliveryReport.put(newLocationUrl, deliveryReport);
+                targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
+            }
+        }
+    }
+
+    /**
      * Retrieves the delivery report for the location based on pattern matching
      *
      * @param inputLocationUrl String
-     * @param targetData    TargetData
+     * @param targetData       TargetData
      * @return DeliveryReport
      */
     private static DeliveryReport getDeliveryReportForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
@@ -137,18 +152,12 @@ public class ReportHelper {
             for (Pattern pattern : patterns) {
                 String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
                 String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                if (StringUtils.contains(inputLocationUrl, group)) {
-                    if (StringUtils.contains(inputLocationUrl, artifact)) {
-                        if (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion())) {
-                            return deliveryReport;
-                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))) {
-                            return deliveryReport;
-                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion()))) {
-                            return deliveryReport;
-                        } else if (!deliveryReport.isExternalEntry() && (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))) {
-                            return deliveryReport;
-                        }
-                    }
+                if (StringUtils.contains(inputLocationUrl, group) && StringUtils.contains(inputLocationUrl, artifact)
+                        && (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion()))
+                        || (!deliveryReport.isExternalEntry() && ((StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))
+                        || (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion())) ||
+                        (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))))) {
+                    return deliveryReport;
                 }
             }
         }
@@ -184,9 +193,9 @@ public class ReportHelper {
     /**
      * Format delivery data
      *
-     * @param deliveryData   Delivery data
-     * @param currentFormat  Current format
-     * @param futureFormat   Future format
+     * @param deliveryData  Delivery data
+     * @param currentFormat Current format
+     * @param futureFormat  Future format
      * @return String
      */
     private static String formatDeliveryData(String deliveryData, String currentFormat, String futureFormat) {
@@ -204,18 +213,22 @@ public class ReportHelper {
      * @param deliveryReportMap DeliveryReport map
      */
     private static Map<String, DeliveryReport> updateDeliveryReportForNonReportCase(TargetData targetData, Map<String, DeliveryReport> deliveryReportMap) {
+        int initialSize = deliveryReportMap.size();
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
         for (Pattern pattern : patterns) {
-            if (!pattern.isUseDeliveryReport()) {
+            if (Boolean.FALSE.equals(pattern.isUseDeliveryReport())) {
                 DeliveryReport deliveryReport =
                         new DeliveryReport(null, pattern.getGroupId(), pattern.getArtifact(), pattern.getVersion(), null, null, true);
-                    deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(
-                            deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
+                deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(
+                        deliveryReport.getGroup(), deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
             }
+        }
+        int finalSize = deliveryReportMap.size();
+        if (finalSize > initialSize) {
+            LOG.info(">>> Delivery Report updated for non report case. Initial size: {}, Final size: {}", initialSize, finalSize);
         }
         return deliveryReportMap;
     }
-
 
     /**
      * Create repo data
@@ -235,7 +248,6 @@ public class ReportHelper {
         return repoData;
     }
 
-
     /**
      * Set repo units
      *
@@ -253,7 +265,6 @@ public class ReportHelper {
         return repoUnits;
     }
 
-
     /**
      * Get report data from the delivery report file
      *
@@ -270,26 +281,22 @@ public class ReportHelper {
             } else {
                 reportFile = readFileFromDirectory(reportFileLocation, linesToSkip);
             }
-
             if (reportFile == null) {
-                LOG.error("!!! Report file is null/empty or cannot be read. !!!" );
-                throw new RuntimeException("!!! Report file is null/empty or cannot be read !!!");
+                LOG.error("!!! Report file is null/empty or cannot be read. !!!");
+                return Collections.emptyMap();
             } else {
                 for (String line : reportFile.split(SeparatorConstants.LINE_BREAK)) {
                     DeliveryReport deliveryReport = DeliveryReport.fromDelimitedString(line, SeparatorConstants.FIELD_DELIMITER_SEMICOLON);
                     deliveryReportMap.put(TargetClonerUtil.deliveryReportKey(deliveryReport.getGroup(),
-                            deliveryReport.getArtifact(),deliveryReport.getVersion()), deliveryReport);
-                    //LOG.info(">>> Delivery report: {}", deliveryReport);
+                            deliveryReport.getArtifact(), deliveryReport.getVersion()), deliveryReport);
                 }
             }
-            LOG.info(">>> Count of Delivery report map: {}", deliveryReportMap.size());
             return deliveryReportMap;
         } catch (IOException e) {
             LOG.error(">>> Failed to read file from directory: {}", e.getMessage());
             return Collections.emptyMap();
         }
     }
-
 
     /**
      * Read file from directory. For Local testing
@@ -346,8 +353,6 @@ public class ReportHelper {
         }
         return updateDeliveryReportForNonReportCase(targetData, deliveryReportMap);
     }
-
-
 
     /**
      * Create delivery report URL

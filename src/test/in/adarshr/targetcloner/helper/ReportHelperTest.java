@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-public class ReportHelperTest {
+class ReportHelperTest {
     private DeliveryReport deliveryReport;
 
     @BeforeEach
@@ -17,7 +17,7 @@ public class ReportHelperTest {
     }
 
     @Test
-    public void testCreateDeliveryReportUrl() {
+    void testCreateDeliveryReportUrl() {
         // Setup your mocks and expected results
         when(deliveryReport.getGroup()).thenReturn("group");
         when(deliveryReport.getArtifact()).thenReturn("artifact");

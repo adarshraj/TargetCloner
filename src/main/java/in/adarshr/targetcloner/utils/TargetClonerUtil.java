@@ -24,6 +24,9 @@ import java.util.stream.Stream;
 public class TargetClonerUtil {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetClonerUtil.class);
 
+    private TargetClonerUtil() {
+    }
+
     /**
      * Unmarshal the given XML file to an object.
      *
@@ -105,7 +108,7 @@ public class TargetClonerUtil {
             assert inputStream != null;
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
                  BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                reader.lines().forEach(System.out::println);
+                reader.lines().forEach(System.out::println); //NOSONAR
             }
         } catch (Exception e) {
             LOG.error(">>> Failed to print banner: {}", e.getMessage());
@@ -120,7 +123,7 @@ public class TargetClonerUtil {
      */
     public static boolean isUrl(String location) {
         try {
-            new URL(location);
+            new URL(location); //NOSONAR
             return true;
         } catch (MalformedURLException e) {
             LOG.error(">>> Invalid delivery report url: {}", e.getMessage());

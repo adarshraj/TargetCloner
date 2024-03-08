@@ -60,7 +60,7 @@ public class TargetCloner {
                 if (repoDataJarUrls.isEmpty()) {
                     LOG.error("*** Error *** No jar urls found. Exiting the application. ***");
                     return;
-                }else{
+                } else {
                     LOG.info("*** Step {} *** Repo Jar Urls creation completed. ***", stepCount());
                     targetData.setRepoDataUrlSet(repoDataJarUrls);
                 }
@@ -93,7 +93,7 @@ public class TargetCloner {
 
                 if (argumentParser.isCompare()) {
                     //Compare the target files
-                    CompareHelper.compareTargetFiles(stringTargetMap, targets, targetData);
+                    CompareHelper.compareTargetFiles(stringTargetMap, targets);
                     LOG.info("*** Step {} ***  Target files are compared. ***", stepCount());
                 }
                 LOG.info("!!! All tasks completed. !!!");

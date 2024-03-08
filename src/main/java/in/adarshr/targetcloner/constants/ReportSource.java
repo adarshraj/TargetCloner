@@ -1,6 +1,7 @@
 package in.adarshr.targetcloner.constants;
 
 import lombok.Getter;
+
 @Getter
 public enum ReportSource {
     //1 value for URL and 2 for File

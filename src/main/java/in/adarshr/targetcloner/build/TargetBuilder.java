@@ -32,7 +32,7 @@ public class TargetBuilder {
      * @return String
      */
     public static String getTargetName(String componentName, String version) {
-        return componentName + FIELD_DELIMITER_UNDERSCORE+ version;
+        return componentName + FIELD_DELIMITER_UNDERSCORE + version;
     }
 
     private static Optional<RepoUnit> getInputUnit(RepoData repoData, TargetData targetData, Unit unit) {
@@ -108,8 +108,8 @@ public class TargetBuilder {
         Target outTarget = null;
         for (Target inpTarget : targetData.getInputTargets()) {
             if (inpTarget.getName().equals(iTarget.getName())) {
-                ObjectFactory ObjectFactory = new ObjectFactory();
-                outTarget = ObjectFactory.createTarget();
+                ObjectFactory objectFactory = new ObjectFactory();
+                outTarget = objectFactory.createTarget();
                 outTarget.setName(createTargetName(targetData));
                 outTarget.setIncludeMode(inpTarget.getIncludeMode());
                 outTarget.setSequenceNumber(inpTarget.getSequenceNumber());
@@ -156,7 +156,7 @@ public class TargetBuilder {
                         LOG.error(">>> Repo data not found for target: {}", inpTarget.getName());
                         continue;
                     }
-                    DeliveryReport deliveryReport = deliveryReportMap.get(TargetClonerUtil.deliveryReportKey(repoData.getGroup(),repoData.getArtifact(),repoData.getVersion()));
+                    DeliveryReport deliveryReport = deliveryReportMap.get(TargetClonerUtil.deliveryReportKey(repoData.getGroup(), repoData.getArtifact(), repoData.getVersion()));
                     if (deliveryReport != null) {
                         locations.getLocation().add(createLocation(inpLocation, repoData, targetData));
                     }

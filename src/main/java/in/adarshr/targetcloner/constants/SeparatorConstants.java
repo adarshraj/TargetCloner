@@ -1,10 +1,12 @@
 package in.adarshr.targetcloner.constants;
 
-public interface SeparatorConstants {
-    String LOCATION_SEPARATOR = "/";
-    String FIELD_DELIMITER_SEMICOLON = ":";
-    String LINE_BREAK = "\n";
-    String EMPTY_STRING = "";
-    String FIELD_DELIMITER_UNDERSCORE = "_";
-    String XML_FILE_EXTENSION = ".xml";
+public final class SeparatorConstants {
+    public static final String LOCATION_SEPARATOR = "/";
+    public static final String FIELD_DELIMITER_SEMICOLON = ":";
+    public static final String LINE_BREAK = "\n";
+    public static final String EMPTY_STRING = "";
+    public static final String FIELD_DELIMITER_UNDERSCORE = "_";
+    public static final String XML_FILE_EXTENSION = ".xml";
+    private SeparatorConstants() {
+    }
 }
