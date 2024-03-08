@@ -56,7 +56,7 @@ public class TargetCloner {
                 LOG.info("*** Step {} *** Delivery report data obtained ***", stepCount());
 
                 //Get repository jar urls
-                Set<RepoData> repoDataJarUrls = ReportHelper.getJarUrls(targetData);
+                Set<RepoData> repoDataJarUrls = ReportHelper.getSelectedReposForJarQueryUrls(targetData);
                 if (repoDataJarUrls.isEmpty()) {
                     LOG.error("*** Error *** No jar urls found. Exiting the application. ***");
                     return;

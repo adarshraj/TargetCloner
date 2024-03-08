@@ -32,11 +32,10 @@ public class ReportHelper {
      * @param targetData TargetData
      * @return Set
      */
-    public static Set<RepoData> getJarUrls(TargetData targetData) {
+    public static Set<RepoData> getSelectedReposForJarQueryUrls(TargetData targetData) {
         Map<String, Map<String, RepoData>> componentRepoMap = createRepoDataMap(targetData);
         targetData.setComponentRepoDataMap(componentRepoMap);
         Set<RepoData> jarUrls = new HashSet<>();
-
         componentRepoMap.forEach((key, value) -> {
             if (value != null && !value.isEmpty()) {
                 value.forEach((k, v) -> {
@@ -83,7 +82,6 @@ public class ReportHelper {
                     }
                 }
             }
-
             compoenentRepoDataMap.put(inputTarget.getName(), repoDataMap);
         }
         return compoenentRepoDataMap;
@@ -108,9 +106,8 @@ public class ReportHelper {
                 String inputLocationUrl = inputLocation.getRepository().getLocation();
                 for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
                     DeliveryReport deliveryReport = entry.getValue();
-                    setDeliveryReportOnLocation(targetData, inputLocation, deliveryReport, inputLocationUrl, targetDeliveryReportMap);
+                    setDeliveryReportForRelatedRepositoryUrl(targetData, deliveryReport, inputLocationUrl, targetDeliveryReportMap);
                 }
-
             }
         }
         return targetDeliveryReportMap;
@@ -120,17 +117,15 @@ public class ReportHelper {
      * Set delivery report on location
      *
      * @param targetData              TargetData
-     * @param inputLocation           Location
      * @param deliveryReport          DeliveryReport
      * @param inputLocationUrl        String
      * @param targetDeliveryReportMap Map
      */
-    private static void setDeliveryReportOnLocation(TargetData targetData, Location inputLocation,
-                                                    DeliveryReport deliveryReport, String inputLocationUrl,
-                                                    Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap) {
+    private static void setDeliveryReportForRelatedRepositoryUrl(TargetData targetData, DeliveryReport deliveryReport, String inputLocationUrl,
+                                                                 Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap) {
         deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
         if (deliveryReport != null) {
-            String newLocationUrl = getNewUrlForLocation(inputLocation, deliveryReport, targetData);
+            String newLocationUrl = getNewUrlForLocation(inputLocationUrl, deliveryReport, targetData);
             if (StringUtils.isNotEmpty(inputLocationUrl) && StringUtils.isNotEmpty(newLocationUrl)) {
                 Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
                 targetDeliveryReport.put(newLocationUrl, deliveryReport);
@@ -150,14 +145,15 @@ public class ReportHelper {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
-                String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
-                String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-                if (StringUtils.contains(inputLocationUrl, group) && StringUtils.contains(inputLocationUrl, artifact)
-                        && (deliveryReport.isExternalEntry() && pattern.getVersion().equals(deliveryReport.getVersion()))
-                        || (!deliveryReport.isExternalEntry() && ((StringUtils.isEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))
-                        || (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isEmpty(targetData.getTargetDetails().getVersion())) ||
-                        (StringUtils.isNotEmpty(pattern.getVersion()) && StringUtils.isNotEmpty(targetData.getTargetDetails().getVersion()))))) {
-                    return deliveryReport;
+                String group = formatUrlPatternData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
+                String artifact = formatUrlPatternData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
+                if ((StringUtils.contains(inputLocationUrl, group) && StringUtils.contains(inputLocationUrl, artifact))){
+                    boolean condA = !pattern.isUseDeliveryReport() && deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
+                    boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
+                    if(condA || condB){
+                        LOG.info(">>> Condition satisfied for pattern:{} : {} : {} : {} : {}", pattern.getUrlPattern(), condA, condB, deliveryReport, inputLocationUrl);
+                        return deliveryReport;
+                    }
                 }
             }
         }
@@ -168,37 +164,34 @@ public class ReportHelper {
     /**
      * Create the new url for the location from the pattern
      *
-     * @param inputLocation  Location
      * @param deliveryReport DeliveryReport
      * @param targetData     TargetData
      * @return String
      */
-    private static String getNewUrlForLocation(Location inputLocation, DeliveryReport deliveryReport, TargetData targetData) {
+    private static String getNewUrlForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
-        String inputLocationUrl = inputLocation.getRepository().getLocation();
         for (Pattern pattern : patterns) {
-            String group = formatDeliveryData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
-            String artifact = formatDeliveryData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
-            String version = formatDeliveryData(deliveryReport.getVersion(), pattern.getCurrentVersionUrlPattern(), pattern.getFutureVersionUrlPattern());
+            String group = formatUrlPatternData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
+            String artifact = formatUrlPatternData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
+            String version = formatUrlPatternData(deliveryReport.getVersion(), pattern.getCurrentVersionUrlPattern(), pattern.getFutureVersionUrlPattern());
             if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                 return pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group)
                         .replace(PLACEHOLDER_ARTIFACT, artifact)
                         .replace(PLACEHOLDER_VERSION, version);
             }
         }
-        LOG.error(">> No new url created for location: {}", inputLocationUrl);
         return StringUtils.EMPTY;
     }
 
     /**
-     * Format delivery data
+     * Format the input p data
      *
      * @param deliveryData  Delivery data
      * @param currentFormat Current format
      * @param futureFormat  Future format
      * @return String
      */
-    private static String formatDeliveryData(String deliveryData, String currentFormat, String futureFormat) {
+    private static String formatUrlPatternData(String deliveryData, String currentFormat, String futureFormat) {
         if (deliveryData != null) {
             return deliveryData.replace(currentFormat, futureFormat).trim();
         }
