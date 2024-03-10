@@ -23,6 +23,9 @@ import static in.adarshr.targetcloner.constants.TargetClonerConstants.*;
 public class ReportHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ReportHelper.class);
 
+    /**
+     * Private constructor
+     */
     private ReportHelper() {
     }
 
@@ -286,7 +289,7 @@ public class ReportHelper {
             }
             return deliveryReportMap;
         } catch (IOException e) {
-            LOG.error(">>> Failed to read file from directory: {}", e.getMessage());
+            LOG.error(">>> Failed to read report file: ", e);
             return Collections.emptyMap();
         }
     }

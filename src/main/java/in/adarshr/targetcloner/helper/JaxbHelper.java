@@ -49,9 +49,9 @@ public class JaxbHelper {
         JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        StringWriter sw = new StringWriter();
-        jaxbMarshaller.marshal(object, sw);
-        return sw.toString();
+        StringWriter stringWriter = new StringWriter();
+        jaxbMarshaller.marshal(object, stringWriter);
+        return stringWriter.toString();
     }
 
     /**
