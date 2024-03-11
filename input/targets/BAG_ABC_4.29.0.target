@@ -10,7 +10,7 @@
     <locations>
         <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="test"
                   type="InstallableUnit">
-            <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/"/>
+            <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.29.0/"/>
             <unit id="org.eclipse.orbit.maven.xalan.feature.jar" version="4.30.0.v20230928-1302"/>
             <unit id="org.eclipse.orbit.maven.org.apache.xmlgraphics.source.feature.jar"
                   version="4.30.0.v20230916-1600"/>
