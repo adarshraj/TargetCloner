@@ -184,11 +184,9 @@ public class ReportHelper {
                 LOG.info(">>> Difference in the new url: {}, {}, {}", difference, inputLocationUrl, newUrl);
                 if (StringUtils.isNotEmpty(difference)) {
                     difference = StringUtils.remove(difference, SeparatorConstants.LOCATION_SEPARATOR);
-                    if(version.contains(difference)) {
+                    if(difference.contains(version)) {
                         return newUrl;
                     }
-                }else{
-                    return newUrl;
                 }
             }
         }
