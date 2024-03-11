@@ -154,7 +154,6 @@ public class ReportHelper {
                     boolean condA = !pattern.isUseDeliveryReport() && deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
                     boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
                     if(condA || condB){
-                        LOG.info(">>> Condition satisfied for pattern:{} : {} : {} : {} : {}", pattern.getUrlPattern(), condA, condB, deliveryReport, inputLocationUrl);
                         return deliveryReport;
                     }
                 }
@@ -182,12 +181,14 @@ public class ReportHelper {
                         .replace(PLACEHOLDER_ARTIFACT, artifact)
                         .replace(PLACEHOLDER_VERSION, version);
                 String difference = StringUtils.difference(inputLocationUrl, newUrl);
+                LOG.info(">>> Difference in the new url: {}, {}, {}", difference, inputLocationUrl, newUrl);
                 if (StringUtils.isNotEmpty(difference)) {
                     difference = StringUtils.remove(difference, SeparatorConstants.LOCATION_SEPARATOR);
                     if(version.contains(difference)) {
-                        LOG.info(">>> Difference in the new url: {}", difference);
                         return newUrl;
                     }
+                }else{
+                    return newUrl;
                 }
             }
         }
