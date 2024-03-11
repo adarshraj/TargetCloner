@@ -27,6 +27,9 @@ public class ConnectionHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionHelper.class);
 
+    /**
+     * Private constructor to prevent instantiation
+     */
     private ConnectionHelper() {
     }
 

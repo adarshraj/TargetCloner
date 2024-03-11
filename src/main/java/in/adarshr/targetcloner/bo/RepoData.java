@@ -26,12 +26,13 @@ public class RepoData {
         if (o == null || getClass() != o.getClass()) return false;
         RepoData repoData = (RepoData) o;
         return Objects.equals(group, repoData.group) &&
-                Objects.equals(artifact, repoData.artifact);
+                Objects.equals(artifact, repoData.artifact) &&
+                Objects.equals(version, repoData.version);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(group, artifact);
+        return Objects.hash(group, artifact, version);
     }
 }
 

@@ -81,6 +81,12 @@ public class TargetBuilder {
         return outputTargets;
     }
 
+    /**
+     * This method is used to set the target VO data
+     *
+     * @param inpTarget   Target
+     * @param targetData  TargetData
+     */
     private void setTargetVOData(Target inpTarget, TargetData targetData) {
         String[] componentVersion = inpTarget.getName().split(FIELD_DELIMITER_UNDERSCORE);
         targetData.setCurrentComponentName(componentVersion[0]);

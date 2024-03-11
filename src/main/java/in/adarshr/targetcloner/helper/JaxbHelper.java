@@ -33,6 +33,9 @@ public class JaxbHelper {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(JaxbHelper.class);
 
+    /**
+     * Private constructor to prevent instantiation
+     */
     private JaxbHelper() {
     }
 

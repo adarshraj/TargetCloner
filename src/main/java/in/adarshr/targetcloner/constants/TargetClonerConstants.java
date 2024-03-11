@@ -12,6 +12,9 @@ public final class TargetClonerConstants {
     public static final String TARGET_FILE_SUFFIX = ".target";
     public static final String OUTPUT_DIRECTORY = "output";
     public static final String USER_DIRECTORY = "user.dir";
+    /**
+     * Private constructor to prevent instantiation
+     */
     private TargetClonerConstants() {
     }
 }

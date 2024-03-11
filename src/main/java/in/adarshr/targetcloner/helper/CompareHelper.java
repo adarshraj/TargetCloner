@@ -19,9 +19,18 @@ public class CompareHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CompareHelper.class);
 
+    /**
+     * Private constructor to prevent instantiation
+     */
     private CompareHelper() {
     }
 
+    /**
+     * Compares the target files.
+     *
+     * @param stringTargetMap the string target map
+     * @param targets         the targets
+     */
     public static void compareTargetFiles(Map<String, Target> stringTargetMap, List<Target> targets) {
         Collection<Target> values = stringTargetMap.values();
         DiffBuilder<List<Target>> diffBuilder = new DiffBuilder<>(values.stream().toList(), targets, ToStringStyle.SIMPLE_STYLE);

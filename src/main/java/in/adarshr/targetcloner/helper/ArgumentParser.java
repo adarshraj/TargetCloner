@@ -12,6 +12,11 @@ public class ArgumentParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentParser.class);
     private boolean isCompare = false;
 
+    /**
+     * Constructor
+     *
+     * @param arguments arguments
+     */
     public ArgumentParser(String[] arguments) {
         parseArguments(arguments);
     }

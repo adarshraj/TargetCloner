@@ -9,6 +9,11 @@ public enum ReportSource {
 
     private final int value;
 
+    /**
+     * Constructor
+     *
+     * @param value value
+     */
     ReportSource(int value) {
         this.value = value;
     }

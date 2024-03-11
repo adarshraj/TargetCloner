@@ -7,6 +7,10 @@ public final class SeparatorConstants {
     public static final String EMPTY_STRING = "";
     public static final String FIELD_DELIMITER_UNDERSCORE = "_";
     public static final String XML_FILE_EXTENSION = ".xml";
+
+    /**
+     * Private constructor to prevent instantiation
+     */
     private SeparatorConstants() {
     }
 }

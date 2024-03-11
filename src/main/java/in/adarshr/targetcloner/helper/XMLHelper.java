@@ -34,6 +34,9 @@ public class XMLHelper {
 
     private static final Logger LOG = LoggerFactory.getLogger(XMLHelper.class);
 
+    /**
+     * Private constructor to prevent instantiation
+     */
     private XMLHelper() {
     }
 
@@ -98,6 +101,12 @@ public class XMLHelper {
         return repoUnit;
     }
 
+    /**
+     * Parse all XML
+     *
+     * @param xmlInputStreamMap Map of XML input stream
+     * @return Map of RepoData and List of RepoUnit
+     */
     public static Map<RepoData, List<RepoUnit>> parseAllXml(Map<RepoData, String> xmlInputStreamMap) {
         return xmlInputStreamMap.entrySet().stream()
                 .filter(entry -> entry.getValue() != null)

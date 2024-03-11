@@ -24,6 +24,9 @@ import java.util.stream.Stream;
 public class TargetClonerUtil {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(TargetClonerUtil.class);
 
+    /**
+     * Private constructor to prevent instantiation
+     */
     private TargetClonerUtil() {
     }
 
