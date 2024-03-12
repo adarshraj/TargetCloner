@@ -178,16 +178,12 @@ public class ReportHelper {
             String version = formatUrlPatternData(deliveryReport.getVersion(), pattern.getCurrentVersionUrlPattern(), pattern.getFutureVersionUrlPattern());
             if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
                 String newUrl =  pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group)
-                        .replace(PLACEHOLDER_ARTIFACT, artifact)
-                        .replace(PLACEHOLDER_VERSION, version);
-                String difference = StringUtils.difference(inputLocationUrl, newUrl);
-                LOG.info(">>> Difference in the new url: {}, {}, {}", difference, inputLocationUrl, newUrl);
-                if (StringUtils.isNotEmpty(difference)) {
-                    difference = StringUtils.remove(difference, SeparatorConstants.LOCATION_SEPARATOR);
-                    if(difference.contains(version)) {
-                        return newUrl;
-                    }
+                        .replace(PLACEHOLDER_ARTIFACT, artifact);
+                String partialNewUrl = newUrl.substring(0, newUrl.indexOf(PLACEHOLDER_VERSION));
+                if(inputLocationUrl.contains(partialNewUrl)) {
+                    newUrl = newUrl.replace(PLACEHOLDER_VERSION, version);
                 }
+                return newUrl;
             }
         }
         return StringUtils.EMPTY;
