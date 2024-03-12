@@ -109,7 +109,10 @@ public class ReportHelper {
                 String inputLocationUrl = inputLocation.getRepository().getLocation();
                 for (Map.Entry<String, DeliveryReport> entry : deliveryReportMap.entrySet()) {
                     DeliveryReport deliveryReport = entry.getValue();
-                    setDeliveryReportForRelatedRepositoryUrl(targetData, deliveryReport, inputLocationUrl, targetDeliveryReportMap);
+                    boolean isFound = setDeliveryReportForRelatedRepositoryUrl(targetData, deliveryReport, inputLocationUrl, targetDeliveryReportMap);
+                    if (isFound) {
+                        break;
+                    }
                 }
             }
         }
@@ -124,8 +127,9 @@ public class ReportHelper {
      * @param inputLocationUrl        String
      * @param targetDeliveryReportMap Map
      */
-    private static void setDeliveryReportForRelatedRepositoryUrl(TargetData targetData, DeliveryReport deliveryReport, String inputLocationUrl,
+    private static boolean setDeliveryReportForRelatedRepositoryUrl(TargetData targetData, DeliveryReport deliveryReport, String inputLocationUrl,
                                                                  Map<String, Map<String, DeliveryReport>> targetDeliveryReportMap) {
+        boolean isFound = false;
         deliveryReport = getDeliveryReportForLocation(inputLocationUrl, deliveryReport, targetData);
         if (deliveryReport != null) {
             String newLocationUrl = getNewUrlForLocation(inputLocationUrl, deliveryReport, targetData);
@@ -133,8 +137,10 @@ public class ReportHelper {
                 Map<String, DeliveryReport> targetDeliveryReport = new HashMap<>();
                 targetDeliveryReport.put(newLocationUrl, deliveryReport);
                 targetDeliveryReportMap.put(inputLocationUrl, targetDeliveryReport);
+                isFound = true;
             }
         }
+        return isFound;
     }
 
     /**
@@ -172,21 +178,23 @@ public class ReportHelper {
      */
     private static String getNewUrlForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
+        String newUrl = null;
         for (Pattern pattern : patterns) {
             String group = formatUrlPatternData(deliveryReport.getGroup(), pattern.getCurrentGroupUrlPattern(), pattern.getFutureGroupUrlPattern());
             String artifact = formatUrlPatternData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
             String version = formatUrlPatternData(deliveryReport.getVersion(), pattern.getCurrentVersionUrlPattern(), pattern.getFutureVersionUrlPattern());
             if (inputLocationUrl.contains(group) && inputLocationUrl.contains(artifact)) {
-                String newUrl =  pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group)
+                newUrl =  pattern.getUrlPattern().replace(PLACEHOLDER_GROUP, group)
                         .replace(PLACEHOLDER_ARTIFACT, artifact);
                 String partialNewUrl = newUrl.substring(0, newUrl.indexOf(PLACEHOLDER_VERSION));
                 if(inputLocationUrl.contains(partialNewUrl)) {
                     newUrl = newUrl.replace(PLACEHOLDER_VERSION, version);
+                }else{
+                    newUrl = null;
                 }
-                return newUrl;
             }
         }
-        return StringUtils.EMPTY;
+        return newUrl;
     }
 
     /**
