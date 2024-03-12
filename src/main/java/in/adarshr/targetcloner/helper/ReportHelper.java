@@ -150,7 +150,7 @@ public class ReportHelper {
      * @param targetData       TargetData
      * @return DeliveryReport
      */
-    private static DeliveryReport getDeliveryReportForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
+    private static DeliveryReport  getDeliveryReportForLocation(String inputLocationUrl, DeliveryReport deliveryReport, TargetData targetData) {
         List<Pattern> patterns = targetData.getTargetDetails().getRepoUrlPatterns().getPattern();
         if (deliveryReport != null && deliveryReport.getGroup() != null && deliveryReport.getArtifact() != null) {
             for (Pattern pattern : patterns) {
@@ -158,7 +158,7 @@ public class ReportHelper {
                 String artifact = formatUrlPatternData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
                 if ((StringUtils.contains(inputLocationUrl, group) && StringUtils.contains(inputLocationUrl, artifact))){
                     boolean condA = !pattern.isUseDeliveryReport() && deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
-                    boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
+                    boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry();
                     if(condA || condB){
                         return deliveryReport;
                     }
