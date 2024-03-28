@@ -189,6 +189,7 @@ public class ReportHelper {
                 String partialNewUrl = newUrl.substring(0, newUrl.indexOf(PLACEHOLDER_VERSION));
                 if(inputLocationUrl.contains(partialNewUrl)) {
                     newUrl = newUrl.replace(PLACEHOLDER_VERSION, version);
+                    break;
                 }else{
                     newUrl = null;
                 }
