@@ -158,7 +158,7 @@ public class ReportHelper {
                 String artifact = formatUrlPatternData(deliveryReport.getArtifact(), pattern.getCurrentArtifactUrlPattern(), pattern.getFutureArtifactUrlPattern());
                 if ((StringUtils.contains(inputLocationUrl, group) && StringUtils.contains(inputLocationUrl, artifact))){
                     boolean condA = !pattern.isUseDeliveryReport() && deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
-                    boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry();
+                    boolean condB = pattern.isUseDeliveryReport() && !deliveryReport.isExternalEntry() && deliveryReport.getVersion().equals(pattern.getVersion());
                     if(condA || condB){
                         return deliveryReport;
                     }
